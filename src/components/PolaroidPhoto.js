@@ -108,7 +108,7 @@ const PolaroidCard = ({
   
   return (
     <motion.div 
-      className="h-full w-full flex justify-center items-center"
+      className="flex justify-center items-center"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
