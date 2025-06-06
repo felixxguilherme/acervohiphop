@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import ThreeTransition from './ThreeTransition';
 
 const PageTransition = ({ children }) => {
   const router = useRouter();
@@ -13,6 +14,13 @@ const PageTransition = ({ children }) => {
   // Atualize o estado quando o pathname mudar
   useEffect(() => {
     setPage(pathname);
+  }, [pathname]);
+
+  // Trigger 3D animation when page changes
+  useEffect(() => {
+    setIsTransitioning(true);
+    const timeout = setTimeout(() => setIsTransitioning(false), 800);
+    return () => clearTimeout(timeout);
   }, [pathname]);
 
   // Variantes para a transição da página
@@ -52,18 +60,21 @@ const PageTransition = ({ children }) => {
   };
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={page}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-        variants={pageVariants}
-        className="w-full h-full"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <>
+      <ThreeTransition active={isTransitioning} />
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={page}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          variants={pageVariants}
+          className="w-full h-full"
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
+    </>
   );
 };
 
