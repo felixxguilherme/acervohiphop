@@ -184,6 +184,8 @@ import { useEffect, useRef } from "react";
 import Lenis from 'lenis';
 
 import PolaroidCard from "../components/PolaroidPhoto";
+import PolaroidCard2 from "../components/PolaroidPhoto2";
+import HeroVideoDialog from "../components/magicui/hero-video-dialog.jsx";
 
 export default function Home() {
 
@@ -228,9 +230,11 @@ export default function Home() {
           <AnimatedButton textSize="text-3xl" text="REVISTA" imagePath="teste2.png" />
         </nav>
       </header>
-      <main ref={container} className="relative h-[200vh]">
+      <main ref={container} className="relative h-[400vh]">
         <Section1 scrollYProgress={scrollYProgress} />
         <Section2 scrollYProgress={scrollYProgress} />
+        <Section3 />
+        <Section4 />
       </main>
     </>
 
@@ -285,17 +289,37 @@ const Section2 = ({ scrollYProgress }) => {
   )
 }
 
-const Section3 = ({ scrollYProgress }) => {
-
-  const scale = useTransform(scrollYProgress, [0, 1], [0.8, 1]);
-  const rotate = useTransform(scrollYProgress, [0, 1], [5, 0])
-
+const Section3 = () => {
   return (
-    <motion.div style={{ scale, rotate }} className="relative h-screen">
-      <div className="h-100 w-300">
-        teste
-      </div>
+    <motion.section
+      className="flex h-screen flex-col items-center justify-center gap-6"
+      initial={{ opacity: 0, y: 100 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8 }}
+    >
+      <PolaroidCard2 caption="Distrito HipHop" />
+      <motion.p className="font-sometype-mono text-2xl" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+        Memórias que inspiram
+      </motion.p>
+    </motion.section>
+  );
+}
 
-    </motion.div>
-  )
+const Section4 = () => {
+  return (
+    <motion.section
+      className="flex h-screen items-center justify-center"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1 }}
+    >
+      <HeroVideoDialog
+        videoSrc="https://www.youtube.com/embed/situlcE28w0?si=OIrELMHTLQ2LaEQA"
+        thumbnailSrc="https://i.ytimg.com/an_webp/situlcE28w0/mqdefault_6s.webp?du=3000&sqp=CKTm-MAG&rs=AOn4CLAuwWbZ7iOZqlH8g5b_6lrEntEStw"
+        className="max-w-xl w-full"
+      />
+    </motion.section>
+  );
 }
