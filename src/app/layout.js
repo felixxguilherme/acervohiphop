@@ -2,6 +2,8 @@ import "./globals.css";
 import { scratchyFont } from "./fonts";
 import { sometypeMonoFont } from "./fonts";
 import { dirtyStainsFont } from "./fonts";
+import HeaderApp from "@/components/html/HeaderApp";
+import FooterApp from "@/components/html/FooterApp";
 
 export const metadata = {
   title: "Create Next App",
@@ -10,11 +12,26 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body
         className={`${scratchyFont.variable} ${sometypeMonoFont.variable} ${dirtyStainsFont.variable} antialiased`}
       >
-        {children}
+        {/* Imagem de fundo - agora com z-index menor */}
+      <div
+        className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0"
+        style={{
+          backgroundImage: `url('/fundo_base.jpg')`,
+          backgroundColor: '#000',
+        }}
+        aria-hidden="true"
+      />
+        <div className="min-h-screen flex flex-col">
+          
+            {children}
+                 
+          {/* Footer */}
+          <FooterApp />
+        </div>
       </body>
     </html>
   );
