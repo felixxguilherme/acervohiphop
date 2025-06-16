@@ -4,20 +4,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
-
 import AnimatedButton from '@/components/AnimatedButton';
 
-import { TimelineDemo } from '@/components/acervo/Timeline';
-
-// Componentes do Acervo
-import HeroTimeline from '@/components/acervo/HeroTimeline';
-import FilterBar from '@/components/acervo/FilterBar';
-import StatsOverview from '@/components/acervo/StatsOverview';
-import ItemsGrid from '@/components/acervo/ItemsGrid';
-
-const Acervo = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilters, setActiveFilters] = useState([]);
+const Audiovisual = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -91,7 +80,7 @@ const Acervo = () => {
               lineHeight: '0.9'
             }}
           >
-            ACERVO DIGITAL
+            AUDIOVISUAL
           </motion.h1>
         </div>
 
@@ -107,7 +96,6 @@ const Acervo = () => {
             </div>
             {/* Navegação principal - centralizada */}
             <div className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 flex-1">
-
               <Link href="/">
                 <AnimatedButton textSize="text-3xl" text="INÍCIO" backgroundMode="static" imagePath="marca-texto-vermelho.png" />
               </Link>
@@ -128,85 +116,51 @@ const Acervo = () => {
             }}
             className="w-full overflow-hidden"
           >
-            {/* Hero Timeline */}
-            <HeroTimeline />
-
-            {/* Stats Overview */}
-            <StatsOverview />
-
-            {/* Filter Bar */}
-            {/* <FilterBar
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              activeFilters={activeFilters}
-              onFilterChange={setActiveFilters}
-            /> */}
-
-            {/* Items Grid */}
-            {/* <ItemsGrid
-              searchTerm={searchTerm}
-              activeFilters={activeFilters}
-            /> */}
-
-            {/* Footer do Acervo */}
-            {/* <motion.footer
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.5 }}
-              className="bg-black/60 backdrop-blur-md border-t border-white/20 mt-16 py-12"
-            >
-              <div className="max-w-7xl mx-auto px-6 text-center">
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    🎤 Acervo Hip Hop Distrito Federal
-                  </h3>
-                  <p className="text-white/80 max-w-2xl mx-auto leading-relaxed">
-                    Preservando e compartilhando a rica história da cultura Hip Hop no Distrito Federal,
-                    desde os primeiros movimentos nos anos 80 até os dias atuais.
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-8 mb-8">
-                  <div className="text-center">
-                    <div className="text-3xl mb-2">📚</div>
-                    <h4 className="font-semibold text-white mb-1">Documentação</h4>
-                    <p className="text-white/60 text-sm">
-                      Fotografias, vídeos, documentos e registros históricos
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl mb-2">🗺️</div>
-                    <h4 className="font-semibold text-white mb-1">Territórios</h4>
-                    <p className="text-white/60 text-sm">
-                      Mapeamento da cultura Hip Hop em todas as regiões do DF
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl mb-2">👥</div>
-                    <h4 className="font-semibold text-white mb-1">Comunidade</h4>
-                    <p className="text-white/60 text-sm">
-                      Preservando memórias de artistas, crews e coletivos
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-white/40 text-sm">
-                  <p>
-                    Projeto desenvolvido em parceria com o Arquivo Público do Distrito Federal
-                  </p>
-                  <p className="mt-2">
-                    © 2024 Acervo Hip Hop DF • Preservando nossa cultura
-                  </p>
-                </div>
-              </div>
-            </motion.footer> */}
+            <div className="container mx-auto px-4 py-16">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-center text-black"
+              >
+                <h2 className="font-sometype-mono text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 max-w-4xl mx-auto">
+                  Documentário, videoclipes, registros de eventos e performances que capturam a essência do Hip Hop brasiliense
+                </h2>
+                
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  {[
+                    { title: 'Documentários', description: 'Filmes que contam a história do Hip Hop no DF' },
+                    { title: 'Videoclipes', description: 'Produções musicais dos artistas locais' },
+                    { title: 'Eventos', description: 'Registro de battles, shows e encontros' },
+                    { title: 'Entrevistas', description: 'Depoimentos de pioneiros e veteranos' },
+                    { title: 'Performances', description: 'Apresentações ao vivo e improvisações' },
+                    { title: 'Making Of', description: 'Bastidores da produção cultural local' }
+                  ].map((item, index) => (
+                    <motion.div
+                      key={item.title}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.4 + index * 0.1 }}
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      className="bg-black/20 backdrop-blur-sm p-6 rounded-lg border-2 border-black cursor-pointer"
+                    >
+                      <h3 className="font-dirty-stains text-2xl font-semibold mb-3 text-black">{item.title}</h3>
+                      <p className="font-sometype-mono text-sm text-black/80">{item.description}</p>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            </div>
           </motion.div>
         </AnimatePresence>
       </div>
-
-      <TimelineDemo />
     </>
   );
 };
 
-export default Acervo;
+export default Audiovisual;

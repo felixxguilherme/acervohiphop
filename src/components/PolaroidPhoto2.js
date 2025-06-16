@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 const PolaroidCard2 = ({ 
   imageSrc = "https://images.unsplash.com/photo-1629753863735-4c9ba15bc10b", 

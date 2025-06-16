@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import AnimatedButton from './AnimatedButton';
 
 const PolaroidCard = ({ 
@@ -108,7 +108,7 @@ const PolaroidCard = ({
   
   return (
     <motion.div 
-      className="h-full w-full flex justify-center items-center"
+      className="flex justify-center items-center w-full h-full"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
@@ -154,21 +154,13 @@ const PolaroidCard = ({
               alt={caption} 
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-0 right-0 z-20">
-              <AnimatedButton
-                textSize="text-4xl"
-                text="CONHEÇA"
-                imagePath="teste.png"
-                backgroundMode="static"
-              />
-            </div>
             </>
           )}
         </div>
         
         {/* Área branca abaixo da foto */}
         <div className="h-1/6 flex items-center justify-center">
-          <p className="text-gray-700 text-sm font-handwriting truncate px-2">{caption}</p>
+          <p className="text-gray-700 text-2xl font-scratchy px-2 text-center">{caption}</p>
         </div>
         
       </motion.div>

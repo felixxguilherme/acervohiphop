@@ -1,9 +1,8 @@
 import HeaderApp from "@/components/html/HeaderApp"
-export default function AcervoLayout({ children }) {
 
-
-    return (
-      <>
+export default function AudiovisualLayout({ children }) {
+  return (
+    <>
       <div
         className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0"
         style={{
@@ -12,10 +11,9 @@ export default function AcervoLayout({ children }) {
         }}
         aria-hidden="true"
       />
-        <section>
-          {children}
-        </section>
-      </>
-      
-    )
-  }
+      <section>
+        {children}
+      </section>
+    </>
+  )
+}

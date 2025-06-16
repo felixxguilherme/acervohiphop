@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -9,7 +9,9 @@ const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' })
   const isStaticBackground = backgroundMode === 'static';
   
   return (
-    <motion.div
+    <>
+    
+    <motion.button
       className={`font-scratchy ${textSize} text-bold antialiased`}
       style={{
         position: 'relative',
@@ -25,6 +27,8 @@ const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' })
       }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
     >
       <motion.div
         style={{
@@ -71,7 +75,10 @@ const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' })
       >
         {text}
       </motion.span>
-    </motion.div>
+    </motion.button>
+  
+    </>
+    
   );
 };
 

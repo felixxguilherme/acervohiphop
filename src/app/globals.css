@@ -146,6 +146,50 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+.text-shadow-lg {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Garantir que elementos fixos não interfiram */
+.z-background {
+  z-index: 0;
+}
+
+.z-content {
+  z-index: 10;
+}
+
+.z-header-footer {
+  z-index: 20;
+}
+
+.z-loading {
+  z-index: 50;
+}
+
+/* Smooth scrolling para toda a página */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Garantir que o header fixo não cubra conteúdo quando usar âncoras */
+html {
+  scroll-padding-top: 100px;
+}
+
+/* Para dispositivos móveis - ajuste responsivo do header */
+@media (max-width: 768px) {
+  .header-height {
+    height: 80px;
+  }
+}
+
+@media (min-width: 769px) {
+  .header-height {
+    height: 100px;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
