@@ -1,4 +1,4 @@
-export default atomCollectionsResponse = {
+const atomCollectionsResponse = {
   "results": [
     {
       "id": "hip-hop-df-collection",
@@ -45,4 +45,6 @@ export default atomCollectionsResponse = {
       "href": "/api/informationobjects?topLod=1"
     }
   }
-}
+};
+
+export default atomCollectionsResponse;

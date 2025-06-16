@@ -1,5 +1,5 @@
 // RESPOSTA PARA AUTORES/CRIADORES
-export default atomActorsResponse = {
+const atomActorsResponse = {
   "results": [
     {
       "id": "actor-001",
@@ -61,4 +61,6 @@ export default atomActorsResponse = {
   "total": 234,
   "offset": 0,
   "limit": 10
-}
+};
+
+export default atomActorsResponse;

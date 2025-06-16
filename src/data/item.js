@@ -1,6 +1,6 @@
 // resposta de um item específico
 
-export default atomItemDetailResponse = {
+const atomItemDetailResponse = {
   "id": "ahhdf-001",
   "slug": "evento-hip-hop-ceilandia-1995",
   "title": "1º Encontro de Hip Hop de Ceilândia",
@@ -151,4 +151,6 @@ export default atomItemDetailResponse = {
     "name": "Sistema AtoM",
     "role": "Sistema"
   }
-}
+};
+
+export default atomItemDetailResponse;

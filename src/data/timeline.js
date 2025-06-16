@@ -1,5 +1,5 @@
 // RESPOSTA PARA TIMELINE/CRONOLOGIA
-export default atomTimelineResponse = {
+const atomTimelineResponse = {
   "events": [
     {
       "id": "timeline-001",
@@ -10,7 +10,7 @@ export default atomTimelineResponse = {
         {
           "id": "ahhdf-timeline-001",
           "title": "Primeiro grafite registrado",
-          "thumbnail": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=150&fit=crop"
+          "thumbnail": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2F736x%2F91%2F9b%2F41%2F919b4175a3c8400cf0932155fce58d23.jpg&f=1&nofb=1&ipt=b10f67349650da198cdbe1d45afe00dbfc1f1c75eabdc407ad00922449a550cf"
         }
       ]
     },
@@ -23,7 +23,7 @@ export default atomTimelineResponse = {
         {
           "id": "ahhdf-001",
           "title": "1º Encontro de Hip Hop de Ceilândia",
-          "thumbnail": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=150&fit=crop"
+          "thumbnail": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%3Fid%3DOIP.ZxGBkev5gUGXSFyAQhsPVwHaE4%26r%3D0%26pid%3DApi&f=1&ipt=cd861c4c4853a86341280f95286af41362ed077cbb5b0585b13808dba5e9bb75&ipo=images"
         }
       ]
     },
@@ -36,7 +36,7 @@ export default atomTimelineResponse = {
         {
           "id": "ahhdf-002",
           "title": "Festa Hip Hop Samambaia",
-          "thumbnail": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=150&fit=crop"
+          "thumbnail": "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages.genius.com%2F27fe315372d1c5f86827ca9847eeca2b.336x336x1.jpg&f=1&nofb=1&ipt=c5117b791aa7abd1e0df2ed5749cc5801e8578d78dd5f105930a523a0b567111"
         }
       ]
     },
@@ -49,7 +49,7 @@ export default atomTimelineResponse = {
         {
           "id": "ahhdf-003",
           "title": "Competição de Breaking - Planaltina",
-          "thumbnail": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=200&h=150&fit=crop"
+          "thumbnail": "https://plus.unsplash.com/premium_photo-1675201001248-e435a2762aae?q=80&w=2487&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         }
       ]
     },
@@ -62,7 +62,7 @@ export default atomTimelineResponse = {
         {
           "id": "ahhdf-005",
           "title": "Revista Zulu Nation DF",
-          "thumbnail": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=150&fit=crop"
+          "thumbnail": "https://images.unsplash.com/photo-1697525104321-06dcb6a4c251?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG11c2ljJTIwc3R1ZGlvJTIwYnJhemlsfGVufDB8fDB8fHww"
         }
       ]
     }
@@ -72,4 +72,6 @@ export default atomTimelineResponse = {
     "start": "1980-01-01",
     "end": "2024-12-31"
   }
-}
+};
+
+export default atomTimelineResponse;

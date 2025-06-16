@@ -261,9 +261,6 @@ export default function Home() {
         {/* Header - Espaço reservado para o header futuro */}
         <div className="w-full">
           <HeaderApp />
-          {/* <div className="h-16 flex items-center justify-center">
-            <h1>teste teste teste</h1>
-          </div> */}
         </div>
 
         {/* Page Content with Transition */}

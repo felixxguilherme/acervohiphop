@@ -5,16 +5,17 @@ import { NumberTicker } from "../magicui/number-ticker";
 
 export const ClipPathLinks = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
+    <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-4 gap-6 p-4">
       <LinkBox
         Icon={MapPinPlus}
         description={
           <div className="flex flex-col">
-            <div>
-              <span className="font-scratchy text-7xl text-black">+ de </span>
-              <NumberTicker className="font-scratchy text-8xl" value={50} />
-            </div>
-              <span className="font-scratchy text-4xl text-black">batalhas mapeadas</span>
+
+            <span className="font-scratchy text-2xl text-black">
+              + de
+              <NumberTicker className="font-scratchy text-4xl" value={50} />
+              batalhas mapeadas
+            </span>
           </div>
         }
       />
@@ -22,11 +23,11 @@ export const ClipPathLinks = () => {
         Icon={BookOpenText}
         description={
           <div className="flex flex-col">
-            <div>
-              <span className="font-scratchy text-7xl text-black">+ de </span>
-              <NumberTicker className="font-scratchy text-8xl" value={100} />
-            </div>
-              <span className="font-scratchy text-4xl text-black">histórias</span>
+            <span className="font-scratchy text-2xl text-black">
+              + de
+              <NumberTicker className="font-scratchy text-4xl" value={100} />
+              histórias catalogadas
+            </span>
           </div>
         }
       />
@@ -34,22 +35,19 @@ export const ClipPathLinks = () => {
         Icon={Film}
         description={
           <div className="flex flex-col">
-            <div>
-              <span className="font-scratchy text-5xl text-black">Acervo</span>
-            </div>
-              <span className="font-scratchy text-4xl text-black">multi-media</span>
+            <span className="font-scratchy text-2xl text-black">
+              Acervo multimídia
+            </span>
           </div>
         }
       />
       <LinkBox 
-        Icon={BookType} 
-        title="Marketing" 
+        Icon={BookType}
         description={
-          <div className="flex flex-col">
-            <div>
-              <span className="font-scratchy text-5xl text-black">Revista</span>
-            </div>
-              <span className="font-scratchy text-4xl text-black">entrevistas e mais</span>
+           <div className="flex flex-col">
+            <span className="font-scratchy text-2xl text-black">
+              Revista, entrevistas e mais
+            </span>
           </div>
         }
       />
@@ -128,60 +126,64 @@ const LinkBox = ({ Icon, href, imgSrc, className, title, description }) => {
       rel="noopener noreferrer"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="h-64 relative cursor-pointer grid h-32 w-full place-content-center border-2 border-black rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 p-4 overflow-hidden group">
+      className="relative cursor-pointer grid w-full h-64 place-content-center bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 p-6 overflow-hidden group">
       
-      {/* Conteúdo principal */}
-      <div className="flex flex-col items-center justify-center text-center space-y-2 relative z-10">
+      {/* Conteúdo principal - Brutalista */}
+      <div className="flex flex-col items-center justify-center text-center space-y-3 relative z-10">
         {imgSrc ? (
           <img
             src={imgSrc}
             alt="custom icon"
-            className={className ?? "max-h-20 sm:max-h-20 md:max-h-20 object-contain"} 
+            className={className ?? "max-h-16 object-contain border-2 border-black"} 
           />
         ) : (
-          <Icon className="text-lg sm:text-xl md:text-2xl text-gray-700" />
+          <div className="w-16 h-16 bg-yellow-400 border-4 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <Icon className="text-2xl text-black" />
+          </div>
         )}
         
-        {/* Texto */}
+        {/* Texto - Brutalista */}
         {title && (
-          <h3 className="text-xs sm:text-sm md:text-base font-semibold break-words text-gray-900">
+          <h3 className="text-sm font-black break-words text-black bg-yellow-400 px-3 py-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase">
             {title}
           </h3>
         )}
         {description && (
-          <p className="text-xs sm:text-xs md:text-sm text-gray-600 break-words">
+          <div className="text-xs text-black break-words font-bold bg-white/80 p-2 border-2 border-black max-w-[200px]">
             {description}
-          </p>
+          </div>
         )}
       </div>
 
-      {/* Overlay de hover */}
+      {/* Overlay de hover - Brutalista */}
       <div
         ref={scope}
         style={{ clipPath: BOTTOM_RIGHT_CLIP }}
-        className="absolute inset-0 grid place-content-center bg-gradient-to-br from-[#FAF9F6] to-black-100  text-white transition-colors duration-300 p-4">
+        className="absolute inset-0 grid place-content-center bg-black text-white transition-colors duration-300 p-6 border-4 border-white">
         
-        <div className="flex flex-col items-center justify-center text-center space-y-2">
+        <div className="flex flex-col items-center justify-center text-center space-y-3">
           {imgSrc ? (
             <img
               src={imgSrc}
               alt="custom icon hover"
-              className={className ?? "max-h-6 sm:max-h-8 md:max-h-10 object-contain filter brightness-0 invert"} 
+              className={className ?? "max-h-16 object-contain filter brightness-0 invert border-2 border-white"} 
             />
           ) : (
-            <Icon className="text-lg sm:text-xl md:text-2xl text-white" />
+            <div className="w-16 h-16 bg-yellow-400 border-4 border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+              <Icon className="text-2xl text-black" />
+            </div>
           )}
           
-          {/* Texto no hover */}
+          {/* Texto no hover - Brutalista */}
           {title && (
-            <h3 className="text-xs sm:text-sm md:text-base font-semibold break-words text-white">
+            <h3 className="text-sm font-black break-words bg-yellow-400 text-black px-3 py-1 border-2 border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] uppercase">
               {title}
             </h3>
           )}
           {description && (
-            <p className="text-xs sm:text-xs md:text-sm opacity-90 break-words text-white">
+            <div className="text-xs font-bold break-words text-white bg-white/20 p-2 border-2 border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] max-w-[200px]">
               {description}
-            </p>
+            </div>
           )}
         </div>
       </div>

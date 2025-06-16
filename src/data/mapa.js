@@ -1,5 +1,5 @@
 // dRESPOSTA PARA MAPA/GEOLOCALIZAÇÃO
-export default atomMapResponse = {
+const atomMapResponse = {
   "locations": [
     {
       "id": "map-ceilandia",
@@ -102,4 +102,6 @@ export default atomMapResponse = {
     "lat": -15.7801,
     "lng": -47.9292
   }
-}
+};
+
+export default atomMapResponse;

@@ -1,4 +1,4 @@
-export default atomSearchResponse = {
+const atomSearchResponse = {
   "query": "breaking",
   "results": [
     {
@@ -64,4 +64,6 @@ export default atomSearchResponse = {
       "href": "/api/search?q=breaking&offset=0&limit=10"
     }
   }
-}
+};
+
+export default atomSearchResponse;

@@ -1,5 +1,5 @@
 // RESPOSTA PARA TAXONOMIAS/VOCABULÁRIOS CONTROLADOS (continuação)
-export default atomTaxonomiesResponse = {
+const atomTaxonomiesResponse = {
   "subjects": {
     "name": "Assuntos",
     "terms": [
@@ -68,4 +68,6 @@ export default atomTaxonomiesResponse = {
       { "id": "media-010", "name": "Vinil", "count": 23 }
     ]
   }
-}
+};
+
+export default atomTaxonomiesResponse;

@@ -9,6 +9,8 @@ const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' })
   const isStaticBackground = backgroundMode === 'static';
   
   return (
+    <>
+    
     <motion.button
       className={`font-scratchy ${textSize} text-bold antialiased`}
       style={{
@@ -74,6 +76,9 @@ const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' })
         {text}
       </motion.span>
     </motion.button>
+  
+    </>
+    
   );
 };
 

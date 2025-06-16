@@ -1,4 +1,4 @@
-export default atomItemsResponse = {
+const atomItemsResponse = {
   "results": [
     {
       "id": "ahhdf-001",
@@ -301,4 +301,6 @@ export default atomItemsResponse = {
       "href": "/api/informationobjects?parent=hip-hop-df-collection&offset=5&limit=5"
     }
   }
-}
+};
+
+export default atomItemsResponse;

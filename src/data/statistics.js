@@ -1,5 +1,5 @@
 // RESPOSTA PARA ESTATÍSTICAS DO ACERVO
-export default atomStatisticsResponse = {
+const atomStatisticsResponse = {
   "overview": {
     "totalItems": 847,
     "totalCollections": 1,
@@ -43,4 +43,6 @@ export default atomStatisticsResponse = {
     { "type": "application/pdf", "count": 234, "totalSize": "0.5 GB" },
     { "type": "others", "count": 141, "totalSize": "0.2 GB" }
   ]
-}
+};
+
+export default atomStatisticsResponse;
