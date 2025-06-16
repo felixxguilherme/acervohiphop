@@ -190,6 +190,50 @@ html {
   }
 }
 
+/* Estilos para MapLibre GL */
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+/* Estilo customizado para popups do mapa */
+.maplibregl-popup {
+  z-index: 1000;
+}
+
+.maplibregl-popup-content {
+  border: none !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+}
+
+.maplibregl-popup-close-button {
+  font-size: 20px !important;
+  padding: 5px !important;
+  color: #000 !important;
+  background: #fae523 !important;
+  border-radius: 50% !important;
+  width: 25px !important;
+  height: 25px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid #000 !important;
+  right: 8px !important;
+  top: 8px !important;
+}
+
+.maplibregl-popup-close-button:hover {
+  background: #000 !important;
+  color: #fae523 !important;
+}
+
+.maplibregl-popup-tip {
+  border-top-color: #000 !important;
+}
+
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+  border-top-color: #000 !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
