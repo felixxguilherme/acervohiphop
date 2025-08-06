@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import AnimatedButton from '@/components/AnimatedButton';
-import maplibregl from 'maplibre-gl';
 import Map, { Marker, Popup } from 'react-map-gl/maplibre';
 import atomMapResponse from '@/data/mapa';
 
 const Mapa = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const mapContainerRef = useRef(null);
   const [viewState, setViewState] = useState({
     longitude: atomMapResponse.center.lng,
     latitude: atomMapResponse.center.lat,
@@ -19,32 +20,10 @@ const Mapa = () => {
   });
 
   useEffect(() => {
-    // Estratégia de carregamento otimizado - mesma da homepage
+    // Estratégia de carregamento otimizado
     if (typeof window !== 'undefined') {
-      // Pré-armazenar a imagem em cache
-      const bgImage = new window.Image();
-      bgImage.src = '/fundo_base.jpg';
-
-      // Adicionar preload no head se não existir
-      let link = document.querySelector('link[href="/fundo_base.jpg"]');
-      if (!link) {
-        link = document.createElement('link');
-        link.rel = 'preload';
-        link.as = 'image';
-        link.href = '/fundo_base.jpg';
-        link.type = 'image/jpeg';
-        link.fetchpriority = 'high';
-        document.head.appendChild(link);
-      }
-
-      // Mostrar página quando imagem estiver carregada
-      if (bgImage.complete) {
-        setIsLoading(false);
-      } else {
-        bgImage.onload = () => setIsLoading(false);
-        bgImage.onerror = () => setIsLoading(false);
-        setTimeout(() => setIsLoading(false), 2000);
-      }
+      // Simular carregamento rápido
+      setTimeout(() => setIsLoading(false), 800);
     }
   }, []);
 
@@ -57,6 +36,69 @@ const Mapa = () => {
       zoom: 12
     });
   };
+
+  const toggleFullscreen = async () => {
+    if (!mapContainerRef.current) return;
+
+    if (!isFullscreen) {
+      // Entrar em tela cheia
+      try {
+        if (mapContainerRef.current.requestFullscreen) {
+          await mapContainerRef.current.requestFullscreen();
+        } else if (mapContainerRef.current.mozRequestFullScreen) {
+          await mapContainerRef.current.mozRequestFullScreen();
+        } else if (mapContainerRef.current.webkitRequestFullscreen) {
+          await mapContainerRef.current.webkitRequestFullscreen();
+        } else if (mapContainerRef.current.msRequestFullscreen) {
+          await mapContainerRef.current.msRequestFullscreen();
+        }
+        setIsFullscreen(true);
+      } catch (error) {
+        console.error('Erro ao entrar em tela cheia:', error);
+      }
+    } else {
+      // Sair da tela cheia
+      try {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          await document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          await document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          await document.msExitFullscreen();
+        }
+        setIsFullscreen(false);
+      } catch (error) {
+        console.error('Erro ao sair da tela cheia:', error);
+      }
+    }
+  };
+
+  // Listener para mudanças no estado de fullscreen
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = !!(
+        document.fullscreenElement ||
+        document.mozFullScreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement
+      );
+      setIsFullscreen(isCurrentlyFullscreen);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
+  }, []);
 
   return (
     <>
@@ -90,7 +132,7 @@ const Mapa = () => {
         {/* Título ocupando toda a largura da tela - ACIMA DE TUDO */}
         <div className="w-full bg-transparent">
           <motion.h1
-            className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-black text-center py-4 md:py-6 lg:py-8 w-full"
+            className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-theme-primary text-center py-4 md:py-6 lg:py-8 w-full"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -161,8 +203,30 @@ const Mapa = () => {
                 className="relative w-full"
               >
                 <div className="mx-4 md:mx-8 mb-8">
-                  <div className="border-4 border-black rounded-lg overflow-hidden shadow-2xl bg-black/10 backdrop-blur-sm">
-                    <div style={{ height: '600px', position: 'relative' }}>
+                  <div 
+                    ref={mapContainerRef}
+                    className={`border-4 border-black rounded-lg overflow-hidden shadow-2xl bg-black/10 backdrop-blur-sm relative ${
+                      isFullscreen ? 'fullscreen-map' : ''
+                    }`}
+                  >
+                    {/* Botão de Tela Cheia */}
+                    <button
+                      onClick={toggleFullscreen}
+                      className="absolute top-4 right-4 z-10 bg-[#fae523] border-2 border-black rounded-lg p-2 hover:bg-[#f8e71c] transition-colors shadow-lg"
+                      title={isFullscreen ? 'Sair da tela cheia' : 'Expandir para tela cheia'}
+                    >
+                      {isFullscreen ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                      )}
+                    </button>
+                    
+                    <div style={{ height: isFullscreen ? '100vh' : '600px', position: 'relative' }}>
                       <Map
                         {...viewState}
                         onMove={evt => setViewState(evt.viewState)}

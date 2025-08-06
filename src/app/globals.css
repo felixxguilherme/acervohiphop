@@ -234,11 +234,95 @@ html {
   border-top-color: #000 !important;
 }
 
+
+/* Classes dinâmicas para texto baseadas no tema */
+body.theme-light .text-theme-primary {
+  color: #000000;
+}
+
+body.theme-dark .text-theme-primary {
+  color: #ffffff;
+}
+
+body.theme-light .text-theme-secondary {
+  color: #374151;
+}
+
+body.theme-dark .text-theme-secondary {
+  color: #d1d5db;
+}
+
+body.theme-light .text-theme-muted {
+  color: #6b7280;
+}
+
+body.theme-dark .text-theme-muted {
+  color: #9ca3af;
+}
+
+/* Classes dinâmicas para backgrounds baseadas no tema */
+body.theme-light .bg-theme-card {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+body.theme-dark .bg-theme-card {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+body.theme-light .bg-theme-overlay {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+body.theme-dark .bg-theme-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Classes dinâmicas para bordas baseadas no tema */
+body.theme-light .border-theme {
+  border-color: #000000;
+}
+
+body.theme-dark .border-theme {
+  border-color: #ffffff;
+}
+
+body.theme-light .border-theme-soft {
+  border-color: #374151;
+}
+
+body.theme-dark .border-theme-soft {
+  border-color: #d1d5db;
+}
+
+/* Estilos para o modo fullscreen do mapa */
+.fullscreen-map {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  background: #000 !important;
+}
+
+.fullscreen-map .maplibregl-canvas-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.fullscreen-map .maplibregl-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
 }
+
