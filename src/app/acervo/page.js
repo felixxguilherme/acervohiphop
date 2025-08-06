@@ -21,32 +21,10 @@ const Acervo = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Estratégia de carregamento otimizado - mesma da homepage
+    // Estratégia de carregamento otimizado
     if (typeof window !== 'undefined') {
-      // Pré-armazenar a imagem em cache
-      const bgImage = new window.Image();
-      bgImage.src = '/fundo_base.jpg';
-
-      // Adicionar preload no head se não existir
-      let link = document.querySelector('link[href="/fundo_base.jpg"]');
-      if (!link) {
-        link = document.createElement('link');
-        link.rel = 'preload';
-        link.as = 'image';
-        link.href = '/fundo_base.jpg';
-        link.type = 'image/jpeg';
-        link.fetchpriority = 'high';
-        document.head.appendChild(link);
-      }
-
-      // Mostrar página quando imagem estiver carregada
-      if (bgImage.complete) {
-        setIsLoading(false);
-      } else {
-        bgImage.onload = () => setIsLoading(false);
-        bgImage.onerror = () => setIsLoading(false);
-        setTimeout(() => setIsLoading(false), 2000);
-      }
+      // Simular carregamento rápido
+      setTimeout(() => setIsLoading(false), 800);
     }
   }, []);
 
@@ -82,7 +60,7 @@ const Acervo = () => {
         {/* Título ocupando toda a largura da tela - ACIMA DE TUDO */}
         <div className="w-full bg-transparent">
           <motion.h1
-            className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-black text-center py-4 md:py-6 lg:py-8 w-full"
+            className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-theme-primary text-center py-4 md:py-6 lg:py-8 w-full"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
