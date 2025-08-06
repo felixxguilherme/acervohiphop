@@ -117,10 +117,7 @@ const PolaroidCard = ({
     >
       <motion.div 
         className="bg-white shadow-xl rounded-sm p-2 md:p-3 w-full h-full max-w-full max-h-full relative"
-        animate={{ 
-          rotate: isHovered ? 0 : Math.random() * 6 - 3 
-        }}
-        transition={{ duration: 0.3 }}
+        
       >
         {/* Silver Tape */}
         {tape && !isLoading && (

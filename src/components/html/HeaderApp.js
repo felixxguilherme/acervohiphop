@@ -8,7 +8,7 @@ import { SpinningText } from "../magicui/spinning-text";
 export default function HeaderApp() {
   return (
     <motion.header
-      className="relative w-full py-4 md:py-6 border-t-3 border-b-3 border-solid border-black z-20"
+      className="relative w-full py-4 md:py-6 border-t-3 border-b-3 border-solid border-theme z-20"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -25,9 +25,6 @@ export default function HeaderApp() {
         <nav className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 flex-1">
           <Link href="/acervo">
             <AnimatedButton textSize="text-3xl" text="ACERVO" backgroundMode="static" imagePath="marca-texto-vermelho.png" />
-          </Link>
-          <Link href="/audiovisual">
-            <AnimatedButton textSize="text-3xl" text="AUDIOVISUAL" backgroundMode="static" imagePath="marca-texto-amarelo.png" />
           </Link>
           <Link href="/mapa">
             <AnimatedButton textSize="text-3xl" text="MAPA" backgroundMode="static" imagePath="marca-texto-azul.png" />
