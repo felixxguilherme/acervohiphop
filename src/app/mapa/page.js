@@ -5,18 +5,68 @@ import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import AnimatedButton from '@/components/AnimatedButton';
-import Map, { Marker, Popup } from 'react-map-gl/maplibre';
+import HeaderApp from '@/components/html/HeaderApp';
+import { Marker, Popup } from 'react-map-gl/maplibre';
+import { MapProvider } from '@/contexts/MapContext';
+import MapRenderer from '@/components/mapa/MapRenderer';
+import { useMapLayers } from '@/hooks/useMapLayers';
 import atomMapResponse from '@/data/mapa';
+import MapSearchComponent from '@/components/mapa/MapSearchComponent';
+import TourMenu from '@/components/mapa/TourMenu';
+import MapboxStorytellingOverlay from '@/components/mapa/MapboxStorytellingOverlay';
+import LayerControl from '@/components/mapa/LayerControl';
+import MapLockIndicatorSimple from '@/components/mapa/MapLockIndicatorSimple';
+import storiesMapboxFormat from '@/data/storiesMapboxFormat';
+import { iconTypes } from '@/components/mapa/MapIcons';
 
-const Mapa = () => {
+// AIDEV-NOTE: Internal component that uses map context
+const MapaContent = () => {
+  const mapLayers = useMapLayers();
+
+  // AIDEV-NOTE: Initialize map layers when component mounts
+  useEffect(() => {
+    mapLayers.initializeDefaultLayers();
+  }, []);
+  // AIDEV-NOTE: Helper function to get icon component for random points
+  const getIconComponent = (location) => {
+    if (!location.isRandomPoint || !location.iconType) return null;
+    const iconType = iconTypes.find(icon => icon.name === location.iconType);
+    return iconType ? iconType.component : null;
+  };
+
+  // AIDEV-NOTE: Helper function to check if tour chapter matches location
+  const checkTourLocationMatch = (chapter, location) => {
+    if (!chapter || !chapter.location || !location) return false;
+    
+    // Check if coordinates are close enough (within ~100m)
+    const chapterLng = chapter.location.center[0];
+    const chapterLat = chapter.location.center[1];
+    const locationLng = location.coordinates.lng;
+    const locationLat = location.coordinates.lat;
+    
+    const distance = Math.sqrt(
+      Math.pow(chapterLng - locationLng, 2) + Math.pow(chapterLat - locationLat, 2)
+    );
+    
+    return distance < 0.001; // Approximately 100m
+  };
+
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [filteredLocations, setFilteredLocations] = useState(atomMapResponse.locations);
+  const [selectedTour, setSelectedTour] = useState(null);
+  const [currentChapter, setCurrentChapter] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const flyToTimeoutRef = useRef(null);
   const [viewState, setViewState] = useState({
     longitude: atomMapResponse.center.lng,
     latitude: atomMapResponse.center.lat,
-    zoom: 10
+    zoom: 10,
+    bearing: 0,
+    pitch: 0
   });
 
   useEffect(() => {
@@ -36,6 +86,86 @@ const Mapa = () => {
       zoom: 12
     });
   };
+
+  // AIDEV-NOTE: Handler for search component to filter map locations
+  const handleLocationFilter = (locations) => {
+    setFilteredLocations(locations);
+  };
+
+  // AIDEV-NOTE: Handler for tour selection and management
+  const handleTourSelect = (tour) => {
+    setSelectedTour(tour);
+    setCurrentChapter(0);
+    
+    if (tour) {
+      // Move to first chapter location with flyTo
+      const firstChapter = tour.chapters[0];
+      handleMapFlyTo({
+        longitude: firstChapter.location.center[0],
+        latitude: firstChapter.location.center[1],
+        zoom: firstChapter.location.zoom || 13,
+        bearing: firstChapter.location.bearing || 0,
+        pitch: firstChapter.location.pitch || 0,
+        speed: firstChapter.location.speed || 2
+      });
+    }
+  };
+
+
+  // AIDEV-NOTE: Handler for map movement with smooth transitions
+  const handleMapMove = (newViewState) => {
+    setIsAnimating(true);
+    setViewState({
+      ...viewState,
+      ...newViewState
+    });
+    
+    // Reset animation flag after transition
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 1500);
+  };
+
+  // AIDEV-NOTE: Handler for flyTo using MapLibre GL JS native method (back to working version)
+  const handleMapFlyTo = (flyToOptions) => {
+    if (!mapRef.current) return;
+    
+    setIsAnimating(true);
+    
+    const map = mapRef.current.getMap();
+    const speed = flyToOptions.speed || 2;
+    const duration = Math.max(1000, Math.min(4000, 2000 / speed));
+    
+    console.log('🚁 Flying to:', {
+      center: [flyToOptions.longitude, flyToOptions.latitude],
+      zoom: flyToOptions.zoom,
+      bearing: flyToOptions.bearing,
+      pitch: flyToOptions.pitch,
+      duration,
+      speed
+    });
+    
+    // Use MapLibre's native flyTo method
+    map.flyTo({
+      center: [flyToOptions.longitude, flyToOptions.latitude],
+      zoom: flyToOptions.zoom || map.getZoom(),
+      bearing: flyToOptions.bearing !== undefined ? flyToOptions.bearing : map.getBearing(),
+      pitch: flyToOptions.pitch !== undefined ? flyToOptions.pitch : map.getPitch(),
+      duration: duration,
+      essential: true
+    });
+    
+    // Reset animation flag after transition
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, duration + 200);
+  };
+
+  // AIDEV-NOTE: Handler for chapter changes during tour
+  const handleChapterChange = (chapterIndex) => {
+    setCurrentChapter(chapterIndex);
+  };
+
 
   const toggleFullscreen = async () => {
     if (!mapContainerRef.current) return;
@@ -129,40 +259,7 @@ const Mapa = () => {
 
       {/* Conteúdo da página */}
       <div className={`relative z-10 overflow-hidden ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
-        {/* Título ocupando toda a largura da tela - ACIMA DE TUDO */}
-        <div className="w-full bg-transparent">
-          <motion.h1
-            className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-theme-primary text-center py-4 md:py-6 lg:py-8 w-full"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            style={{
-              letterSpacing: '0.05em',
-              lineHeight: '0.9'
-            }}
-          >
-            MAPA DO HIP HOP
-          </motion.h1>
-        </div>
-
-        <motion.div
-          className="relative w-full py-4 md:py-6 border-t-3 border-b-3 border-solid border-black z-20"
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-center justify-between px-4 md:px-8">
-            <div className="flex items-start px-4 absolute top-[-50px] left-[-50px]">
-              <Image src="cursor03.png" alt="Marca de spray com escorrimento" width={150} height={180} />
-            </div>
-            {/* Navegação principal - centralizada */}
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 flex-1">
-              <Link href="/">
-                <AnimatedButton textSize="text-3xl" text="INÍCIO" backgroundMode="static" imagePath="marca-texto-vermelho.png" />
-              </Link>
-            </div>
-          </div>
-        </motion.div>
+        <HeaderApp title="MAPA DO HIP HOP" showTitle={true} />
 
         {/* Page Content with Transition */}
         <AnimatePresence mode="wait">
@@ -227,14 +324,53 @@ const Mapa = () => {
                     </button>
                     
                     <div style={{ height: isFullscreen ? '100vh' : '600px', position: 'relative' }}>
-                      <Map
+                      {/* Tour Components - only visible in fullscreen */}
+                      <TourMenu
+                        isFullscreen={isFullscreen}
+                        onTourSelect={handleTourSelect}
+                        selectedTour={selectedTour}
+                      />
+                      
+                      {/* AIDEV-NOTE: Layer control component */}
+                      <LayerControl isVisible={isFullscreen && !selectedTour} />
+                      
+                      {/* AIDEV-NOTE: Mapbox Storytelling Overlay */}
+                      <MapboxStorytellingOverlay
+                        selectedTour={selectedTour}
+                        onMapMove={handleMapFlyTo}
+                        onChapterChange={handleChapterChange}
+                        isVisible={isFullscreen && !!selectedTour}
+                      />
+                      
+                      {/* Search Component - only visible in fullscreen when no tour selected */}
+                      {!selectedTour && (
+                        <MapSearchComponent
+                          isFullscreen={isFullscreen}
+                          onLocationFilter={handleLocationFilter}
+                          onMarkerClick={handleMarkerClick}
+                          selectedLocation={selectedLocation}
+                        />
+                      )}
+                      
+                      <MapRenderer
+                        ref={mapRef}
                         {...viewState}
-                        onMove={evt => setViewState(evt.viewState)}
-                        style={{ width: '100%', height: '100%' }}
-                        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+                        onLoad={(evt) => {
+                          console.log('Map loaded successfully');
+                        }}
+                        onMove={evt => {
+                          // Always update viewState but prevent user interaction during tour
+                          setViewState(evt.viewState);
+                        }}
+                        style={{ 
+                          width: '100%', 
+                          height: '100%',
+                          cursor: 'grab'
+                        }}
+                        mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
                         attributionControl={false}
                       >
-                        {atomMapResponse.locations.map((location) => (
+                        {filteredLocations.map((location) => (
                           <Marker
                             key={location.id}
                             longitude={location.coordinates.lng}
@@ -245,16 +381,64 @@ const Mapa = () => {
                             }}
                           >
                             <motion.div
-                              whileHover={{ scale: 1.2 }}
+                              whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
                               whileTap={{ scale: 0.9 }}
-                              className="w-8 h-8 bg-[#fae523] border-3 border-black rounded-full cursor-pointer flex items-center justify-center shadow-lg"
+                              animate={{
+                                scale: (selectedTour && 
+                                  checkTourLocationMatch(selectedTour.chapters[currentChapter], location)) 
+                                  ? 1.3 : 1,
+                                backgroundColor: (selectedTour &&
+                                  checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                  ? '#f8e71c' : '#fae523'
+                              }}
+                              transition={{ duration: 0.5, ease: "easeOut" }}
+                              className={`w-8 h-8 border-3 border-black rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
+                                selectedTour ? 'ring-2 ring-white/50' : ''
+                              }`}
+                              style={{
+                                backgroundColor: (selectedTour &&
+                                  checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                  ? '#f8e71c' : '#fae523'
+                              }}
                             >
-                              <div className="w-3 h-3 bg-black rounded-full"></div>
+                              {location.isRandomPoint ? (
+                                // AIDEV-NOTE: Render custom SVG icon for random points
+                                (() => {
+                                  const IconComponent = getIconComponent(location);
+                                  return IconComponent ? (
+                                    <IconComponent 
+                                      size={20} 
+                                      color={(selectedTour &&
+                                        checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                        ? '#f8e71c' : '#fae523'} 
+                                    />
+                                  ) : (
+                                    <motion.div
+                                      animate={{
+                                        scale: (selectedTour &&
+                                          checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                          ? 1.2 : 1
+                                      }}
+                                      className="w-3 h-3 bg-black rounded-full"
+                                    />
+                                  );
+                                })()
+                              ) : (
+                                // AIDEV-NOTE: Default marker for original locations
+                                <motion.div
+                                  animate={{
+                                    scale: (selectedTour &&
+                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                      ? 1.2 : 1
+                                  }}
+                                  className="w-3 h-3 bg-black rounded-full"
+                                />
+                              )}
                             </motion.div>
                           </Marker>
                         ))}
 
-                        {selectedLocation && (
+                        {selectedLocation && !selectedTour && (
                           <Popup
                             longitude={selectedLocation.coordinates.lng}
                             latitude={selectedLocation.coordinates.lat}
@@ -290,7 +474,7 @@ const Mapa = () => {
                             </div>
                           </Popup>
                         )}
-                      </Map>
+                      </MapRenderer>
                     </div>
                   </div>
                 </div>
@@ -318,7 +502,19 @@ const Mapa = () => {
                       >
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-6 h-6 bg-[#fae523] border-2 border-black rounded-full flex items-center justify-center">
-                            <div className="w-2 h-2 bg-black rounded-full"></div>
+                            {location.isRandomPoint ? (
+                              // AIDEV-NOTE: Show custom icon for random points in location list
+                              (() => {
+                                const IconComponent = getIconComponent(location);
+                                return IconComponent ? (
+                                  <IconComponent size={16} color="#000" />
+                                ) : (
+                                  <div className="w-2 h-2 bg-black rounded-full"></div>
+                                );
+                              })()
+                            ) : (
+                              <div className="w-2 h-2 bg-black rounded-full"></div>
+                            )}
                           </div>
                           <h4 className="font-dirty-stains text-2xl text-black">{location.name}</h4>
                         </div>
@@ -343,6 +539,15 @@ const Mapa = () => {
         </AnimatePresence>
       </div>
     </>
+  );
+};
+
+// AIDEV-NOTE: Main component wrapped with MapProvider
+const Mapa = () => {
+  return (
+    <MapProvider>
+      <MapaContent />
+    </MapProvider>
   );
 };
 
