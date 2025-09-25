@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hip Hop Map Style Preview</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .map-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fae523;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Arial', sans-serif;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        .map-overlay h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .map-overlay p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .hip-hop-marker {
+            width: 30px;
+            height: 30px;
+            background-color: #fae523;
+            border: 3px solid #000;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hip-hop-marker::before {
+            content: "🎤";
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="map-overlay">
+        <h2>🎵 Hip Hop Culture Map</h2>
+        <p><strong>Tema:</strong> Cultura Hip Hop</p>
+        <p><strong>Cores:</strong> Preto, amarelo (#fae523)</p>
+        <p><strong>Estilo:</strong> Urbano escuro</p>
+        <p><strong>Localização:</strong> Distrito Federal</p>
+        <p><em>Explore pontos históricos da cultura Hip Hop brasiliense</em></p>
+    </div>
+
+    <script>
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: './hip-hop-map-style.json',
+            center: [-47.8826, -15.7942], // Brasília coordinates
+            zoom: 10
+        });
+
+        // Sample Hip Hop locations in Brasília
+        const hipHopLocations = [
+            {
+                coordinates: [-47.8826, -15.7942],
+                title: "Centro de Brasília",
+                description: "Berço do Hip Hop brasiliense"
+            },
+            {
+                coordinates: [-47.9292, -15.7801],
+                title: "Ceilândia",
+                description: "Importante centro da cultura Hip Hop"
+            },
+            {
+                coordinates: [-47.8014, -15.8267],
+                title: "Planaltina",
+                description: "Comunidade ativa de Hip Hop"
+            },
+            {
+                coordinates: [-47.9578, -15.8358],
+                title: "Samambaia",
+                description: "Eventos e batalhas de rap"
+            },
+            {
+                coordinates: [-47.7731, -15.7217],
+                title: "Sobradinho",
+                description: "Grupos locais de Hip Hop"
+            }
+        ];
+
+        map.on('load', () => {
+            // Add Hip Hop location markers
+            hipHopLocations.forEach((location, index) => {
+                const marker = new maplibregl.Marker({
+                    element: createCustomMarker()
+                })
+                .setLngLat(location.coordinates)
+                .setPopup(new maplibregl.Popup({ offset: 25 })
+                    .setHTML(`
+                        <div style="color: black; padding: 10px;">
+                            <h3 style="margin: 0; color: #000;">${location.title}</h3>
+                            <p style="margin: 5px 0 0 0; font-size: 12px;">${location.description}</p>
+                        </div>
+                    `))
+                .addTo(map);
+            });
+        });
+
+        function createCustomMarker() {
+            const marker = document.createElement('div');
+            marker.className = 'hip-hop-marker';
+            return marker;
+        }
+
+        // Add controls
+        map.addControl(new maplibregl.NavigationControl());
+        map.addControl(new maplibregl.FullscreenControl());
+    </script>
+</body>
+</html>

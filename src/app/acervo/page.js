@@ -6,8 +6,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import AnimatedButton from '@/components/AnimatedButton';
+import HeaderApp from '@/components/html/HeaderApp';
 
 import { TimelineDemo } from '@/components/acervo/Timeline';
+import SearchComponent from '@/components/acervo/SearchComponent';
+import AdvancedAcervoInterface from '@/components/acervo/AdvancedAcervoInterface';
+import AcervoNavigator from '@/components/acervo/AcervoNavigator';
+import CollectionGrid from '@/components/acervo/CollectionGrid';
+import CollectionDetail from '@/components/acervo/CollectionDetail';
+import CollectionsTest from '@/components/acervo/CollectionsTest';
 
 // Componentes do Acervo
 import HeroTimeline from '@/components/acervo/HeroTimeline';
@@ -19,6 +26,9 @@ const Acervo = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilters, setActiveFilters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [useAdvancedInterface, setUseAdvancedInterface] = useState(true);
+  const [viewMode, setViewMode] = useState('collections'); // 'collections' or 'detail'
+  const [selectedCollection, setSelectedCollection] = useState(null);
 
   useEffect(() => {
     // Estratégia de carregamento otimizado - mesma da homepage
@@ -79,41 +89,7 @@ const Acervo = () => {
 
       {/* Conteúdo da página */}
       <div className={`relative z-10 overflow-hidden ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
-        {/* Título ocupando toda a largura da tela - ACIMA DE TUDO */}
-        <div className="w-full bg-transparent">
-          <motion.h1
-            className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-black text-center py-4 md:py-6 lg:py-8 w-full"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            style={{
-              letterSpacing: '0.05em',
-              lineHeight: '0.9'
-            }}
-          >
-            ACERVO DIGITAL
-          </motion.h1>
-        </div>
-
-        <motion.div
-          className="relative w-full py-4 md:py-6 border-t-3 border-b-3 border-solid border-black z-20"
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-center justify-between px-4 md:px-8">
-            <div className="flex items-start px-4 absolute top-[-50px] left-[-50px]">
-              <Image src="cursor03.png" alt="Marca de spray com escorrimento" width={150} height={180} />
-            </div>
-            {/* Navegação principal - centralizada */}
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 flex-1">
-
-              <Link href="/">
-                <AnimatedButton textSize="text-3xl" text="INÍCIO" backgroundMode="static" imagePath="marca-texto-vermelho.png" />
-              </Link>
-            </div>
-          </div>
-        </motion.div>
+        <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
 
         {/* Page Content with Transition */}
         <AnimatePresence mode="wait">
@@ -128,25 +104,89 @@ const Acervo = () => {
             }}
             className="w-full overflow-hidden"
           >
-            {/* Hero Timeline */}
-            <HeroTimeline />
+            {/* Interface Toggle */}
+            <div className="max-w-7xl mx-auto px-6 py-6">
+              <div className="bg-black/40 backdrop-blur-sm border border-yellow-400/30 rounded-lg p-4 mb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-scratchy text-yellow-400 mb-2">
+                      Escolha a Interface do Acervo
+                    </h2>
+                    <p className="text-yellow-100/70 text-sm">
+                      {useAdvancedInterface 
+                        ? '🚀 Interface avançada com busca por título, expressões, filtros por data e taxonomias' 
+                        : '📚 Interface de coleções - navegação estruturada e escalável'
+                      }
+                    </p>
+                  </div>
+                  <div className="flex bg-black/50 border border-yellow-400/30 rounded overflow-hidden">
+                    <button
+                      onClick={() => setUseAdvancedInterface(false)}
+                      className={`px-4 py-2 text-sm transition-colors ${
+                        !useAdvancedInterface 
+                          ? 'bg-yellow-400 text-black' 
+                          : 'text-yellow-400 hover:bg-yellow-400/20'
+                      }`}
+                    >
+                      📚 Coleções
+                    </button>
+                    <button
+                      onClick={() => setUseAdvancedInterface(true)}
+                      className={`px-4 py-2 text-sm transition-colors ${
+                        useAdvancedInterface 
+                          ? 'bg-yellow-400 text-black' 
+                          : 'text-yellow-400 hover:bg-yellow-400/20'
+                      }`}
+                    >
+                      🚀 Avançada
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            {/* Stats Overview */}
-            <StatsOverview />
-
-            {/* Filter Bar */}
-            {/* <FilterBar
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              activeFilters={activeFilters}
-              onFilterChange={setActiveFilters}
-            /> */}
-
-            {/* Items Grid */}
-            {/* <ItemsGrid
-              searchTerm={searchTerm}
-              activeFilters={activeFilters}
-            /> */}
+            {useAdvancedInterface ? (
+              /* Interface Avançada */
+              <div className="max-w-7xl mx-auto px-6">
+                <AdvancedAcervoInterface />
+              </div>
+            ) : (
+              /* Interface de Coleções - Estrutura escalável */
+              <div>
+                {/* TESTE TEMPORÁRIO */}
+                <div className="max-w-7xl mx-auto px-6 mb-8">
+                  <CollectionsTest />
+                </div>
+                
+                {viewMode === 'collections' ? (
+                  <CollectionGrid 
+                    onSelectCollection={(collection) => {
+                      setSelectedCollection(collection);
+                      setViewMode('detail');
+                    }}
+                  />
+                ) : (
+                  <div>
+                    {/* Back Button */}
+                    <div className="max-w-7xl mx-auto px-4 mb-8">
+                      <button
+                        onClick={() => {
+                          setViewMode('collections');
+                          setSelectedCollection(null);
+                        }}
+                        className="bg-white border-2 border-black text-black font-sometype-mono font-bold text-sm py-3 px-6 transform hover:rotate-1 transition-all duration-200 uppercase"
+                      >
+                        ← Voltar às Coleções
+                      </button>
+                    </div>
+                    <CollectionDetail 
+                      collectionId={selectedCollection?.id} 
+                      collectionName={selectedCollection?.name}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Footer do Acervo */}
             {/* <motion.footer

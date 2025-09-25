@@ -1,24 +1,45 @@
 /**
- * AtoM Service - Simula a API do AtoM usando dados estáticos
+ * AtoM Service - Interface para a API real do AtoM
  * Este serviço fornece uma interface unificada para acessar os dados
- * do acervo Hip Hop DF de forma similar à API REST do AtoM
+ * do acervo Hip Hop DF usando a API REST real do AtoM
  */
 
-import atomActorsResponse from '../data/authors.js';
-import atomCollectionsResponse from '../data/collections.js';
-import atomItemsResponse from '../data/docItems.js';
-import atomItemDetailResponse from '../data/item.js';
-import atomMapResponse from '../data/mapa.js';
-import atomSearchResponse from '../data/searchResp.js';
-import atomStatisticsResponse from '../data/statistics.js';
-import atomTaxonomiesResponse from '../data/taxonomies.js';
-import atomTimelineResponse from '../data/timeline.js';
+// AIDEV-NOTE: Removed all static mock data imports - using only real API
 
 class AtomService {
   constructor() {
-    this.baseUrl = '/api'; // Para futura integração com API real
+    this.baseUrl = 'https://acervodistritohiphop.com.br/index.php/api';
+    this.apiKey = process.env.NEXT_PUBLIC_API_KEY;
     this.cache = new Map();
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
+  }
+
+  /**
+   * Faz requisição para a API real do AtoM
+   * @private
+   */
+  async _fetchFromApi(endpoint, params = {}) {
+    const url = new URL(`${this.baseUrl}/${endpoint}`);
+    
+    // Adiciona parâmetros de query
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.append(key, value);
+      }
+    });
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        'REST-API-Key': this.apiKey,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+    }
+
+    return response.json();
   }
 
   /**
@@ -36,234 +57,391 @@ class AtomService {
       parent,
       offset = 0,
       limit = 10,
-      sort = 'createdAt',
-      order = 'desc'
+      sort,
+      order
     } = params;
 
-    // Simula delay da API
-    await this._delay(100);
-
-    let items = [...atomItemsResponse.results];
-
-    // Filtro por coleção pai
-    if (parent) {
-      items = items.filter(item => item.parentId === parent);
-    }
-
-    // Ordenação
-    items.sort((a, b) => {
-      const aValue = this._getNestedValue(a, sort);
-      const bValue = this._getNestedValue(b, sort);
+    // AIDEV-NOTE: Using real ATOM API for informationobjects endpoint
+    try {
+      const apiParams = { offset, limit };
       
-      if (order === 'desc') {
-        return bValue > aValue ? 1 : -1;
+      // Adiciona parent se fornecido (para filtrar por coleção)
+      if (parent) {
+        apiParams.parent = parent;
       }
-      return aValue > bValue ? 1 : -1;
-    });
 
-    // Paginação
-    const paginatedItems = items.slice(offset, offset + limit);
-
-    return {
-      results: paginatedItems,
-      total: items.length,
-      offset,
-      limit,
-      _links: this._generateLinks('informationobjects', params, items.length)
-    };
+      const response = await this._fetchFromApi('informationobjects', apiParams);
+      
+      return {
+        results: response.results || [],
+        total: response.total || 0,
+        offset,
+        limit,
+        _links: this._generateLinks('informationobjects', params, response.total || 0)
+      };
+    } catch (error) {
+      console.error('❌ API falhou para getItems:', error.message);
+      throw new Error(`Falha ao carregar itens: ${error.message}`);
+    }
   }
 
   /**
-   * Busca um item específico pelo ID
-   * @param {string} id - ID do item
+   * Busca um item específico pelo ID/slug
+   * @param {string} id - ID ou slug do item
    * @returns {Promise<Object>} Dados detalhados do item
    */
   async getItem(id) {
-    await this._delay(80);
-
-    // Para o exemplo, retorna sempre o item detalhado
-    // Em uma implementação real, buscaria pelo ID específico
-    if (id === 'ahhdf-001') {
-      return atomItemDetailResponse;
+    // AIDEV-NOTE: Using real ATOM API for individual item details
+    try {
+      const response = await this._fetchFromApi(`informationobjects/${id}`);
+      return response;
+    } catch (error) {
+      console.error(`❌ API falhou para item ${id}:`, error.message);
+      throw new Error(`Falha ao carregar item ${id}: ${error.message}`);
     }
-
-    // Busca nos dados básicos
-    const item = atomItemsResponse.results.find(item => item.id === id);
-    if (!item) {
-      throw new Error(`Item ${id} não encontrado`);
-    }
-
-    return item;
   }
 
   /**
-   * Busca coleções
+   * Busca coleções (itens de nível superior)
    * @param {Object} params - Parâmetros de busca
    * @returns {Promise<Object>} Resposta com coleções
    */
   async getCollections(params = {}) {
-    await this._delay(90);
-    
-    return {
-      ...atomCollectionsResponse,
-      _links: this._generateLinks('informationobjects', params, atomCollectionsResponse.total)
-    };
+    // AIDEV-NOTE: Using topLod=1 to get only top-level descriptions (collections)
+    try {
+      const apiParams = { 
+        topLod: 1,
+        limit: params.limit || 50,
+        offset: params.offset || 0,
+        sort: params.sort || 'alphabetic'
+      };
+
+      const response = await this._fetchFromApi('informationobjects', apiParams);
+      
+      return {
+        results: response.results || [],
+        total: response.total || 0,
+        offset: apiParams.offset,
+        limit: apiParams.limit,
+        _links: this._generateLinks('informationobjects', params, response.total || 0)
+      };
+    } catch (error) {
+      console.error('❌ API falhou para coleções:', error.message);
+      throw new Error(`Falha ao carregar coleções: ${error.message}`);
+    }
   }
 
   /**
-   * Busca atores/criadores
+   * Busca itens com objetos digitais (imagens/mídia)
+   * @param {Object} params - Parâmetros de busca
+   * @returns {Promise<Object>} Resposta com itens de mídia
+   */
+  async getMediaItems(params = {}) {
+    // AIDEV-NOTE: Using onlyMedia=1 to get only items with digital objects
+    try {
+      const apiParams = { 
+        onlyMedia: 1,
+        limit: params.limit || 20,
+        offset: params.offset || 0,
+        sort: params.sort || 'alphabetic'
+      };
+
+      const response = await this._fetchFromApi('informationobjects', apiParams);
+      
+      return {
+        results: response.results || [],
+        total: response.total || 0,
+        offset: apiParams.offset,
+        limit: apiParams.limit,
+        _links: this._generateLinks('informationobjects', params, response.total || 0)
+      };
+    } catch (error) {
+      console.error('❌ API falhou para mídia:', error.message);
+      throw new Error(`Falha ao carregar itens de mídia: ${error.message}`);
+    }
+  }
+
+  /**
+   * Busca atores/criadores - Not implemented in real API
    * @param {Object} params - Parâmetros de busca
    * @returns {Promise<Object>} Resposta com atores
    */
   async getActors(params = {}) {
-    await this._delay(100);
-    
-    return {
-      ...atomActorsResponse,
-      _links: this._generateLinks('actors', params, atomActorsResponse.total)
-    };
+    // AIDEV-NOTE: Actors endpoint not available in real API
+    throw new Error('Endpoint de atores não disponível na API');
   }
 
   /**
-   * Busca ator específico pelo ID
+   * Busca ator específico pelo ID - Not implemented in real API
    * @param {string} id - ID do ator
    * @returns {Promise<Object>} Dados do ator
    */
   async getActor(id) {
-    await this._delay(80);
-    
-    const actor = atomActorsResponse.results.find(actor => actor.id === id);
-    if (!actor) {
-      throw new Error(`Ator ${id} não encontrado`);
-    }
-    
-    return actor;
+    // AIDEV-NOTE: Individual actor endpoint not available in real API
+    throw new Error('Endpoint de ator individual não disponível na API');
   }
 
   /**
-   * Realiza busca textual no acervo
+   * Busca avançada com suporte server-side
    * @param {Object} params - Parâmetros de busca
-   * @param {string} params.q - Termo de busca
+   * @param {string} [params.q] - Termo de busca
+   * @param {string} [params.field='title'] - Campo de busca (title, identifier, scopeAndContent)
+   * @param {string} [params.operator='and'] - Operador lógico (and, or, not)
    * @param {number} [params.offset=0] - Offset para paginação
    * @param {number} [params.limit=10] - Limite de resultados
-   * @param {string[]} [params.subjects] - Filtros por assunto
-   * @param {string[]} [params.places] - Filtros por lugar
-   * @param {string} [params.dateRange] - Filtro por período
+   * @param {string} [params.startDate] - Data inicial (YYYY-MM-DD)
+   * @param {string} [params.endDate] - Data final (YYYY-MM-DD)
+   * @param {string} [params.sort] - Ordenação (alphabetic, date, identifier, lastUpdated)
+   * @param {boolean} [params.onlyMedia] - Apenas itens com mídia
+   * @param {boolean} [params.topLod] - Apenas descrições de nível superior
    * @returns {Promise<Object>} Resultados da busca
    */
   async search(params = {}) {
-    const { q, offset = 0, limit = 10, subjects, places, dateRange } = params;
+    const { 
+      q, 
+      field = 'title',
+      operator = 'and',
+      offset = 0, 
+      limit = 10, 
+      startDate, 
+      endDate,
+      sort = 'alphabetic',
+      onlyMedia = false,
+      topLod = false,
+      subjects = [],
+      places = [],
+      dateRange = null
+    } = params;
     
-    await this._delay(150);
-
-    // Para demonstração, retorna dados pré-configurados
-    // Em implementação real, faria busca nos dados
-    if (q?.toLowerCase().includes('breaking')) {
-      return {
-        ...atomSearchResponse,
-        query: q,
+    // AIDEV-NOTE: Using real server-side search with sq0/sf0 parameters
+    try {
+      const apiParams = {
         offset,
         limit,
-        _links: this._generateLinks('search', params, atomSearchResponse.total)
+        sort
       };
+
+      // Adiciona busca textual server-side
+      if (q && q.trim()) {
+        apiParams.sq0 = q.trim();
+        apiParams.sf0 = field;
+        apiParams.so0 = operator;
+      }
+
+      // Adiciona filtros de data
+      if (startDate) apiParams.startDate = startDate;
+      if (endDate) apiParams.endDate = endDate;
+
+      // Adiciona filtros especiais
+      if (onlyMedia) apiParams.onlyMedia = 1;
+      if (topLod) apiParams.topLod = 1;
+
+      const response = await this._fetchFromApi('informationobjects', apiParams);
+      let results = response.results || [];
+
+      // Se não usou busca server-side, aplica filtro client-side
+      if (q && q.trim() && !apiParams.sq0) {
+        const searchTerm = q.toLowerCase().trim();
+        results = results.filter(item => {
+          const searchFields = [
+            item.title,
+            item.physical_characteristics,
+            item.reference_code,
+            ...(item.place_access_points || []),
+            ...(item.subjects || [])
+          ].filter(Boolean);
+          
+          const searchText = searchFields.join(' ').toLowerCase();
+          return searchText.includes(searchTerm);
+        });
+      }
+
+      // Aplica filtros por assunto
+      if (subjects && subjects.length > 0) {
+        results = results.filter(item => 
+          item.subjects && item.subjects.some(subject => 
+            subjects.includes(subject) || subjects.includes(subject.term)
+          )
+        );
+      }
+
+      // Aplica filtros por lugar
+      if (places && places.length > 0) {
+        results = results.filter(item =>
+          item.place_access_points && item.place_access_points.some(place =>
+            places.includes(place) || places.includes(place.name)
+          )
+        );
+      }
+
+      // Aplica filtro por data
+      if (dateRange) {
+        results = results.filter(item => {
+          if (!item.creation_dates || item.creation_dates.length === 0) return false;
+          const itemDate = new Date(item.creation_dates[0]);
+          return this._isDateInRange(itemDate, dateRange);
+        });
+      }
+
+      // Paginação
+      const paginatedResults = results.slice(offset, offset + limit);
+
+      return {
+        query: q,
+        results: paginatedResults,
+        total: results.length,
+        offset,
+        limit,
+        facets: this._generateFacetsFromApiData(results),
+        _links: this._generateLinks('search', params, results.length)
+      };
+
+    } catch (error) {
+      console.error('❌ API falhou na busca:', error.message);
+      throw new Error(`Falha na busca: ${error.message}`);
     }
+  }
 
-    // Busca genérica nos itens
-    const results = atomItemsResponse.results.filter(item => {
-      const searchText = `${item.title} ${item.scopeAndContent} ${item.subjects.join(' ')}`.toLowerCase();
-      return searchText.includes(q?.toLowerCase() || '');
-    });
+  /**
+   * Obtém dados para o mapa - Not implemented in real API
+   * @returns {Promise<Object>} Dados de localização
+   */
+  async getMapData() {
+    // AIDEV-NOTE: Map data endpoint not available in real API
+    throw new Error('Endpoint de dados do mapa não disponível na API');
+  }
 
+  /**
+   * Obtém dados estatísticos do acervo - Computed from real data
+   * @returns {Promise<Object>} Estatísticas
+   */
+  async getStatistics() {
+    // AIDEV-NOTE: Computing statistics from real API data
+    const [allItems, collections, media] = await Promise.all([
+      this.getItems({ limit: 1000 }),
+      this.getCollections({ limit: 100 }),
+      this.getMediaItems({ limit: 100 })
+    ]);
+    
     return {
-      query: q,
-      results: results.slice(offset, offset + limit),
-      total: results.length,
-      offset,
-      limit,
-      facets: this._generateFacets(results),
-      _links: this._generateLinks('search', params, results.length)
+      totalItems: allItems.total,
+      totalCollections: collections.total,
+      totalMedia: media.total,
+      lastUpdated: new Date().toISOString()
     };
   }
 
   /**
-   * Obtém dados para o mapa
-   * @returns {Promise<Object>} Dados de localização
-   */
-  async getMapData() {
-    await this._delay(120);
-    return atomMapResponse;
-  }
-
-  /**
-   * Obtém dados estatísticos do acervo
-   * @returns {Promise<Object>} Estatísticas
-   */
-  async getStatistics() {
-    await this._delay(100);
-    return atomStatisticsResponse;
-  }
-
-  /**
    * Obtém taxonomias e vocabulários controlados
-   * @returns {Promise<Object>} Dados de taxonomias
+   * @returns {Promise<Object>} Dados de taxonomias combinadas
    */
   async getTaxonomies() {
-    await this._delay(90);
-    return atomTaxonomiesResponse;
+    // AIDEV-NOTE: Using real taxonomy endpoints with discovered IDs
+    try {
+      const [subjects, places, genres, levels, actorTypes] = await Promise.all([
+        this._fetchFromApi('taxonomies/35'), // Subjects
+        this._fetchFromApi('taxonomies/42'), // Places  
+        this._fetchFromApi('taxonomies/78'), // Genres
+        this._fetchFromApi('taxonomies/34'), // Level of Description
+        this._fetchFromApi('taxonomies/32')  // Actor Entity Type
+      ]);
+
+      return {
+        subjects: {
+          id: 35,
+          name: 'Subjects',
+          terms: subjects.map(item => ({ name: item.name, count: 0 }))
+        },
+        places: {
+          id: 42,
+          name: 'Places', 
+          terms: places.map(item => ({ name: item.name, count: 0 }))
+        },
+        genres: {
+          id: 78,
+          name: 'Genres',
+          terms: genres.map(item => ({ name: item.name, count: 0 }))
+        },
+        levels: {
+          id: 34,
+          name: 'Level of Description',
+          terms: levels.map(item => ({ name: item.name, count: 0 }))
+        },
+        creators: {
+          id: 32,
+          name: 'Actor Types',
+          terms: actorTypes.map(item => ({ name: item.name, count: 0 }))
+        }
+      };
+    } catch (error) {
+      console.error('❌ API falhou para taxonomias:', error.message);
+      throw new Error(`Falha ao carregar taxonomias: ${error.message}`);
+    }
   }
 
   /**
-   * Obtém dados da linha do tempo
+   * Obtém uma taxonomia específica
+   * @param {number} id - ID da taxonomia
+   * @returns {Promise<Array>} Termos da taxonomia
+   */
+  async getTaxonomy(id) {
+    // AIDEV-NOTE: Direct access to individual taxonomy endpoints
+    try {
+      return await this._fetchFromApi(`taxonomies/${id}`);
+    } catch (error) {
+      console.warn(`API real falhou para taxonomia ${id}:`, error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Obtém dados da linha do tempo - Not implemented in real API
    * @returns {Promise<Object>} Eventos da timeline
    */
   async getTimeline() {
-    await this._delay(110);
-    return atomTimelineResponse;
+    // AIDEV-NOTE: Timeline endpoint not available in real API
+    throw new Error('Endpoint de timeline não disponível na API');
   }
 
   /**
-   * Obtém sugestões para autocomplete
+   * Obtém sugestões para autocomplete baseado em taxonomias reais
    * @param {string} query - Termo parcial
    * @param {string} [type='all'] - Tipo de sugestão (subjects, places, creators, all)
    * @returns {Promise<Array>} Lista de sugestões
    */
   async getSuggestions(query, type = 'all') {
-    await this._delay(50);
-    
-    const suggestions = [];
-    const lowerQuery = query.toLowerCase();
+    try {
+      const suggestions = [];
+      const lowerQuery = query.toLowerCase();
 
-    if (type === 'all' || type === 'subjects') {
-      atomTaxonomiesResponse.subjects.terms
-        .filter(term => term.name.toLowerCase().includes(lowerQuery))
-        .forEach(term => suggestions.push({
-          type: 'subject',
-          value: term.name,
-          count: term.count
-        }));
+      // Get suggestions from real taxonomies
+      const taxonomies = await this.getTaxonomies();
+      
+      if (type === 'all' || type === 'subjects') {
+        taxonomies.subjects.terms
+          .filter(term => term.name.toLowerCase().includes(lowerQuery))
+          .forEach(term => suggestions.push({
+            type: 'subject',
+            value: term.name,
+            count: term.count
+          }));
+      }
+
+      if (type === 'all' || type === 'places') {
+        taxonomies.places.terms
+          .filter(term => term.name.toLowerCase().includes(lowerQuery))
+          .forEach(term => suggestions.push({
+            type: 'place',
+            value: term.name,
+            count: term.count
+          }));
+      }
+
+      return suggestions.slice(0, 10);
+    } catch (error) {
+      console.error('❌ Erro ao buscar sugestões:', error.message);
+      return [];
     }
-
-    if (type === 'all' || type === 'places') {
-      atomTaxonomiesResponse.places.terms
-        .filter(term => term.name.toLowerCase().includes(lowerQuery))
-        .forEach(term => suggestions.push({
-          type: 'place',
-          value: term.name,
-          count: term.count
-        }));
-    }
-
-    if (type === 'all' || type === 'creators') {
-      atomTaxonomiesResponse.creators.terms
-        .filter(term => term.name.toLowerCase().includes(lowerQuery))
-        .forEach(term => suggestions.push({
-          type: 'creator',
-          value: term.name,
-          count: term.count
-        }));
-    }
-
-    return suggestions.slice(0, 10);
   }
 
   // Métodos utilitários privados
@@ -316,10 +494,24 @@ class AtomService {
   }
 
   /**
-   * Gera facetas para busca
+   * Verifica se uma data está dentro do intervalo especificado
    * @private
    */
-  _generateFacets(results) {
+  _isDateInRange(date, dateRange) {
+    // Implementação simples - pode ser expandida conforme necessário
+    const year = date.getFullYear();
+    if (dateRange.includes('-')) {
+      const [start, end] = dateRange.split('-').map(y => parseInt(y.trim()));
+      return year >= start && year <= end;
+    }
+    return year.toString() === dateRange;
+  }
+
+  /**
+   * Gera facetas para dados da API real
+   * @private
+   */
+  _generateFacetsFromApiData(results) {
     const facets = {
       subjects: {},
       places: {},
@@ -327,20 +519,29 @@ class AtomService {
     };
 
     results.forEach(item => {
-      // Facetas de assuntos
-      item.subjects.forEach(subject => {
-        const term = typeof subject === 'string' ? subject : subject.term;
-        facets.subjects[term] = (facets.subjects[term] || 0) + 1;
-      });
+      // Facetas de assuntos (se existirem)
+      if (item.subjects) {
+        item.subjects.forEach(subject => {
+          const term = typeof subject === 'string' ? subject : subject.term || subject;
+          if (term) {
+            facets.subjects[term] = (facets.subjects[term] || 0) + 1;
+          }
+        });
+      }
 
       // Facetas de lugares
-      item.places.forEach(place => {
-        facets.places[place.name] = (facets.places[place.name] || 0) + 1;
-      });
+      if (item.place_access_points) {
+        item.place_access_points.forEach(place => {
+          const placeName = typeof place === 'string' ? place : place.name || place;
+          if (placeName) {
+            facets.places[placeName] = (facets.places[placeName] || 0) + 1;
+          }
+        });
+      }
 
       // Facetas de datas (por década)
-      if (item.dates.length > 0) {
-        const year = new Date(item.dates[0].startDate).getFullYear();
+      if (item.creation_dates && item.creation_dates.length > 0) {
+        const year = new Date(item.creation_dates[0]).getFullYear();
         const decade = `${Math.floor(year / 10) * 10}s`;
         facets.dates[decade] = (facets.dates[decade] || 0) + 1;
       }
@@ -359,6 +560,8 @@ class AtomService {
         .sort((a, b) => b.count - a.count)
     };
   }
+
+  // AIDEV-NOTE: Removed _generateFacets method that used static mock data
 }
 
 // Instância singleton

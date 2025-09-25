@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import AnimatedButton from '@/components/AnimatedButton';
+import HeaderApp from '@/components/html/HeaderApp';
 import StackedPagesScroll from "@/components/ui/stack";
 
 const Revista = () => {
@@ -69,40 +70,7 @@ const Revista = () => {
 
       {/* Conteúdo da página */}
       <div className={`relative z-10 overflow-hidden ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
-        {/* Título ocupando toda a largura da tela - ACIMA DE TUDO */}
-        <div className="w-full bg-transparent">
-          <motion.h1
-            className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-black text-center py-4 md:py-6 lg:py-8 w-full"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            style={{
-              letterSpacing: '0.05em',
-              lineHeight: '0.9'
-            }}
-          >
-            REVISTA DIGITAL
-          </motion.h1>
-        </div>
-
-        <motion.div
-          className="relative w-full py-4 md:py-6 border-t-3 border-b-3 border-solid border-black z-20"
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-center justify-between px-4 md:px-8">
-            <div className="flex items-start px-4 absolute top-[-50px] left-[-50px]">
-              <Image src="cursor03.png" alt="Marca de spray com escorrimento" width={150} height={180} />
-            </div>
-            {/* Navegação principal - centralizada */}
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 flex-1">
-              <Link href="/">
-                <AnimatedButton textSize="text-3xl" text="INÍCIO" backgroundMode="static" imagePath="marca-texto-vermelho.png" />
-              </Link>
-            </div>
-          </div>
-        </motion.div>
+        <HeaderApp title="REVISTA DIGITAL" showTitle={true} />
 
         {/* Page Content with Transition */}
         <AnimatePresence mode="wait">
