@@ -308,11 +308,11 @@ Preparação para Expansão:
 ### **🛠️ Ferramentas de Teste**
 ```bash
 # Comandos para validar implementação:
-curl -H "REST-API-Key: af5067ab9869c4cc" \
+curl -H "REST-API-Key: c87ec7a29cf917c9" \
   "https://acervodistritohiphop.com.br/index.php/api/informationobjects?topLod=1"
 
 # Verificar taxonomias:
-curl -H "REST-API-Key: af5067ab9869c4cc" \
+curl -H "REST-API-Key: c87ec7a29cf917c9" \
   "https://acervodistritohiphop.com.br/index.php/api/taxonomies/35"
 ```
 

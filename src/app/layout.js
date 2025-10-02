@@ -4,6 +4,7 @@ import { sometypeMonoFont } from "./fonts";
 import { dirtyStainsFont } from "./fonts";
 import HeaderApp from "@/components/html/HeaderApp";
 import FooterApp from "@/components/html/FooterApp";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export const metadata = {
   title: "Acervo Hip-Hop Distrito Federal",
@@ -16,22 +17,24 @@ export default function RootLayout({ children }) {
       <body
         className={`${scratchyFont.variable} ${sometypeMonoFont.variable} ${dirtyStainsFont.variable} antialiased`}
       >
-        {/* Imagem de fundo - agora com z-index menor */}
-      <div
-        className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0"
-        style={{
-          backgroundImage: `url('/fundo_base.jpg')`,
-          backgroundColor: '#000',
-        }}
-        aria-hidden="true"
-      />
-        <div className="min-h-screen flex flex-col">
-          
-            {children}
-                 
-          {/* Footer */}
-          <FooterApp />
-        </div>
+        <ThemeProvider>
+          {/* Imagem de fundo - agora com z-index menor */}
+          <div
+            className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0"
+            style={{
+              backgroundImage: `url('/fundo_base.jpg')`,
+              backgroundColor: '#000',
+            }}
+            aria-hidden="true"
+          />
+          <div className="min-h-screen flex flex-col">
+            
+              {children}
+                   
+            {/* Footer */}
+            <FooterApp />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

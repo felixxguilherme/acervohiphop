@@ -1,25 +1,27 @@
 /**
  * AtoM Service - Interface para a API real do AtoM
  * Este serviço fornece uma interface unificada para acessar os dados
- * do acervo Hip Hop DF usando a API REST real do AtoM
+ * do acervo Hip Hop DF usando a API REST real do AtoM através do proxy Next.js
  */
 
 // AIDEV-NOTE: Removed all static mock data imports - using only real API
 
 class AtomService {
   constructor() {
-    this.baseUrl = 'https://acervodistritohiphop.com.br/index.php/api';
-    this.apiKey = process.env.NEXT_PUBLIC_API_KEY;
+    // Usar API route local para evitar problemas de CORS
+    this.baseUrl = '/api/acervo';
     this.cache = new Map();
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
   }
 
   /**
-   * Faz requisição para a API real do AtoM
+   * Faz requisição para a API através do proxy Next.js
    * @private
    */
-  async _fetchFromApi(endpoint, params = {}) {
-    const url = new URL(`${this.baseUrl}/${endpoint}`);
+  async _fetchFromApi(endpoint = '', params = {}) {
+    // Se endpoint for vazio, usa apenas baseUrl
+    // Se tiver endpoint, adiciona ao path
+    const url = new URL(endpoint ? `${this.baseUrl}/${endpoint}` : this.baseUrl, window.location.origin);
     
     // Adiciona parâmetros de query
     Object.entries(params).forEach(([key, value]) => {
@@ -28,18 +30,26 @@ class AtomService {
       }
     });
 
-    const response = await fetch(url.toString(), {
-      headers: {
-        'REST-API-Key': this.apiKey,
-        'Content-Type': 'application/json'
-      }
-    });
+    console.info('[AtomService] ➡️ Requesting', url.pathname + url.search);
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
+      console.error('[AtomService] ❌ Request failed', {
+        status: response.status,
+        statusText: response.statusText
+      });
       throw new Error(`API Error: ${response.status} - ${response.statusText}`);
     }
 
-    return response.json();
+    const data = await response.json();
+
+    console.info('[AtomService] ✅ Response received', {
+      total: data?.total ?? 0,
+      count: Array.isArray(data?.results) ? data.results.length : 0
+    });
+
+    return data;
   }
 
   /**
@@ -61,7 +71,7 @@ class AtomService {
       order
     } = params;
 
-    // AIDEV-NOTE: Using real ATOM API for informationobjects endpoint
+    // AIDEV-NOTE: Using real ATOM API via proxy for informationobjects endpoint
     try {
       const apiParams = { offset, limit };
       
@@ -70,7 +80,7 @@ class AtomService {
         apiParams.parent = parent;
       }
 
-      const response = await this._fetchFromApi('informationobjects', apiParams);
+      const response = await this._fetchFromApi('', apiParams);
       
       return {
         results: response.results || [],
@@ -116,7 +126,7 @@ class AtomService {
         sort: params.sort || 'alphabetic'
       };
 
-      const response = await this._fetchFromApi('informationobjects', apiParams);
+      const response = await this._fetchFromApi('', apiParams);
       
       return {
         results: response.results || [],
@@ -146,7 +156,7 @@ class AtomService {
         sort: params.sort || 'alphabetic'
       };
 
-      const response = await this._fetchFromApi('informationobjects', apiParams);
+      const response = await this._fetchFromApi('', apiParams);
       
       return {
         results: response.results || [],
@@ -236,7 +246,7 @@ class AtomService {
       if (onlyMedia) apiParams.onlyMedia = 1;
       if (topLod) apiParams.topLod = 1;
 
-      const response = await this._fetchFromApi('informationobjects', apiParams);
+      const response = await this._fetchFromApi('', apiParams);
       let results = response.results || [];
 
       // Se não usou busca server-side, aplica filtro client-side

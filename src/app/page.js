@@ -8,8 +8,6 @@ import Lenis from '@studio-freight/lenis'
 import HeaderApp from '@/components/html/HeaderApp';
 import PolaroidCard from '@/components/PolaroidPhoto';
 import { CartoonButton } from '@/components/ui/cartoon-button';
-import StoryCard from '@/components/ui/story-card';
-import AcervoPreview from '@/components/home/AcervoPreview';
 import HipHopScrollySection from '@/components/HipHopScrollySection';
 import AcervoCompleto from '@/components/home/AcervoCompleto';
 import ApiResults from '@/components/home/ApiResults';

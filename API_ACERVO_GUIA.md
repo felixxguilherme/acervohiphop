@@ -22,7 +22,7 @@ https://acervodistritohiphop.com.br/index.php/api/
 ### Autenticação
 ```javascript
 Headers: {
-  'REST-API-Key': 'af5067ab9869c4cc',
+  'REST-API-Key': 'c87ec7a29cf917c9',
   'Content-Type': 'application/json'
 }
 ```
@@ -30,7 +30,7 @@ Headers: {
 ### Configuração no Projeto
 ```javascript
 // .env
-NEXT_PUBLIC_API_KEY=af5067ab9869c4cc
+NEXT_PUBLIC_API_KEY=c87ec7a29cf917c9
 
 // atomService.js
 this.apiKey = process.env.NEXT_PUBLIC_API_KEY;
@@ -508,7 +508,7 @@ const useSearchWithDebounce = (initialQuery = '') => {
 console.log('API Key:', process.env.NEXT_PUBLIC_API_KEY);
 
 // Testar diretamente
-curl -H "REST-API-Key: af5067ab9869c4cc" \
+curl -H "REST-API-Key: c87ec7a29cf917c9" \
   "https://acervodistritohiphop.com.br/index.php/api/informationobjects?limit=1"
 ```
 
