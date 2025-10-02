@@ -55,7 +55,7 @@ export default function AcervoPreview() {
                 initial={{ height: 8 }}
                 animate={{
                   height: [8, 40, 8],
-                  backgroundColor: ["#000000", "#fae523", "#000000"]
+                  backgroundColor: ["#000000", "#000000"]
                 }}
                 transition={{
                   duration: 1,
@@ -127,7 +127,7 @@ export default function AcervoPreview() {
         {/* Coluna Esquerda - Timeline Preview */}
         <div className="p-8 border-r-4 border-black bg-white/50">
           <div className="mb-6">
-            <div className="text-black text-sm font-black font-scratchy px-3 py-1 border-2 border-black inline-block mb-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-[#e08e6e]">
+            <div className="text-black text-sm font-black font-scratchy px-3 py-1 border-2 border-black inline-block mb-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-white">
               AMOSTRA DO ACERVO
             </div>
             
@@ -145,7 +145,7 @@ export default function AcervoPreview() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 30 }}
               transition={{ duration: 0.5 }}
-              className="bg-[#e08e6e]/70 p-4 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6"
+              className="bg-white p-4 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6"
             >
               <div className="font-scratchy text-black text-lg font-black px-2 py-1 inline-block mb-2 border border-black bg-white">
                 {new Date(currentEvent.date).getFullYear()}
@@ -172,8 +172,8 @@ export default function AcervoPreview() {
                 onClick={() => setActiveItem(index)}
                 className={`w-4 h-4 transition-all duration-200 border-2 border-black ${
                   index === activeItem 
-                    ? 'bg-[#e08e6e] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
-                    : 'bg-white hover:bg-[#e08e6e] shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]'
+                    ? 'bg-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
+                    : 'bg-white hover:bg-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]'
                 }`}
               />
             ))}
@@ -212,7 +212,7 @@ export default function AcervoPreview() {
           {/* Call to Action */}
           <div className="text-center z-0">
             <CartoonButton 
-              color="bg-[#fae523]" 
+              color="bg-black" 
               label="Explorar Acervo Completo!" 
               onClick={() => window.location.href = '/acervo'}
               className="shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
