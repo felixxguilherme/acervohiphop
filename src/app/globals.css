@@ -260,6 +260,74 @@ body.theme-dark .text-theme-muted {
   color: #9ca3af;
 }
 
+/* Estilos globais para textos */
+body.theme-light {
+  color: #000000;
+  font-family: var(--font-scratchy);
+}
+
+body.theme-dark {
+  color: #ffffff;
+  font-family: var(--font-scratchy);
+}
+
+/* Títulos principais com Dirty Stains */
+body.theme-light h1,
+body.theme-light h2 {
+  color: #000000;
+  font-family: var(--font-dirty-stains);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+body.theme-dark h1,
+body.theme-dark h2 {
+  color: #ffffff;
+  font-family: var(--font-dirty-stains);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Subtítulos com Scratchy */
+body.theme-light h3,
+body.theme-light h4,
+body.theme-light h5,
+body.theme-light h6 {
+  color: #000000;
+  font-family: var(--font-scratchy);
+}
+
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark h5,
+body.theme-dark h6 {
+  color: #ffffff;
+  font-family: var(--font-scratchy);
+}
+
+/* Textos de código com Sometype Mono */
+body.theme-light code,
+body.theme-light pre {
+  font-family: var(--font-sometype-mono-italic);
+}
+
+body.theme-dark code,
+body.theme-dark pre {
+  font-family: var(--font-sometype-mono-italic);
+}
+
+body.theme-light p,
+body.theme-light span,
+body.theme-light div {
+  color: inherit;
+}
+
+body.theme-dark p,
+body.theme-dark span,
+body.theme-dark div {
+  color: inherit;
+}
+
 /* Classes dinâmicas para backgrounds baseadas no tema */
 body.theme-light .bg-theme-card {
   background-color: rgba(255, 255, 255, 0.9);
@@ -278,11 +346,11 @@ body.theme-dark .bg-theme-overlay {
 }
 
 body.theme-light .bg-theme-background {
-  background-color: #EBEAE8;
+  background-color: #F7ECE5;
 }
 
 body.theme-dark .bg-theme-background {
-  background-color: #000;
+  background-color: #A09A96;
 }
 
 /* Classes dinâmicas para bordas baseadas no tema */
