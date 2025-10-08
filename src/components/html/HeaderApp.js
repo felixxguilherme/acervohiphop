@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { SpinningText } from "../magicui/spinning-text";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useEffect, useState } from "react";
+import ThemeToggle from "../ThemeToggle";
 
 export default function HeaderApp({ title, showTitle = false }) {
   const { theme } = useTheme();
@@ -34,6 +35,7 @@ export default function HeaderApp({ title, showTitle = false }) {
             style={{
               letterSpacing: '0.05em',
               lineHeight: '0.9',
+              textTransform: 'uppercase',
             }}
           >
             {title}
@@ -43,7 +45,7 @@ export default function HeaderApp({ title, showTitle = false }) {
     <motion.header
       className="sticky top-0 w-full border-3 border-solid border-theme z-50"
       style={{
-        backgroundColor: currentTheme === 'light' ? '#EBEAE8' : '#000'
+        backgroundColor: currentTheme === 'light' ? '#F7ECE5' : '#A09A96'
       }}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -54,7 +56,14 @@ export default function HeaderApp({ title, showTitle = false }) {
           {/* Spinning text - posicionado à esquerda */}
           <Link href="/">
             <div className="flex items-center px-4">
-              <SpinningText>acervo • hip-hop • Distrito Federal •</SpinningText>
+              <div className="scale-120 md:scale-120">
+                <SpinningText
+                  radius={8}
+                  className="h-20 w-20 text-base md:text-lg tracking-[0.35em] font-scratchy"
+                >
+                  acervo • hip-hop • Distrito Federal •
+                </SpinningText>
+              </div>
             </div>
           </Link>
 
@@ -70,6 +79,11 @@ export default function HeaderApp({ title, showTitle = false }) {
               <AnimatedButton textSize="text-3xl" text="REVISTA" backgroundMode="static" imagePath="marca-texto-verde.png" />
             </Link>
           </nav>
+
+          {/* Toggle de tema - posicionado à direita */}
+          <div className="flex items-center px-4">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </motion.header>
