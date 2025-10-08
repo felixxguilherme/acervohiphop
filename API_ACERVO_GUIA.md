@@ -16,7 +16,7 @@ A API do Acervo Hip Hop DF é baseada no sistema **AtoM** (Access to Memory), um
 
 ### Endpoint Base
 ```
-https://acervodistritohiphop.com.br/index.php/api/
+https://base.acervodistritohiphop.com.br/index.php/api/
 ```
 
 ### Autenticação
@@ -509,7 +509,7 @@ console.log('API Key:', process.env.NEXT_PUBLIC_API_KEY);
 
 // Testar diretamente
 curl -H "REST-API-Key: c87ec7a29cf917c9" \
-  "https://acervodistritohiphop.com.br/index.php/api/informationobjects?limit=1"
+  "https://base.acervodistritohiphop.com.br/index.php/api/informationobjects?limit=1"
 ```
 
 #### 2. Resultados vazios

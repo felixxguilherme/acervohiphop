@@ -23,7 +23,7 @@ A API do Acervo Hip Hop DF está **100% funcional** e conectada com sucesso à p
 
 ### **1. API Totalmente Operacional**
 ```
-✅ Endpoint: https://acervodistritohiphop.com.br/index.php/api/
+✅ Endpoint: https://base.acervodistritohiphop.com.br/index.php/api/
 ✅ Autenticação: Configurada e validada
 ✅ Tempo de resposta: ~500ms (excelente performance)
 ✅ Disponibilidade: 24/7 sem interrupções

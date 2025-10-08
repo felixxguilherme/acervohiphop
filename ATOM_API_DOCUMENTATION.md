@@ -2,7 +2,7 @@
 
 ## Informações Gerais
 
-- **URL Base**: `https://acervodistritohiphop.com.br/index.php/api/`
+- **URL Base**: `https://base.acervodistritohiphop.com.br/index.php/api/`
 - **Autenticação**: Header `REST-API-Key: c87ec7a29cf917c9`
 - **Software**: AtoM (Access to Memory)
 - **Versão**: Indeterminada (headers mostram PHP/8.3.23, Nginx/1.29.0)
@@ -55,19 +55,19 @@ GET /informationobjects
 ```bash
 # Buscar apenas coleções de nível superior
 curl -H "REST-API-Key: c87ec7a29cf917c9" \
-  "https://acervodistritohiphop.com.br/index.php/api/informationobjects?topLod=1"
+  "https://base.acervodistritohiphop.com.br/index.php/api/informationobjects?topLod=1"
 
 # Buscar apenas itens com imagens
 curl -H "REST-API-Key: c87ec7a29cf917c9" \
-  "https://acervodistritohiphop.com.br/index.php/api/informationobjects?onlyMedia=1"
+  "https://base.acervodistritohiphop.com.br/index.php/api/informationobjects?onlyMedia=1"
 
 # Buscar "dino" no campo título
 curl -H "REST-API-Key: c87ec7a29cf917c9" \
-  "https://acervodistritohiphop.com.br/index.php/api/informationobjects?sq0=dino&sf0=title"
+  "https://base.acervodistritohiphop.com.br/index.php/api/informationobjects?sq0=dino&sf0=title"
 
 # Filtrar por período (1994)
 curl -H "REST-API-Key: c87ec7a29cf917c9" \
-  "https://acervodistritohiphop.com.br/index.php/api/informationobjects?startDate=1994-01-01&endDate=1994-12-31"
+  "https://base.acervodistritohiphop.com.br/index.php/api/informationobjects?startDate=1994-01-01&endDate=1994-12-31"
 ```
 
 #### 2. `/informationobjects/{slug}` - Detalhes de Item Específico
@@ -96,7 +96,7 @@ GET /taxonomies/{id}
 ```bash
 # Buscar todos os assuntos/temas
 curl -H "REST-API-Key: c87ec7a29cf917c9" \
-  "https://acervodistritohiphop.com.br/index.php/api/taxonomies/35"
+  "https://base.acervodistritohiphop.com.br/index.php/api/taxonomies/35"
 
 # Retorna: ["Batalha", "Dino Black", "GOG", "Rap", ...]
 ```
