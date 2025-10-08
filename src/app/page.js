@@ -67,7 +67,6 @@ export default function Home() {
       lenis.raf(time)
       requestAnimationFrame(raf)
     }
-
     requestAnimationFrame(raf)
   })
 
@@ -84,11 +83,11 @@ export default function Home() {
       {/* Spacer to push content below the sticky cards */}
       <div style={{ height: '100vh' }}></div>
       
-      <HipHopScrollySection />
+      {/* <HipHopScrollySection />
 
       <AcervoCompleto />
 
-      <ApiResults />
+      <ApiResults /> */}
 
       <section id="posscrolly" style={{ position: 'relative', zIndex: 10, backgroundColor: 'white', padding: '4rem 2rem' }}>
         <div className="max-w-4xl mx-auto">
@@ -98,25 +97,37 @@ export default function Home() {
             <div className="bg-theme-card p-6 rounded-lg">
               <h3 className="text-2xl font-sometype-mono mb-4">ACERVO</h3>
               <p className="text-lg mb-4">Navegue por nossa coleção de documentos históricos</p>
-              <CartoonButton textSize="text-xl" text="EXPLORAR" backgroundMode="static" imagePath="marca-texto-vermelho.png" />
+              <CartoonButton
+                label="EXPLORAR"
+                color="bg-red-400"
+                onClick={() => window.location.href = '/acervo'}
+              />
             </div>
             
             <div className="bg-theme-card p-6 rounded-lg">
               <h3 className="text-2xl font-sometype-mono mb-4">MAPA</h3>
               <p className="text-lg mb-4">Descubra os locais históricos do Hip Hop no DF</p>
-              <CartoonButton textSize="text-xl" text="NAVEGAR" backgroundMode="static" imagePath="marca-texto-azul.png" />
+              <CartoonButton
+                label="NAVEGAR"
+                color="bg-sky-400"
+                onClick={() => window.location.href = '/mapa'}
+              />
             </div>
             
             <div className="bg-theme-card p-6 rounded-lg">
               <h3 className="text-2xl font-sometype-mono mb-4">REVISTA</h3>
               <p className="text-lg mb-4">Leia reportagens e entrevistas exclusivas</p>
-              <CartoonButton textSize="text-xl" text="LER MAIS" backgroundMode="static" imagePath="marca-texto-verde.png" />
+              <CartoonButton
+                label="LER MAIS"
+                color="bg-lime-400"
+                onClick={() => window.location.href = '/revista'}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#f0f0f0', padding: '4rem 2rem' }}>
+      {/* <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#f0f0f0', padding: '4rem 2rem' }}>
         <div className="max-w-6xl mx-auto">
           <h2 className="text-6xl font-dirty-stains text-center mb-8">CRONOLOGIA</h2>
           
@@ -142,11 +153,22 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section style={{ position: 'relative', zIndex: 10, backgroundColor: 'black', color: 'white', padding: '4rem 2rem' }}>
+      <section
+        style={{
+          position: 'relative',
+          zIndex: 10,
+          color: 'white',
+          padding: '4rem 2rem',
+          backgroundImage: "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('/imgfundo.jpeg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-8xl font-dirty-stains mb-8">CONTINUE A HISTÓRIA</h2>
+          <h2 className="text-4xl font-dirty-stains mb-8 text-white">acervo hip-hop</h2>
           <p className="text-2xl font-sometype-mono mb-8">
             O Hip Hop do DF continua evoluindo. Faça parte dessa história.
           </p>
@@ -154,11 +176,25 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
             <div className="p-8">
               <h3 className="text-3xl font-dirty-stains mb-4">PARTICIPE</h3>
-              <p className="text-lg mb-6">Envie suas histórias, fotos e documentos para nosso acervo</p>
+              <p className="text-lg mb-6 font-sometype-mono">Envie suas histórias, fotos e documentos para nosso acervo</p>
+              <div className="flex justify-center">
+                <CartoonButton
+                  label="Envie sua história"
+                  color="bg-amber-300"
+                  onClick={() => window.location.href = '/acervo#contribua'}
+                />
+              </div>
             </div>
             <div className="p-8">
               <h3 className="text-3xl font-dirty-stains mb-4">CONECTE</h3>
-              <p className="text-lg mb-6">Junte-se à comunidade e mantenha viva a cultura Hip Hop</p>
+              <p className="text-lg mb-6 font-sometype-mono">Navegue pela história e cultura do hip hop do DF</p>
+              <div className="flex justify-center">
+                <CartoonButton
+                  label="Visitar acervo"
+                  color="bg-emerald-300"
+                  onClick={() => window.location.href = '/comunidade'}
+                />
+              </div>
             </div>
           </div>
         </div>
