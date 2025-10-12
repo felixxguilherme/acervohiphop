@@ -36,7 +36,7 @@ export default function ThemeBackground() {
     <div
       className="fixed inset-0 w-full h-full z-0"
       style={{
-        backgroundColor: theme === 'light' ? '#F7ECE5' : '#A09A96'
+        backgroundColor: theme === 'light' ? '#FFFCF2' : '#252422'
       }}
       aria-hidden="true"
     />

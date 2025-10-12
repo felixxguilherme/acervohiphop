@@ -20,7 +20,7 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       className="relative w-12 h-6 rounded-full transition-colors duration-300 border-2 border-theme focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-theme"
       style={{
-        backgroundColor: theme === 'light' ? '#F7ECE5' : '#A09A96'
+        backgroundColor: theme === 'light' ? '#F7ECE5' : '#252422'
       }}
       aria-label={`Alternar para tema ${theme === 'light' ? 'escuro' : 'claro'}`}
     >

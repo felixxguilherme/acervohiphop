@@ -1,7 +1,7 @@
 // AIDEV-NOTE: API route to proxy requests to AtoM API - no fallbacks
 import { NextResponse } from 'next/server';
 
-const ATOM_API_BASE = 'https://acervodistritohiphop.com.br/index.php/api';
+const ATOM_API_BASE = 'https://base.acervodistritohiphop.com.br/index.php/api';
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY
 
 export async function GET(request) {

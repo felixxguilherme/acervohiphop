@@ -1,13 +1,15 @@
 'use client'
 import Image from 'next/image';
 import '../app/parallaxstyle.css'
-import { useTransform, motion, useScroll } from 'framer-motion';
-import { useRef } from 'react';
+import { useTransform, motion, useScroll, useMotionValue } from 'framer-motion';
+import { useRef, useEffect, useState } from 'react';
 import PolaroidCard from './PolaroidPhoto';
 
 const CardParallax = ({i, title, description, src, url, link, color, progress, range, targetScale}) => {
 
   const container = useRef(null);
+  const [position, setPosition] = useState('sticky');
+  
   const { scrollYProgress } = useScroll({
     target: container,
     offset: ['start end', 'start start']
@@ -15,9 +17,28 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
 
   const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1])
   const scale = useTransform(progress, range, [1, targetScale]);
+  
+  // Detectar quando o efeito parallax terminou e mudar para relative
+  useEffect(() => {
+    const unsubscribe = progress.onChange((latest) => {
+      if (latest > 0.9) {
+        setPosition('relative');
+      } else {
+        setPosition('sticky');
+      }
+    });
+    
+    return () => unsubscribe();
+  }, [progress]);
  
   return (
-    <div ref={container} className="cardContainer border-solid border-l-3 border-b-3 border-r-3 border-theme">
+    <motion.div 
+      ref={container} 
+      className="cardContainer border-solid border-l-3 border-b-3 border-r-3 border-theme"
+      style={{
+        position: position
+      }}
+    >
       <motion.div 
         style={{backgroundColor: color, scale, top:`calc(-5vh + ${i * 25}px)`}} 
         className="card"
@@ -50,7 +71,7 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
 
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   )
 }
 
