@@ -15,17 +15,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className="overflow-x-hidden overflow-y-auto">
       <body
-        className={`${scratchyFont.variable} ${sometypeMonoFont.variable} ${dirtyStainsFont.variable} antialiased`}
+        className={`${scratchyFont.variable} ${sometypeMonoFont.variable} ${dirtyStainsFont.variable} antialiased overflow-x-hidden overflow-y-auto`}
       >
         <ThemeProvider>
           <AppBackground />
-          <ThemeToggle />
-          <div className="relative min-h-screen flex flex-col">
+          {/* <ThemeToggle /> */}
+          <div className="relative min-h-screen flex flex-col overflow-x-hidden overflow-y-auto">
             {children}
             {/* Footer */}
-            <FooterApp />
+            {/* <FooterApp /> */}
           </div>
         </ThemeProvider>
       </body>
