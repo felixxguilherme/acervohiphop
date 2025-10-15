@@ -31,13 +31,9 @@ export default function ThemeBackground() {
   if (!mounted) {
     return null;
   }
-
   return (
     <div
-      className="fixed inset-0 w-full h-full z-0"
-      style={{
-        backgroundColor: theme === 'light' ? '#FFFCF2' : '#252422'
-      }}
+      className={`fixed inset-0 w-full h-full z-0 ${theme === 'light' ? 'bg-theme-background' : 'bg-theme-background'}`}
       aria-hidden="true"
     />
   );

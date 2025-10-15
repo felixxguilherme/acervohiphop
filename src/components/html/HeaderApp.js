@@ -23,34 +23,37 @@ export default function HeaderApp({ title, showTitle = false }) {
     // Atualiza quando o tema muda
     setCurrentTheme(theme);
   }, [theme]);
-
   useEffect(() => {
-    // Detecta o scroll do Lenis para reduzir o header de forma mais suave
-    const handleLenisScroll = (e) => {
-      const scrollTop = e.detail.scroll;
-      setIsScrolled(scrollTop > 50);
-    };
+    let ticking = false;
+    const SCROLL_THRESHOLD = 100; // Threshold em pixels para ativar o estado "scrolled"
+    const HYSTERESIS = 20; // Histerese para evitar alternância rápida
 
-    // Fallback para scroll nativo caso o Lenis não esteja disponível
-    const handleNativeScroll = () => {
-      const scrollTop = window.scrollY;
-      setIsScrolled(scrollTop > 50);
-    };
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          
+          // Implementa histerese: só muda o estado se ultrapassar o threshold com margem
+          if (currentScrollY > SCROLL_THRESHOLD + HYSTERESIS && !isScrolled) {
+            setIsScrolled(true);
+          } else if (currentScrollY < SCROLL_THRESHOLD - HYSTERESIS && isScrolled) {
+            setIsScrolled(false);
+          }
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isScrolled]); // Dependência necessária para verificar estado atual
 
-    // Prioriza o evento do Lenis, com fallback para scroll nativo
-    window.addEventListener('lenisScroll', handleLenisScroll);
-    window.addEventListener('scroll', handleNativeScroll);
-    
-    return () => {
-      window.removeEventListener('lenisScroll', handleLenisScroll);
-      window.removeEventListener('scroll', handleNativeScroll);
-    };
-  }, []);
   return (
     <motion.header
       className="sticky top-0 w-full border-3 border-solid border-theme z-50"
       style={{
-        backgroundColor: currentTheme === 'light' ? '#FFFCF2' : '#252422'
+        backgroundColor: currentTheme === 'light' ? '#FFFCF2' : '#252422',
+        willChange: 'height, transform'
       }}
       initial={{ y: -100, opacity: 0 }}
       animate={{ 
@@ -59,7 +62,7 @@ export default function HeaderApp({ title, showTitle = false }) {
         height: isScrolled ? 'auto' : 'auto'
       }}
       transition={{ 
-        duration: 0.6,
+        duration: 0.4,
         ease: [0.25, 0.1, 0.25, 1]
       }}
     >
@@ -69,7 +72,7 @@ export default function HeaderApp({ title, showTitle = false }) {
           minHeight: isScrolled ? '70px' : '200px'
         }}
         transition={{ 
-          duration: 0.6,
+          duration: 0.4,
           ease: [0.25, 0.1, 0.25, 1]
         }}
       >

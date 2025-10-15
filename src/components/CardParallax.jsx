@@ -35,7 +35,7 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
   return (
     <motion.div 
       ref={container} 
-      className="cardContainer border-solid border-l-3 border-b-3 border-r-3 border-theme"
+      className="cardContainer border-solid border-l-3 border-r-3 border-theme"
       style={{
         position: position
       }}
