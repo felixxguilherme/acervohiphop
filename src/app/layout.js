@@ -17,6 +17,7 @@ export default function RootLayout({ children }) {
     <html lang="pt-BR">
       <body
         className={`${scratchyFont.variable} ${sometypeMonoFont.variable} ${dirtyStainsFont.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
         <ThemeProvider>
           <ThemeBackground />

@@ -8,8 +8,12 @@ export default function SearchBar({ onSearch, loading = false }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.info('[SearchBar/handleSubmit] 🔍 Formulário enviado:', { searchTerm: searchTerm.trim() });
     if (searchTerm.trim()) {
+      console.info('[SearchBar/handleSubmit] ✅ Chamando onSearch com:', searchTerm.trim());
       onSearch(searchTerm.trim());
+    } else {
+      console.warn('[SearchBar/handleSubmit] ⚠️ Termo de busca vazio');
     }
   };
 
@@ -73,6 +77,9 @@ export default function SearchBar({ onSearch, loading = false }) {
           <button
             type="submit"
             disabled={loading || !searchTerm.trim()}
+            onClick={(e) => {
+              console.info('[SearchBar/onClick] 🖱️ Botão clicado:', { searchTerm, loading });
+            }}
             className="px-8 py-4 
                      bg-yellow-400 hover:bg-yellow-300
                      border-3 border-black

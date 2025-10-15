@@ -106,7 +106,7 @@ export default function HeaderApp({ title, showTitle = false }) {
             </div>
             
             {/* Toggle de tema fixo no canto superior direito */}
-            <div className="absolute top-2 right-4">
+            <div className="absolute top-2 right-2">
               <ThemeToggle />
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function HeaderApp({ title, showTitle = false }) {
             </div>
             
             {/* Toggle de tema fixo no canto superior direito */}
-            <div className="absolute top-4 right-4">
+            <div className="absolute top-2 right-2">
               <ThemeToggle />
             </div>
           </div>

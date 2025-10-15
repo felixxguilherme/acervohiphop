@@ -17,31 +17,10 @@ const Acervo = () => {
   const [loadingObjects, setLoadingObjects] = useState(true);
   const [objectsError, setObjectsError] = useState(null);
 
-  // Carrega informationobjects ao montar o componente
-  useEffect(() => {
-    const loadInformationObjects = async () => {
-      try {
-        setLoadingObjects(true);
-        const response = await atomService.getItems({ limit: 10 });
-        setInformationObjects(response.results);
-        console.info('[Acervo] ✅ InformationObjects carregados:', {
-          total: response.total,
-          count: response.results.length,
-          sample: response.results[0]
-        });
-      } catch (error) {
-        console.error('[Acervo] ❌ Erro ao carregar informationobjects:', error);
-        setObjectsError(error.message);
-      } finally {
-        setLoadingObjects(false);
-      }
-    };
-
-    loadInformationObjects();
-  }, []);
-
   const handleSearch = async (query) => {
     setSearchQuery(query);
+    
+    console.info('[Acervo/handleSearch] 🔍 Iniciando busca:', { query });
     
     // Se a query estiver vazia, limpa os resultados
     if (!query.trim()) {
@@ -62,24 +41,77 @@ const Acervo = () => {
         sort: 'alphabetic'
       });
 
-      console.info('[Acervo/Search] 🔍 Resultados recebidos', {
+      console.info('[Acervo/handleSearch] ✅ Resultados recebidos:', {
         query,
         total: response.total,
         count: response.results?.length ?? 0,
+        results: response.results,
         sample: response.results?.[0]
       });
 
       setSearchResults(response.results || []);
       setTotalResults(response.total || 0);
+      
+      // Log adicional para debug
+      if (response.results && response.results.length > 0) {
+        console.info('[Acervo/handleSearch] 📝 Primeiros resultados:', response.results.slice(0, 3));
+      } else {
+        console.warn('[Acervo/handleSearch] ⚠️ Nenhum resultado encontrado para:', query);
+      }
+      
     } catch (error) {
-      console.error('Erro na busca:', error);
+      console.error('[Acervo/handleSearch] ❌ Erro na busca:', error);
       setSearchResults([]);
       setTotalResults(0);
-      alert('Erro ao buscar no acervo. Tente novamente.');
+      
+      // Mostra erro mais específico
+      const errorMessage = error.message.includes('Falha na busca') 
+        ? 'Erro na comunicação com o servidor do acervo. Tente novamente em alguns minutos.'
+        : 'Erro ao buscar no acervo. Verifique sua conexão e tente novamente.';
+      
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
   };
+
+  // Carrega informationobjects ao montar o componente e processa parâmetros de URL
+  useEffect(() => {
+    const loadInformationObjects = async () => {
+      try {
+        setLoadingObjects(true);
+        const response = await atomService.getItems({ limit: 10 });
+        setInformationObjects(response.results);
+        console.info('[Acervo] ✅ InformationObjects carregados:', {
+          total: response.total,
+          count: response.results.length,
+          sample: response.results[0]
+        });
+      } catch (error) {
+        console.error('[Acervo] ❌ Erro ao carregar informationobjects:', error);
+        setObjectsError(error.message);
+      } finally {
+        setLoadingObjects(false);
+      }
+    };
+
+    // Verifica parâmetros de URL para busca automática
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    const artistParam = urlParams.get('artist');
+    
+    if (searchParam) {
+      console.info('[Acervo] 🔍 Busca automática via URL:', searchParam);
+      handleSearch(searchParam);
+    } else if (artistParam) {
+      console.info('[Acervo] 🎭 Busca por artista via URL:', artistParam);
+      // Converter artistParam para nome do artista se necessário
+      const artistSearch = artistParam === 'dino-black' ? 'Dino Black' : artistParam;
+      handleSearch(artistSearch);
+    }
+
+    loadInformationObjects();
+  }, []);
 
   return (
     <div className="relative z-10">
@@ -88,6 +120,28 @@ const Acervo = () => {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Barra de busca */}
         <SearchBar onSearch={handleSearch} loading={loading} />
+        
+        {/* Botão de teste para debug */}
+        <div className="mb-4 text-center">
+          <button 
+            onClick={() => {
+              console.info('[Acervo] 🧪 Teste de busca direto');
+              handleSearch('Dino Black');
+            }}
+            className="px-4 py-2 bg-red-500 text-white rounded mr-4"
+          >
+            Teste: Buscar Dino Black
+          </button>
+          <button 
+            onClick={() => {
+              console.info('[Acervo] 🧪 Teste de busca rap');
+              handleSearch('rap');
+            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Teste: Buscar rap
+          </button>
+        </div>
 
         {/* Resultados da busca */}
         <SearchResults 

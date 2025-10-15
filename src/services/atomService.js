@@ -212,7 +212,7 @@ class AtomService {
       field = 'title',
       operator = 'and',
       offset = 0, 
-      limit = 10, 
+      limit = 20, 
       startDate, 
       endDate,
       sort = 'alphabetic',
@@ -223,7 +223,10 @@ class AtomService {
       dateRange = null
     } = params;
     
-    // AIDEV-NOTE: Using real server-side search with sq0/sf0 parameters
+    console.info('[AtomService/search] 🔍 Parâmetros de busca:', {
+      q, field, operator, offset, limit, sort
+    });
+    
     try {
       const apiParams = {
         offset,
@@ -236,6 +239,11 @@ class AtomService {
         apiParams.sq0 = q.trim();
         apiParams.sf0 = field;
         apiParams.so0 = operator;
+        console.info('[AtomService/search] 🎯 Busca server-side configurada:', {
+          sq0: apiParams.sq0,
+          sf0: apiParams.sf0,
+          so0: apiParams.so0
+        });
       }
 
       // Adiciona filtros de data
@@ -246,68 +254,28 @@ class AtomService {
       if (onlyMedia) apiParams.onlyMedia = 1;
       if (topLod) apiParams.topLod = 1;
 
+      console.info('[AtomService/search] ➡️ Fazendo requisição com parâmetros:', apiParams);
+      
       const response = await this._fetchFromApi('', apiParams);
-      let results = response.results || [];
-
-      // Se não usou busca server-side, aplica filtro client-side
-      if (q && q.trim() && !apiParams.sq0) {
-        const searchTerm = q.toLowerCase().trim();
-        results = results.filter(item => {
-          const searchFields = [
-            item.title,
-            item.physical_characteristics,
-            item.reference_code,
-            ...(item.place_access_points || []),
-            ...(item.subjects || [])
-          ].filter(Boolean);
-          
-          const searchText = searchFields.join(' ').toLowerCase();
-          return searchText.includes(searchTerm);
-        });
-      }
-
-      // Aplica filtros por assunto
-      if (subjects && subjects.length > 0) {
-        results = results.filter(item => 
-          item.subjects && item.subjects.some(subject => 
-            subjects.includes(subject) || subjects.includes(subject.term)
-          )
-        );
-      }
-
-      // Aplica filtros por lugar
-      if (places && places.length > 0) {
-        results = results.filter(item =>
-          item.place_access_points && item.place_access_points.some(place =>
-            places.includes(place) || places.includes(place.name)
-          )
-        );
-      }
-
-      // Aplica filtro por data
-      if (dateRange) {
-        results = results.filter(item => {
-          if (!item.creation_dates || item.creation_dates.length === 0) return false;
-          const itemDate = new Date(item.creation_dates[0]);
-          return this._isDateInRange(itemDate, dateRange);
-        });
-      }
-
-      // Paginação
-      const paginatedResults = results.slice(offset, offset + limit);
+      
+      console.info('[AtomService/search] ✅ Resposta recebida:', {
+        total: response.total,
+        resultsCount: response.results?.length,
+        hasResults: response.results && response.results.length > 0
+      });
 
       return {
         query: q,
-        results: paginatedResults,
-        total: results.length,
+        results: response.results || [],
+        total: response.total || 0,
         offset,
         limit,
-        facets: this._generateFacetsFromApiData(results),
-        _links: this._generateLinks('search', params, results.length)
+        facets: this._generateFacetsFromApiData(response.results || []),
+        _links: this._generateLinks('search', params, response.total || 0)
       };
 
     } catch (error) {
-      console.error('❌ API falhou na busca:', error.message);
+      console.error('[AtomService/search] ❌ Erro na busca:', error.message);
       throw new Error(`Falha na busca: ${error.message}`);
     }
   }
@@ -572,6 +540,124 @@ class AtomService {
   }
 
   // AIDEV-NOTE: Removed _generateFacets method that used static mock data
+
+  /**
+   * Busca itens de um artista específico usando múltiplas estratégias
+   * @param {Object} artist - Configuração do artista
+   * @param {number} [limit=100] - Limite de resultados
+   * @returns {Promise<Object>} Resultados da busca
+   */
+  async getArtistItems(artist, limit = 100) {
+    console.info(`[AtomService] 🎯 Buscando itens do artista: ${artist.name}`);
+
+    // Estratégia 1: Busca por creator (mais específica)
+    try {
+      console.info(`[AtomService] Tentativa 1: Busca por creator "${artist.name}"`);
+      const creatorResults = await this.getItems({
+        creators: artist.name,
+        limit
+      });
+      
+      if (creatorResults.results.length > 0) {
+        console.info(`[AtomService] ✅ Estratégia 1 funcionou: ${creatorResults.results.length} itens`);
+        return {
+          ...creatorResults,
+          strategy: 'creator',
+          artistKey: artist.key
+        };
+      }
+    } catch (error) {
+      console.warn(`[AtomService] ⚠️ Estratégia 1 falhou:`, error.message);
+    }
+
+    // Estratégia 2: Busca textual por título
+    for (const searchTerm of artist.searchTerms) {
+      try {
+        console.info(`[AtomService] Tentativa 2: Busca textual "${searchTerm}"`);
+        const titleResults = await this.search({
+          sq0: searchTerm,
+          sf0: 'title',
+          so0: 'and',
+          limit
+        });
+        
+        if (titleResults.results.length > 0) {
+          console.info(`[AtomService] ✅ Estratégia 2 funcionou: ${titleResults.results.length} itens`);
+          return {
+            ...titleResults,
+            strategy: 'title_search',
+            searchTerm,
+            artistKey: artist.key
+          };
+        }
+      } catch (error) {
+        console.warn(`[AtomService] ⚠️ Busca por "${searchTerm}" falhou:`, error.message);
+      }
+    }
+
+    // Estratégia 3: Busca por taxonomia de subjects
+    try {
+      console.info(`[AtomService] Tentativa 3: Busca por subjects "${artist.name}"`);
+      const subjectResults = await this.getItems({
+        subjects: artist.name,
+        limit
+      });
+      
+      if (subjectResults.results.length > 0) {
+        console.info(`[AtomService] ✅ Estratégia 3 funcionou: ${subjectResults.results.length} itens`);
+        return {
+          ...subjectResults,
+          strategy: 'subjects',
+          artistKey: artist.key
+        };
+      }
+    } catch (error) {
+      console.warn(`[AtomService] ⚠️ Estratégia 3 falhou:`, error.message);
+    }
+
+    // Todas as estratégias falharam
+    console.warn(`[AtomService] ❌ Nenhuma estratégia funcionou para ${artist.name}`);
+    return {
+      results: [],
+      total: 0,
+      strategy: 'none',
+      artistKey: artist.key,
+      error: 'Nenhuma estratégia de busca retornou resultados'
+    };
+  }
+
+  /**
+   * Busca itens de múltiplos artistas em paralelo
+   * @param {Array} artists - Lista de configurações de artistas
+   * @param {number} [limit=50] - Limite por artista
+   * @returns {Promise<Array>} Array de resultados por artista
+   */
+  async getMultipleArtistsItems(artists, limit = 50) {
+    console.info(`[AtomService] 🎭 Buscando itens de ${artists.length} artistas`);
+    
+    const promises = artists.map(artist => 
+      this.getArtistItems(artist, limit).catch(error => ({
+        results: [],
+        total: 0,
+        strategy: 'error',
+        artistKey: artist.key,
+        error: error.message
+      }))
+    );
+
+    const results = await Promise.all(promises);
+    
+    // Log do resultado geral
+    const summary = results.map(r => ({
+      artist: r.artistKey,
+      count: r.total,
+      strategy: r.strategy
+    }));
+    
+    console.info(`[AtomService] 📊 Resumo da busca por artistas:`, summary);
+    
+    return results;
+  }
 }
 
 // Instância singleton

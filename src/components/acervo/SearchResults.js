@@ -4,6 +4,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 
 export default function SearchResults({ results, loading, query, total }) {
+  console.info('[SearchResults] 📊 Props recebidas:', { 
+    resultsCount: results?.length, 
+    loading, 
+    query, 
+    total,
+    results: results 
+  });
+
   // Loading state
   if (loading) {
     return (

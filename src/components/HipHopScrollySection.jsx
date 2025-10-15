@@ -163,7 +163,7 @@ const HipHopScrollySection = () => {
       id="hiphop-scrolly"
       className="relative flex min-h-screen border-theme border-solid border-3"
       style={{
-        backgroundColor: theme === 'light' ? '#F7ECE5' : '#252422'
+        backgroundColor: theme === 'light' ? '#FFFCF2' : '#252422'
       }}
       ref={scrollyRef}
     >
@@ -203,7 +203,7 @@ const HipHopScrollySection = () => {
           transform: 'translate3d(0, 0, 0)',
           top: '140px',
           height: '60vh',
-          backgroundColor: theme === 'light' ? '#F7ECE5' : '#252422'
+          backgroundColor: theme === 'light' ? '#FFFCF2' : '#252422'
         }}
       >
         {/* Background Image */}

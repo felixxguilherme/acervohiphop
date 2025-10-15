@@ -2,7 +2,7 @@
 import './parallaxstyle.css';
 import CardParallax from '../components/CardParallax.jsx';
 import { useScroll } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Lenis from '@studio-freight/lenis'
 
 import HeaderApp from '@/components/html/HeaderApp';
@@ -11,17 +11,20 @@ import { CartoonButton } from '@/components/ui/cartoon-button';
 import HipHopScrollySection from '@/components/HipHopScrollySection';
 import AcervoCompleto from '@/components/home/AcervoCompleto';
 import ApiResults from '@/components/home/ApiResults';
+import atomService from '@/services/atomService';
+import { getActiveArtists, DEFAULT_ARTIST_IMAGE } from '@/data/artists';
+import atomCollectionsResponse from '@/data/collections';
 
 import { motion, AnimatePresence } from 'motion/react';
 
 
 const projects = [
   {
-    title: "DISTRITO HIP HOP",
+    title: "",
     description: "Uma plataforma digital dedicada à preservação e documentação da cultura Hip Hop no Distrito Federal. Nosso objetivo é contar as histórias, mapear os locais históricos e celebrar os protagonistas que construíram este movimento.",
     src: "https://images.unsplash.com/photo-1635796403527-50ae19d7f65d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGhpcGhvcCUyMGNyZXd8ZW58MHx8MHx8fDA%3D",
     link: "/acervo",
-    color: "#FF6B35"
+    color: "#FFF"
   },
   {
     title: "ACERVO DIGITAL", 
@@ -60,6 +63,12 @@ export default function Home() {
     offset: ['start start', 'end end']
   })
 
+  // Estados para artistas da API
+  const [artistsData, setArtistsData] = useState([]);
+  const [loadingArtists, setLoadingArtists] = useState(true);
+  const [artistsError, setArtistsError] = useState(null);
+  const [projectsWithAPI, setProjectsWithAPI] = useState(projects);
+
   useEffect( () => {
     const lenis = new Lenis()
 
@@ -70,18 +79,368 @@ export default function Home() {
     requestAnimationFrame(raf)
   })
 
+  // Carregar artistas da API
+  useEffect(() => {
+    const loadArtists = async () => {
+      try {
+        setLoadingArtists(true);
+        
+        // Buscar artistas ativos da configuração
+        const activeArtists = getActiveArtists();
+        console.info('[Home] 🎭 Artistas ativos configurados:', activeArtists.map(a => a.name));
+        
+        if (activeArtists.length === 0) {
+          console.warn('[Home] ⚠️ Nenhum artista ativo encontrado');
+          setProjectsWithAPI([projects[0]]); // Apenas primeiro card
+          return;
+        }
+        
+        // Buscar dados de cada artista na API
+        const artistsResults = await atomService.getMultipleArtistsItems(activeArtists);
+        setArtistsData(artistsResults);
+        
+        // Criar projects combinando o primeiro card estático com artistas da API
+        const firstProject = projects[0]; // Mantém o primeiro card
+        
+        const artistProjects = artistsResults
+          .filter(result => result.total > 0) // Apenas artistas com conteúdo
+          .map((result, index) => {
+            const artist = activeArtists.find(a => a.key === result.artistKey);
+            const firstItem = result.results[0] || {};
+            
+            return {
+              title: artist.displayName,
+              description: `${artist.description} (${result.total} ${result.total === 1 ? 'item' : 'itens'} no acervo)`,
+              src: firstItem.thumbnail_url || DEFAULT_ARTIST_IMAGE,
+              link: `/acervo?artist=${artist.key}`,
+              color: artist.color,
+              slug: `artist-${artist.key}`,
+              artistKey: artist.key,
+              itemCount: result.total,
+              strategy: result.strategy,
+              // Metadados do primeiro item para exibição
+              reference_code: firstItem.reference_code,
+              creation_dates: firstItem.creation_dates,
+              place_access_points: firstItem.place_access_points
+            };
+          });
+        
+        setProjectsWithAPI([firstProject, ...artistProjects]);
+        
+        console.info('[Home] ✅ Artistas carregados:', {
+          totalArtists: activeArtists.length,
+          artistsWithContent: artistProjects.length,
+          summary: artistProjects.map(p => ({
+            name: p.title,
+            count: p.itemCount,
+            strategy: p.strategy
+          }))
+        });
+        
+      } catch (error) {
+        console.error('[Home] ❌ Erro ao carregar artistas:', error);
+        setArtistsError(error.message);
+      } finally {
+        setLoadingArtists(false);
+      }
+    };
+
+    loadArtists();
+  }, []);
+
   return (
     <main ref={container} className="main">
       <HeaderApp title="DISTRITO HIPHOP" showTitle={true} />
-      {
-        projects.map( (project, i) => {
-          const targetScale = 1 - ( (projects.length - i) * 0.05);
-          return <CardParallax key={`p_${i}`} i={i} {...project} progress={scrollYProgress} range={[i * .25, 1]} targetScale={targetScale}/>
+      
+      {/* HERO SECTION */}
+      <section className="hero-section relative min-h-screen flex flex-col justify-center items-center overflow-hidden">
+        
+        
+        {/* Decorative elements */}
+        <div className="absolute inset-0 z-10 pointer-events-none decorative-elements">
+          
+          {/* Spray effects */}
+          <div 
+            className="absolute top-20 right-20 w-32 h-32 bg-contain bg-no-repeat"
+            style={{
+              backgroundImage: "url('/spray_preto-1.png')"
+            }}
+          />
+          
+          <div 
+            className="absolute bottom-32 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
+            style={{
+              backgroundImage: "url('/spray_preto-2.png')"
+            }}
+          />
+        </div>
+        
+        {/* Main content */}
+        <div className="relative z-20 text-center max-w-6xl mx-auto px-6">          
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-2xl md:text-3xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
+          >
+            Preservando a memória e cultura do Hip Hop do Distrito Federal através de documentos, fotos, vídeos e histórias dos protagonistas do movimento
+          </motion.p>
+          
+          {/* Featured Artists Preview */}
+          {!loadingArtists && artistsData.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="mb-12"
+            >
+             
+              
+              <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto">
+                {artistsData.slice(0, 3).map((result, index) => {
+                  const artist = getActiveArtists().find(a => a.key === result.artistKey);
+                  const item = result.results[0];
+                  
+                  return (
+                    <motion.div
+                      key={`hero-artist-${result.artistKey}`}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.8 + index * 0.2 }}
+                      className="group cursor-pointer"
+                      onClick={() => window.location.href = `/acervo?artist=${artist.key}`}
+                    >
+                      <div className="relative">
+                        <PolaroidCard
+                          src={item?.thumbnail_url || DEFAULT_ARTIST_IMAGE}
+                          alt={artist?.displayName}
+                          caption={artist?.displayName}
+                          subtitle={`${result.total} ${result.total === 1 ? 'item' : 'itens'}`}
+                          tapeColor={index === 0 ? "yellow" : index === 1 ? "blue" : "green"}
+                          rotation={index % 2 === 0 ? -3 : 3}
+                          className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0"
+                        />
+                        
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 rounded-lg" />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+          
+          {/* Call to Action */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="space-y-6"
+          >
+            <CartoonButton
+              label="EXPLORAR ACERVO COMPLETO"
+              color="bg-yellow-400"
+              onClick={() => window.location.href = '/acervo'}
+              className="text-xl px-8 py-4 mx-auto"
+            />
+            
+            <div className="flex flex-wrap justify-center gap-4 text-sm font-sometype-mono text-theme-secondary">
+              <span>📸 {artistsData.reduce((total, result) => total + result.total, 0)} itens no acervo</span>
+              <span>🎭 {artistsData.length} artistas em destaque</span>
+              <span>📅 4 décadas de história</span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+      
+      {/* CARDS PARALLAX DOS ARTISTAS */}
+      <section className="relative">
+        {!loadingArtists && !artistsError && projectsWithAPI.length > 0 && (
+          projectsWithAPI.slice(1).map((project, i) => {
+            const targetScale = 1 - ((projectsWithAPI.length - i - 1) * 0.05);
+            return (
+              <CardParallax 
+                key={project.slug || `hero_p_${i}`} 
+                i={i} 
+                {...project} 
+                progress={scrollYProgress} 
+                range={[i * 0.25, 1]} 
+                targetScale={targetScale}
+              />
+            );
+          })
+        )}
+        
+        {/* Spacer para empurrar conteúdo abaixo dos cards sticky */}
+        <div style={{ height: `${Math.max(projectsWithAPI.length - 1, 1) * 80}vh` }}></div>
+      </section>
+      
+      {/* Loading state para artistas */}
+      {/* {loadingArtists ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin h-12 w-12 border-4 border-theme border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-xl font-dirty-stains text-theme-primary">
+              Carregando artistas do acervo...
+            </p>
+            <p className="text-sm font-sometype-mono text-theme-secondary mt-2">
+              Buscando conteúdo na API AtoM
+            </p>
+          </div>
+        </div>
+      ) : artistsError ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center max-w-md">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg">
+              <h3 className="font-bold text-lg mb-2">Erro ao carregar artistas</h3>
+              <p className="mb-4">{artistsError}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              >
+                Tentar novamente
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Cards dos artistas
+        projectsWithAPI.map( (project, i) => {
+          const targetScale = 1 - ( (projectsWithAPI.length - i) * 0.05);
+          return <CardParallax key={project.slug || `p_${i}`} i={i} {...project} progress={scrollYProgress} range={[i * .2, 1]} targetScale={targetScale}/>
         })
-      }
+      )} */}
       
       {/* Spacer to push content below the sticky cards */}
-      <div style={{ height: '100vh' }}></div>
+      {/* <div style={{ height: '80vh' }}></div> */}
+
+      {/* Seção EM DESTAQUE */}
+      {/* <section className="py-16 bg-theme-background relative z-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-6xl font-dirty-stains text-center mb-4 text-theme-primary">
+              EM DESTAQUE
+            </h2>
+            <p className="text-xl font-sometype-mono text-center mb-12 text-theme-secondary max-w-3xl mx-auto">
+              Conheça alguns dos itens mais importantes do nosso acervo
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {artistsData.slice(0, 3).map((result, index) => {
+              const artist = getActiveArtists().find(a => a.key === result.artistKey);
+              const item = result.results[0];
+              
+              return (
+                <motion.div
+                  key={`featured-${result.artistKey}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="group"
+                >
+                  <PolaroidCard
+                    src={item?.thumbnail_url || DEFAULT_ARTIST_IMAGE}
+                    alt={item?.title || artist?.displayName}
+                    caption={item?.title || artist?.displayName}
+                    subtitle={item?.creation_dates?.[0] || 'Data não informada'}
+                    tapeColor="yellow"
+                    rotation={index % 2 === 0 ? -2 : 2}
+                    className="transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="mt-4 text-center">
+                    <h3 className="font-dirty-stains text-2xl text-theme-primary mb-2">
+                      {item?.title || artist?.displayName}
+                    </h3>
+                    <p className="font-sometype-mono text-sm text-theme-secondary mb-3">
+                      {item?.scope_and_content || artist?.description}
+                    </p>
+                    <CartoonButton
+                      label="VER MAIS"
+                      color="bg-yellow-400"
+                      onClick={() => window.location.href = `/acervo?search=${encodeURIComponent(item?.title || artist?.displayName)}`}
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section> */}
+
+
+      {/* Seção NAVEGUE PELO MOSAICO */}
+      {/* <section className="py-16 bg-theme-background relative z-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-6xl font-dirty-stains text-center mb-4 text-theme-primary">
+              NAVEGUE PELO MOSAICO
+            </h2>
+            <p className="text-xl font-sometype-mono text-center mb-12 text-theme-secondary max-w-3xl mx-auto">
+              Explore diferentes aspectos da cultura Hip Hop através de nosso acervo diversificado
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {artistsData.flatMap(result => result.results.slice(0, 2)).slice(0, 18).map((item, index) => (
+              <motion.div
+                key={`mosaic-${index}`}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                viewport={{ once: true }}
+                className="aspect-square group cursor-pointer"
+                onClick={() => window.location.href = `/acervo?search=${encodeURIComponent(item.title)}`}
+              >
+                <div className="relative w-full h-full rounded-lg overflow-hidden border-2 border-black shadow-lg">
+                  <img
+                    src={item.thumbnail_url || DEFAULT_ARTIST_IMAGE}
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
+                      <p className="text-white text-xs font-sometype-mono truncate">
+                        {item.title}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <CartoonButton
+              label="VER TODO O ACERVO"
+              color="bg-black"
+              onClick={() => window.location.href = '/acervo'}
+            />
+          </motion.div>
+        </div>
+      </section> */}
+
+      {/* Spacer final */}
+      {/* <div style={{ height: '50vh' }}></div> */}
       
       {/* <HipHopScrollySection />
 
@@ -89,7 +448,7 @@ export default function Home() {
 
       <ApiResults /> */}
 
-      <section id="posscrolly" style={{ position: 'relative', zIndex: 10, backgroundColor: 'white', padding: '4rem 2rem' }}>
+      {/* <section id="posscrolly" style={{ position: 'relative', zIndex: 1, backgroundColor: 'white', padding: '4rem 2rem' }}>
         <div className="max-w-4xl mx-auto">
           <h2 className="text-6xl font-dirty-stains text-center mb-8 text-theme-primary">EXPLORE MAIS</h2>
           
@@ -125,7 +484,86 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+
+      {/* Seção de Coleções da API */}
+      {/* <section className="py-16 bg-theme-secondary" style={{ position: 'relative', zIndex: 1 }}>
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-4xl font-dirty-stains text-center mb-8 text-theme-primary">
+            COLEÇÕES DE ARTISTAS (API)
+          </h2>
+          
+          {loadingCollections ? (
+            <div className="text-center py-12">
+              <div className="animate-spin h-8 w-8 border-2 border-theme border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-lg font-sometype-mono">Carregando coleções...</p>
+            </div>
+          ) : collectionsError ? (
+            <div className="text-center py-12">
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 max-w-2xl mx-auto">
+                <p className="font-bold">Erro ao carregar coleções:</p>
+                <p>{collectionsError}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="text-center mb-8">
+                <p className="text-lg font-sometype-mono text-theme-secondary">
+                  Total de coleções encontradas: {collections.length}
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {collections.map((collection, index) => (
+                  <div key={collection.slug || index} className="bg-theme-card border-2 border-theme p-6 rounded-lg">
+                    <h3 className="text-xl font-dirty-stains mb-3 text-theme-primary">
+                      {collection.title || 'Sem título'}
+                    </h3>
+                    
+                    {collection.level_of_description && (
+                      <p className="text-sm font-sometype-mono mb-2 text-theme-secondary">
+                        <strong>Nível:</strong> {collection.level_of_description}
+                      </p>
+                    )}
+                    
+                    {collection.physical_characteristics && (
+                      <p className="text-sm font-sometype-mono mb-2 text-theme-secondary">
+                        <strong>Características:</strong> {collection.physical_characteristics}
+                      </p>
+                    )}
+                    
+                    {collection.reference_code && (
+                      <p className="text-sm font-sometype-mono mb-2 text-theme-secondary">
+                        <strong>Código:</strong> {collection.reference_code}
+                      </p>
+                    )}
+                    
+                    {collection.creation_dates && collection.creation_dates.length > 0 && (
+                      <p className="text-sm font-sometype-mono mb-2 text-theme-secondary">
+                        <strong>Data:</strong> {collection.creation_dates[0]}
+                      </p>
+                    )}
+                    
+                    <div className="mt-4 pt-3 border-t border-theme-secondary">
+                      <p className="text-xs font-sometype-mono text-theme-secondary">
+                        ID: {collection.slug || 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              
+              <details className="mt-8 bg-gray-100 p-4 rounded-lg">
+                <summary className="cursor-pointer font-bold mb-2">Debug: Raw API Response</summary>
+                <pre className="text-xs overflow-auto bg-gray-50 p-4 rounded">
+                  {JSON.stringify(collections.slice(0, 2), null, 2)}
+                </pre>
+              </details>
+            </div>
+          )}
+        </div>
+      </section> */}
 
       {/* <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#f0f0f0', padding: '4rem 2rem' }}>
         <div className="max-w-6xl mx-auto">
@@ -155,7 +593,7 @@ export default function Home() {
         </div>
       </section> */}
 
-      <section
+      {/* <section
         style={{
           position: 'relative',
           zIndex: 10,
@@ -198,7 +636,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
       
     </main>
   )

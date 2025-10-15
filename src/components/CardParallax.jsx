@@ -5,7 +5,7 @@ import { useTransform, motion, useScroll, useMotionValue } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import PolaroidCard from './PolaroidPhoto';
 
-const CardParallax = ({i, title, description, src, url, link, color, progress, range, targetScale}) => {
+const CardParallax = ({i, title, description, src, url, link, color, progress, range, targetScale, reference_code, creation_dates, place_access_points}) => {
 
   const container = useRef(null);
   const [position, setPosition] = useState('sticky');
@@ -20,8 +20,9 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
   
   // Detectar quando o efeito parallax terminou e mudar para relative
   useEffect(() => {
-    const unsubscribe = progress.onChange((latest) => {
-      if (latest > 0.9) {
+    const unsubscribe = progress.on("change", (latest) => {
+      // Mudar para relative mais cedo para evitar sobreposição
+      if (latest > 0.7) {
         setPosition('relative');
       } else {
         setPosition('sticky');
@@ -47,6 +48,28 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
         <div className="body">
           <div className="description">
             <p className="font-sometype-mono">{description}</p>
+            
+            {/* Metadados específicos da API */}
+            {(reference_code || creation_dates || place_access_points) && (
+              <div className="mt-3 space-y-1 text-sm">
+                {reference_code && (
+                  <p className="font-sometype-mono opacity-80">
+                    <strong>Código:</strong> {reference_code}
+                  </p>
+                )}
+                {creation_dates && creation_dates.length > 0 && (
+                  <p className="font-sometype-mono opacity-80">
+                    <strong>Data:</strong> {creation_dates[0]}
+                  </p>
+                )}
+                {place_access_points && place_access_points.length > 0 && (
+                  <p className="font-sometype-mono opacity-80">
+                    <strong>Local:</strong> {place_access_points[0]}
+                  </p>
+                )}
+              </div>
+            )}
+            
             <span className="mt-4 font-sometype-mono flex items-center gap-2 text-3xl">
               <a href={url || link} target={url ? "_blank" : "_self"}>Explorar</a>
               <svg width="22" height="12" viewBox="0 0 22 12" fill="none" xmlns="http://www.w3.org/2000/svg">
