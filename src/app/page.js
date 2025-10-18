@@ -12,7 +12,6 @@ import HipHopScrollySection from '@/components/HipHopScrollySection';
 import AcervoCompleto from '@/components/home/AcervoCompleto';
 import ApiResults from '@/components/home/ApiResults';
 import atomService from '@/services/atomService';
-import { getActiveArtists, DEFAULT_ARTIST_IMAGE } from '@/data/artists';
 import atomCollectionsResponse from '@/data/collections';
 
 import { motion, AnimatePresence } from 'motion/react';
@@ -61,11 +60,6 @@ export default function Home() {
   const [lenis, setLenis] = useState(null);
   const [showSpacer, setShowSpacer] = useState(true); // Estado para controlar o spacer
 
-  // Estados para artistas da API
-  const [artistsData, setArtistsData] = useState([]);
-  const [loadingArtists, setLoadingArtists] = useState(true);
-  const [artistsError, setArtistsError] = useState(null);
-  const [projectsWithAPI, setProjectsWithAPI] = useState(projects);
 
   // Inicializar Lenis
   useEffect(() => {
@@ -118,79 +112,11 @@ export default function Home() {
     }
   }, [lenis]);
 
-  // Carregar artistas da API
-  useEffect(() => {
-    const loadArtists = async () => {
-      try {
-        setLoadingArtists(true);
-
-        // Buscar artistas ativos da configuração
-        const activeArtists = getActiveArtists();
-        console.info('[Home] 🎭 Artistas ativos configurados:', activeArtists.map(a => a.name));
-
-        if (activeArtists.length === 0) {
-          console.warn('[Home] ⚠️ Nenhum artista ativo encontrado');
-          setProjectsWithAPI([projects[0]]); // Apenas primeiro card
-          return;
-        }
-
-        // Buscar dados de cada artista na API
-        const artistsResults = await atomService.getMultipleArtistsItems(activeArtists);
-        setArtistsData(artistsResults);
-
-        // Criar projects combinando o primeiro card estático com artistas da API
-        const firstProject = projects[0]; // Mantém o primeiro card
-
-        const artistProjects = artistsResults
-          .filter(result => result.total > 0) // Apenas artistas com conteúdo
-          .map((result, index) => {
-            const artist = activeArtists.find(a => a.key === result.artistKey);
-            const firstItem = result.results[0] || {};
-
-            return {
-              title: artist.displayName,
-              description: `${artist.description} (${result.total} ${result.total === 1 ? 'item' : 'itens'} no acervo)`,
-              src: firstItem.thumbnail_url || DEFAULT_ARTIST_IMAGE,
-              link: `/acervo?artist=${artist.key}`,
-              color: artist.color,
-              slug: `artist-${artist.key}`,
-              artistKey: artist.key,
-              itemCount: result.total,
-              strategy: result.strategy,
-              // Metadados do primeiro item para exibição
-              reference_code: firstItem.reference_code,
-              creation_dates: firstItem.creation_dates,
-              place_access_points: firstItem.place_access_points
-            };
-          });
-
-        setProjectsWithAPI([firstProject, ...artistProjects]);
-
-        console.info('[Home] ✅ Artistas carregados:', {
-          totalArtists: activeArtists.length,
-          artistsWithContent: artistProjects.length,
-          summary: artistProjects.map(p => ({
-            name: p.title,
-            count: p.itemCount,
-            strategy: p.strategy
-          }))
-        });
-
-      } catch (error) {
-        console.error('[Home] ❌ Erro ao carregar artistas:', error);
-        setArtistsError(error.message);
-      } finally {
-        setLoadingArtists(false);
-      }
-    };
-
-    loadArtists();
-  }, []);
 
   return (
     <main ref={container} className="main">
       <HeaderApp title="DISTRITO HIPHOP" showTitle={true} />
-      {/* CARDS PARALLAX DOS ARTISTAS */}
+      {/* CARDS PARALLAX */}
       
       <section className="relative">
         {/* Spray effects */}
@@ -249,48 +175,6 @@ export default function Home() {
             Arquivo bruto, direto e factual. Capturando a evolução das expressões artísticas que sobreviveram à exclusão e invisibilidade. Memória viva que inspira e transforma gerações.
           </motion.p>
 
-          {/* Featured Artists Preview */}
-          {/* {!loadingArtists && artistsData.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="mb-12"
-            >
-             
-              
-              <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto">
-                {artistsData.slice(0, 3).map((result, index) => {
-                  const artist = getActiveArtists().find(a => a.key === result.artistKey);
-                  const item = result.results[0];
-                  
-                  return (
-                    <motion.div
-                      key={`hero-artist-${result.artistKey}`}
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.8 + index * 0.2 }}
-                      className="group cursor-pointer"
-                      onClick={() => window.location.href = `/acervo?artist=${artist.key}`}
-                    >
-                      <div className="relative">
-                        <PolaroidCard
-                          src={item?.thumbnail_url || DEFAULT_ARTIST_IMAGE}
-                          alt={artist?.displayName}
-                          caption={artist?.displayName}
-                          subtitle={`${result.total} ${result.total === 1 ? 'item' : 'itens'}`}
-                          tapeColor={index === 0 ? "yellow" : index === 1 ? "blue" : "green"}
-                          rotation={index % 2 === 0 ? -3 : 3}
-                          className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0"
-                        />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 rounded-lg" />
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )} */}
 
           {/* Call to Action */}
           <motion.div
@@ -316,167 +200,12 @@ export default function Home() {
       </section>
 
 
-      {/* Loading state para artistas */}
-      {/* {loadingArtists ? (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin h-12 w-12 border-4 border-theme border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p className="text-xl font-dirty-stains text-theme-primary">
-              Carregando artistas do acervo...
-            </p>
-            <p className="text-sm font-sometype-mono text-theme-secondary mt-2">
-              Buscando conteúdo na API AtoM
-            </p>
-          </div>
-        </div>
-      ) : artistsError ? (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center max-w-md">
-            <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg">
-              <h3 className="font-bold text-lg mb-2">Erro ao carregar artistas</h3>
-              <p className="mb-4">{artistsError}</p>
-              <button 
-                onClick={() => window.location.reload()} 
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-              >
-                Tentar novamente
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : (
-        // Cards dos artistas
-        projectsWithAPI.map( (project, i) => {
-          const targetScale = 1 - ( (projectsWithAPI.length - i) * 0.05);
-          return <CardParallax key={project.slug || `p_${i}`} i={i} {...project} progress={scrollYProgress} range={[i * .2, 1]} targetScale={targetScale}/>
-        })
-      )} */}
 
       {/* Spacer to push content below the sticky cards */}
       {/* <div style={{ height: '80vh' }}></div> */}
 
-      {/* Seção EM DESTAQUE */}
-      {/* <section className="py-16 bg-theme-background relative z-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-6xl font-dirty-stains text-center mb-4 text-theme-primary">
-              EM DESTAQUE
-            </h2>
-            <p className="text-xl font-sometype-mono text-center mb-12 text-theme-secondary max-w-3xl mx-auto">
-              Conheça alguns dos itens mais importantes do nosso acervo
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {artistsData.slice(0, 3).map((result, index) => {
-              const artist = getActiveArtists().find(a => a.key === result.artistKey);
-              const item = result.results[0];
-              
-              return (
-                <motion.div
-                  key={`featured-${result.artistKey}`}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="group"
-                >
-                  <PolaroidCard
-                    src={item?.thumbnail_url || DEFAULT_ARTIST_IMAGE}
-                    alt={item?.title || artist?.displayName}
-                    caption={item?.title || artist?.displayName}
-                    subtitle={item?.creation_dates?.[0] || 'Data não informada'}
-                    tapeColor="yellow"
-                    rotation={index % 2 === 0 ? -2 : 2}
-                    className="transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="mt-4 text-center">
-                    <h3 className="font-dirty-stains text-2xl text-theme-primary mb-2">
-                      {item?.title || artist?.displayName}
-                    </h3>
-                    <p className="font-sometype-mono text-sm text-theme-secondary mb-3">
-                      {item?.scope_and_content || artist?.description}
-                    </p>
-                    <CartoonButton
-                      label="VER MAIS"
-                      color="bg-yellow-400"
-                      onClick={() => window.location.href = `/acervo?search=${encodeURIComponent(item?.title || artist?.displayName)}`}
-                    />
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section> */}
 
 
-      {/* Seção NAVEGUE PELO MOSAICO */}
-      {/* <section className="py-16 bg-theme-background relative z-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-6xl font-dirty-stains text-center mb-4 text-theme-primary">
-              NAVEGUE PELO MOSAICO
-            </h2>
-            <p className="text-xl font-sometype-mono text-center mb-12 text-theme-secondary max-w-3xl mx-auto">
-              Explore diferentes aspectos da cultura Hip Hop através de nosso acervo diversificado
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {artistsData.flatMap(result => result.results.slice(0, 2)).slice(0, 18).map((item, index) => (
-              <motion.div
-                key={`mosaic-${index}`}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                viewport={{ once: true }}
-                className="aspect-square group cursor-pointer"
-                onClick={() => window.location.href = `/acervo?search=${encodeURIComponent(item.title)}`}
-              >
-                <div className="relative w-full h-full rounded-lg overflow-hidden border-2 border-black shadow-lg">
-                  <img
-                    src={item.thumbnail_url || DEFAULT_ARTIST_IMAGE}
-                    alt={item.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300">
-                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
-                      <p className="text-white text-xs font-sometype-mono truncate">
-                        {item.title}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <CartoonButton
-              label="VER TODO O ACERVO"
-              color="bg-black"
-              onClick={() => window.location.href = '/acervo'}
-            />
-          </motion.div>
-        </div>
-      </section> */}
 
       {/* Spacer final */}
       {/* <div style={{ height: '50vh' }}></div> */}

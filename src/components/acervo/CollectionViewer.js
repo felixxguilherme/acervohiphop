@@ -233,7 +233,7 @@ const CollectionCard = ({ collection, onViewDetails, isExpanded, onToggle }) => 
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

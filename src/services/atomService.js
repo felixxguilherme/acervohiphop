@@ -212,7 +212,7 @@ class AtomService {
       field = 'title',
       operator = 'and',
       offset = 0, 
-      limit = 20, 
+      limit = 10, 
       startDate, 
       endDate,
       sort = 'alphabetic',
@@ -223,10 +223,7 @@ class AtomService {
       dateRange = null
     } = params;
     
-    console.info('[AtomService/search] 🔍 Parâmetros de busca:', {
-      q, field, operator, offset, limit, sort
-    });
-    
+    // AIDEV-NOTE: Using real server-side search with sq0/sf0 parameters
     try {
       const apiParams = {
         offset,
@@ -235,15 +232,10 @@ class AtomService {
       };
 
       // Adiciona busca textual server-side
-      if (q && q.trim()) {
+      if (q && q.trim() && q.trim() !== '*') {
         apiParams.sq0 = q.trim();
         apiParams.sf0 = field;
         apiParams.so0 = operator;
-        console.info('[AtomService/search] 🎯 Busca server-side configurada:', {
-          sq0: apiParams.sq0,
-          sf0: apiParams.sf0,
-          so0: apiParams.so0
-        });
       }
 
       // Adiciona filtros de data
@@ -254,28 +246,95 @@ class AtomService {
       if (onlyMedia) apiParams.onlyMedia = 1;
       if (topLod) apiParams.topLod = 1;
 
-      console.info('[AtomService/search] ➡️ Fazendo requisição com parâmetros:', apiParams);
-      
-      const response = await this._fetchFromApi('', apiParams);
-      
-      console.info('[AtomService/search] ✅ Resposta recebida:', {
-        total: response.total,
-        resultsCount: response.results?.length,
-        hasResults: response.results && response.results.length > 0
+      console.info('[AtomService] 🔍 Search params:', {
+        query: q,
+        field,
+        operator,
+        apiParams
       });
+
+      const response = await this._fetchFromApi('', apiParams);
+      let results = response.results || [];
+
+      console.info('[AtomService] 📨 Raw API response:', {
+        total: response.total,
+        resultsCount: results.length,
+        hasSearchParams: !!apiParams.sq0
+      });
+
+      // Se usou busca server-side, retorna os resultados direto
+      // Apenas aplica filtro client-side se não tiver usado sq0
+      if (q && q.trim() && q.trim() !== '*' && !apiParams.sq0) {
+        const searchTerm = q.toLowerCase().trim();
+        results = results.filter(item => {
+          const searchFields = [
+            item.title,
+            item.physical_characteristics,
+            item.reference_code,
+            ...(item.place_access_points || []),
+            ...(item.subjects || [])
+          ].filter(Boolean);
+          
+          const searchText = searchFields.join(' ').toLowerCase();
+          return searchText.includes(searchTerm);
+        });
+      }
+
+      // Aplica filtros por assunto
+      if (subjects && subjects.length > 0) {
+        results = results.filter(item => 
+          item.subjects && item.subjects.some(subject => 
+            subjects.includes(subject) || subjects.includes(subject.term)
+          )
+        );
+      }
+
+      // Aplica filtros por lugar
+      if (places && places.length > 0) {
+        results = results.filter(item =>
+          item.place_access_points && item.place_access_points.some(place =>
+            places.includes(place) || places.includes(place.name)
+          )
+        );
+      }
+
+      // Aplica filtro por data
+      if (dateRange) {
+        results = results.filter(item => {
+          if (!item.creation_dates || item.creation_dates.length === 0) return false;
+          const itemDate = new Date(item.creation_dates[0]);
+          return this._isDateInRange(itemDate, dateRange);
+        });
+      }
+
+      // Se usou busca server-side, retorna dados direto da API
+      if (apiParams.sq0) {
+        return {
+          query: q,
+          results: results,
+          total: response.total || results.length,
+          offset,
+          limit,
+          facets: this._generateFacetsFromApiData(results),
+          _links: this._generateLinks('search', params, response.total || results.length)
+        };
+      }
+
+      // Paginação client-side apenas para casos sem busca server-side
+      const paginatedResults = results.slice(offset, offset + limit);
 
       return {
         query: q,
-        results: response.results || [],
-        total: response.total || 0,
+        results: paginatedResults,
+        total: results.length,
         offset,
         limit,
-        facets: this._generateFacetsFromApiData(response.results || []),
-        _links: this._generateLinks('search', params, response.total || 0)
+        facets: this._generateFacetsFromApiData(results),
+        _links: this._generateLinks('search', params, results.length)
       };
 
     } catch (error) {
-      console.error('[AtomService/search] ❌ Erro na busca:', error.message);
+      console.error('❌ API falhou na busca:', error.message);
       throw new Error(`Falha na busca: ${error.message}`);
     }
   }

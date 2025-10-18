@@ -6,154 +6,67 @@ import atomService from '@/services/atomService';
 import { motion } from 'motion/react';
 
 const Acervo = () => {
-  // Estados para filtros
-  const [filters, setFilters] = useState({
-    mediaType: '',
-    decade: '',
-    region: '',
-    element: '',
-    artist: '',
-    crew: ''
-  });
-  
   // Estados para busca e resultados
   const [searchQuery, setSearchQuery] = useState('');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalResults, setTotalResults] = useState(0);
+  
+  // Estados para a seção de informationobjects
+  const [informationObjects, setInformationObjects] = useState([]);
+  const [loadingObjects, setLoadingObjects] = useState(true);
+  const [objectsError, setObjectsError] = useState(null);
 
-  // Opções para os filtros
-  const filterOptions = {
-    mediaType: [
-      { value: '', label: 'Todas as Mídias' },
-      { value: 'foto', label: '📸 Fotografias' },
-      { value: 'video', label: '🎥 Vídeos' },
-      { value: 'audio', label: '🎵 Áudios' },
-      { value: 'documento', label: '📄 Documentos' },
-      { value: 'flyer', label: '📋 Flyers/Cartazes' }
-    ],
-    decade: [
-      { value: '', label: 'Todas as Décadas' },
-      { value: '1980', label: '🎶 Anos 80' },
-      { value: '1990', label: '🎤 Anos 90' },
-      { value: '2000', label: '🎧 Anos 2000' },
-      { value: '2010', label: '📱 Anos 2010' },
-      { value: '2020', label: '🌐 Anos 2020' }
-    ],
-    region: [
-      { value: '', label: 'Todas as Regiões' },
-      { value: 'ceilandia', label: '🏘️ Ceilândia' },
-      { value: 'samambaia', label: '🌳 Samambaia' },
-      { value: 'planaltina', label: '🌾 Planaltina' },
-      { value: 'sobradinho', label: '🏔️ Sobradinho' },
-      { value: 'plano-piloto', label: '🏛️ Plano Piloto' },
-      { value: 'taguatinga', label: '🏙️ Taguatinga' }
-    ],
-    element: [
-      { value: '', label: 'Todos os Elementos' },
-      { value: 'rap', label: '🎤 RAP/MC' },
-      { value: 'dj', label: '🎧 DJ' },
-      { value: 'breaking', label: '🕺 Breaking/B-boy' },
-      { value: 'grafite', label: '🎨 Grafite' },
-      { value: 'beatbox', label: '🔊 Beatbox' }
-    ],
-    artist: [
-      { value: '', label: 'Todos os Artistas' },
-      { value: 'dino-black', label: '🎤 Dino Black' },
-      { value: 'gog', label: '👑 GOG' },
-      { value: 'dj-jamaika', label: '🎧 DJ Jamaika' },
-      { value: 'x', label: '🔥 X' },
-      { value: 'funkero', label: '🎵 Funkero' }
-    ],
-    crew: [
-      { value: '', label: 'Todas as Crews' },
-      { value: 'posse-mente-zulu', label: '🧠 Posse Mente Zulu' },
-      { value: 'familia-de-rua', label: '🏠 Família de Rua' },
-      { value: 'cambio-negro', label: '💰 Câmbio Negro' },
-      { value: 'viela-17', label: '🛤️ Viela 17' },
-      { value: 'circulo-vicioso', label: '⭕ Círculo Vicioso' }
-    ]
-  };
-
-  // Função para aplicar filtros
-  const applyFilters = async () => {
+  // Função para realizar busca
+  const performSearch = async (query = '') => {
+    console.info('[Acervo] 🔍 Iniciando busca:', { query });
     setLoading(true);
+    setError(null);
     try {
-      let query = searchQuery;
-      const activeFilters = Object.entries(filters).filter(([key, value]) => value !== '');
-      
-      // Construir query baseada nos filtros ativos
-      if (activeFilters.length > 0) {
-        const filterQueries = activeFilters.map(([key, value]) => {
-          switch(key) {
-            case 'artist':
-              return value === 'dino-black' ? 'Dino Black' : value;
-            case 'element':
-              return value;
-            case 'decade':
-              return value;
-            default:
-              return value;
-          }
-        });
-        
-        if (query) {
-          query = `${query} ${filterQueries.join(' ')}`;
-        } else {
-          query = filterQueries.join(' ');
-        }
-      }
-      
-      const response = await atomService.search({
+      const searchParams = {
         q: query || '*',
         limit: 24,
         sort: 'alphabetic'
+      };
+      
+      console.info('[Acervo] 📋 Parâmetros de busca:', searchParams);
+      
+      const response = await atomService.search(searchParams);
+
+      console.info('[Acervo] ✅ Resposta recebida:', {
+        total: response.total,
+        count: response.results?.length,
+        query: response.query
       });
 
       setItems(response.results || []);
       setTotalResults(response.total || 0);
       
     } catch (error) {
-      console.error('[Acervo] Erro ao aplicar filtros:', error);
+      console.error('[Acervo] ❌ Erro na busca:', error);
       setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Função para limpar filtros
-  const clearFilters = () => {
-    setFilters({
-      mediaType: '',
-      decade: '',
-      region: '',
-      element: '',
-      artist: '',
-      crew: ''
-    });
+  // Função para limpar busca
+  const clearSearch = () => {
     setSearchQuery('');
-  };
-
-  // Função para lidar com mudança de filtro
-  const handleFilterChange = (filterType, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
+    performSearch('');
   };
 
   // Função para lidar com busca
   const handleSearch = (query) => {
     setSearchQuery(query);
+    performSearch(query);
   };
 
   // Carregar itens iniciais
   useEffect(() => {
     const loadInitialItems = async () => {
       try {
-        setLoading(true);
-        
         // Verificar parâmetros de URL
         const urlParams = new URLSearchParams(window.location.search);
         const searchParam = urlParams.get('search');
@@ -164,105 +77,128 @@ const Acervo = () => {
           setSearchQuery(searchParam);
           initialQuery = searchParam;
         } else if (artistParam) {
-          const artistName = artistParam === 'dino-black' ? 'Dino Black' : artistParam;
-          setFilters(prev => ({ ...prev, artist: artistParam }));
-          initialQuery = artistName;
+          setSearchQuery(artistParam);
+          initialQuery = artistParam;
         }
         
-        const response = await atomService.search({
-          q: initialQuery || '*',
-          limit: 24,
-          sort: 'alphabetic'
-        });
-
-        setItems(response.results || []);
-        setTotalResults(response.total || 0);
+        await performSearch(initialQuery);
         
       } catch (error) {
         console.error('[Acervo] Erro ao carregar itens:', error);
         setError(error.message);
-      } finally {
-        setLoading(false);
       }
     };
 
     loadInitialItems();
   }, []);
 
-  // Aplicar filtros quando mudarem
+  // Carregar informationobjects ao montar o componente
   useEffect(() => {
-    if (!loading) {
-      applyFilters();
-    }
-  }, [filters, searchQuery]);
+    const loadInformationObjects = async () => {
+      try {
+        setLoadingObjects(true);
+        const response = await atomService.getItems({ limit: 24 });
+        setInformationObjects(response.results);
+        console.info('[Acervo] ✅ InformationObjects carregados:', {
+          total: response.total,
+          count: response.results.length,
+          sample: response.results[0]
+        });
+      } catch (error) {
+        console.error('[Acervo] ❌ Erro ao carregar informationobjects:', error);
+        setObjectsError(error.message);
+      } finally {
+        setLoadingObjects(false);
+      }
+    };
+
+    loadInformationObjects();
+  }, []);
 
   return (
     <div className="relative z-10">
       <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
       
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Linha de Filtros */}
+        {/* Barra de Busca Simplificada */}
         <motion.div 
-          className="mb-6 p-4 bg-white/90 border-2 border-black"
+          className="mb-8 p-6 bg-white/90 border-2 border-black"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex flex-wrap gap-3 items-center justify-center">
-            {Object.entries(filterOptions).map(([filterType, options]) => (
-              <select
-                key={filterType}
-                value={filters[filterType]}
-                onChange={(e) => handleFilterChange(filterType, e.target.value)}
-                className="px-3 py-2 bg-theme-background border-2 border-black font-sometype-mono text-sm hover:bg-zinc-100 transition-colors min-w-[140px]"
-              >
-                {options.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            ))}
-            
-            {/* Botão Limpar Filtros */}
-            <button
-              onClick={clearFilters}
-              className="px-4 py-2 bg-theme-background border-2 border-black font-dirty-stains text-sm hover:bg-zinc-100 transition-colors"
-            >
-              LIMPAR
-            </button>
-          </div>
-        </motion.div>        {/* Linha de Busca */}
-        <motion.div 
-          className="mb-6 p-4 bg-white/90 border-2 border-black"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="flex flex-col md:flex-row gap-3 items-center">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Buscar no acervo..."
-              className="flex-1 px-3 py-2 bg-theme-background border-2 border-black font-sometype-mono text-sm focus:outline-none"
+              placeholder="Buscar no acervo... (ex: Dino Black, rap, 1994, Ceilândia)"
+              className="flex-1 px-4 py-3 bg-theme-background border-2 border-black font-sometype-mono text-base focus:outline-none focus:border-yellow-400"
             />
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-3 justify-center">
               <button
                 onClick={() => handleSearch('Dino Black')}
-                className="px-3 py-2 bg-theme-background border-2 border-black font-dirty-stains text-sm hover:bg-zinc-100 transition-colors"
+                className="px-4 py-2 bg-yellow-400 hover:bg-yellow-300 border-2 border-black font-dirty-stains text-sm transition-colors"
               >
-                Dino Black
+                🎤 Dino Black
               </button>
               <button
                 onClick={() => handleSearch('rap')}
-                className="px-3 py-2 bg-theme-background border-2 border-black font-dirty-stains text-sm hover:bg-zinc-100 transition-colors"
+                className="px-4 py-2 bg-yellow-400 hover:bg-yellow-300 border-2 border-black font-dirty-stains text-sm transition-colors"
               >
-                RAP
+                🎵 RAP
+              </button>
+              <button
+                onClick={() => handleSearch('GOG')}
+                className="px-4 py-2 bg-yellow-400 hover:bg-yellow-300 border-2 border-black font-dirty-stains text-sm transition-colors"
+              >
+                👑 GOG
+              </button>
+              <button
+                onClick={() => {
+                  console.log('🧪 Iniciando teste busca direta');
+                  setLoading(true);
+                  setError(null);
+                  // Busca direta via fetch para testar
+                  fetch('/api/acervo?sq0=vera&sf0=title')
+                    .then(res => res.json())
+                    .then(data => {
+                      console.log('🧪 Teste busca direta - Resposta:', data);
+                      setItems(data.results || []);
+                      setTotalResults(data.total || 0);
+                      setSearchQuery('vera (teste direto)');
+                      setLoading(false);
+                    })
+                    .catch(err => {
+                      console.error('❌ Erro teste:', err);
+                      setError(err.message);
+                      setLoading(false);
+                    });
+                }}
+                className="px-4 py-2 bg-green-400 hover:bg-green-300 border-2 border-black font-dirty-stains text-sm transition-colors"
+              >
+                🧪 Teste Vera
+              </button>
+              <button
+                onClick={() => handleSearch('1994')}
+                className="px-4 py-2 bg-blue-400 hover:bg-blue-300 border-2 border-black font-dirty-stains text-sm transition-colors"
+              >
+                📅 Anos 90
+              </button>
+              <button
+                onClick={clearSearch}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 border-2 border-black font-dirty-stains text-sm transition-colors"
+              >
+                ✕ Limpar
               </button>
             </div>
           </div>
-        </motion.div>        {/* Contador de Resultados */}
+          <p className="mt-3 text-sm text-gray-600 font-sometype-mono text-center">
+            💡 Digite qualquer termo para buscar em títulos, descrições, artistas e localizações
+          </p>
+        </motion.div>
+
+        {/* Contador de Resultados */}
         <motion.div 
           className="mb-6 text-center"
           initial={{ opacity: 0 }}
@@ -280,7 +216,8 @@ const Acervo = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-        >          {loading ? (
+        >
+          {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-lg font-sometype-mono">Carregando acervo...</p>
@@ -296,7 +233,7 @@ const Acervo = () => {
             <div className="text-center py-12">
               <div className="bg-theme-background border-2 border-black p-6">
                 <p className="font-dirty-stains text-xl mb-2">Nenhum item encontrado</p>
-                <p className="font-sometype-mono">Tente ajustar os filtros ou termo de busca</p>
+                <p className="font-sometype-mono">Tente um termo de busca diferente</p>
               </div>
             </div>
           ) : (
@@ -347,6 +284,83 @@ const Acervo = () => {
             </div>
           )}
         </motion.div>
+
+        {/* Seção de InformationObjects da API */}
+        <section className="mt-16 py-12 border-t-2 border-black">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-4xl font-dirty-stains text-center mb-8 text-theme-primary">
+              ITENS DO ACERVO (API)
+            </h2>
+            
+            {loadingObjects ? (
+              <div className="text-center py-12">
+                <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-lg font-sometype-mono">Carregando itens do acervo...</p>
+              </div>
+            ) : objectsError ? (
+              <div className="text-center py-12">
+                <div className="bg-theme-background border-2 border-black p-6 bg-white/90">
+                  <p className="font-dirty-stains text-xl mb-2">Erro ao carregar dados</p>
+                  <p className="font-sometype-mono">{objectsError}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="text-center mb-8">
+                  <p className="text-lg font-sometype-mono text-theme-secondary">
+                    Total de itens encontrados: {informationObjects.length}
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {informationObjects.map((item, index) => (
+                    <motion.div 
+                      key={item.slug || index} 
+                      className="bg-theme-background border-2 border-black p-4 hover:bg-zinc-100 transition-colors"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                    >
+                      <h3 className="text-lg font-dirty-stains mb-3 leading-tight">
+                        {item.title || 'Sem título'}
+                      </h3>
+                      
+                      {item.physical_characteristics && (
+                        <p className="text-sm font-sometype-mono mb-2">
+                          <strong>Tipo:</strong> {item.physical_characteristics}
+                        </p>
+                      )}
+                      
+                      {item.reference_code && (
+                        <p className="text-sm font-sometype-mono mb-2">
+                          <strong>Código:</strong> {item.reference_code}
+                        </p>
+                      )}
+                      
+                      {item.creation_dates && item.creation_dates.length > 0 && (
+                        <p className="text-sm font-sometype-mono mb-2">
+                          <strong>Data:</strong> {item.creation_dates[0]}
+                        </p>
+                      )}
+                      
+                      {item.level_of_description && (
+                        <p className="text-sm font-sometype-mono mb-2">
+                          <strong>Nível:</strong> {item.level_of_description}
+                        </p>
+                      )}
+                      
+                      <div className="mt-3 pt-3 border-t-2 border-black">
+                        <p className="text-xs font-sometype-mono opacity-60">
+                          ID: {item.slug || 'N/A'}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

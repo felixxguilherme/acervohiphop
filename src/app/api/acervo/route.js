@@ -5,6 +5,8 @@ const ATOM_API_BASE = 'https://base.acervodistritohiphop.com.br/index.php/api';
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY
 
 export async function GET(request) {
+  console.log('🔥 [API Route] Recebida requisição em:', new Date().toISOString());
+  
   try {
     const { searchParams } = new URL(request.url);
     
@@ -20,6 +22,10 @@ export async function GET(request) {
     const sf0 = searchParams.get('sf0');
     const so0 = searchParams.get('so0');
     
+    console.log('📋 [API Route] Parâmetros recebidos:', {
+      limit, offset, sort, sq0, sf0, so0
+    });
+    
     // Date filters
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
@@ -34,22 +40,30 @@ export async function GET(request) {
     const genres = searchParams.get('genres');
     const places = searchParams.get('places');
     
-    // Build API URL - AtoM 2.9 compliant
-    const apiParams = new URLSearchParams({
-      limit,
-      offset,
-      sort,
-      sf_culture: languages || 'pt' // Use sf_culture instead of languages
-    });
+    // Build API URL - Different logic for search vs listing
+    let apiParams;
     
-    // Basic filters
-    if (topLod) apiParams.append('topLod', '1');
-    if (onlyMedia) apiParams.append('onlyMedia', '1');
-    
-    // Search parameters
-    if (sq0) apiParams.append('sq0', sq0);
-    if (sf0) apiParams.append('sf0', sf0);
-    if (so0) apiParams.append('so0', so0);
+    if (sq0 && sf0) {
+      // Para busca: apenas parâmetros de busca
+      console.log('🔍 [API Route] Modo busca - usando apenas sq0 e sf0');
+      apiParams = new URLSearchParams({
+        sq0,
+        sf0
+      });
+    } else {
+      // Para listagem: parâmetros completos
+      console.log('📄 [API Route] Modo listagem - usando todos os parâmetros');
+      apiParams = new URLSearchParams({
+        limit,
+        offset,
+        sort,
+        sf_culture: languages || 'pt'
+      });
+      
+      // Basic filters apenas para listagem
+      if (topLod) apiParams.append('topLod', '1');
+      if (onlyMedia) apiParams.append('onlyMedia', '1');
+    }
     
     // Date filters
     if (startDate) apiParams.append('startDate', startDate);
@@ -66,31 +80,47 @@ export async function GET(request) {
     
     const apiUrl = `${ATOM_API_BASE}/informationobjects?${apiParams}`;
     
-    console.log('Proxying request to:', apiUrl);
+    console.log('🌐 [API Route] Fazendo requisição para:', apiUrl);
+    console.log('🔑 [API Route] Usando API Key:', API_KEY ? 'Configurada' : 'FALTANDO!');
     
     // Make request to AtoM API - only real data, fail if unavailable
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+    const timeoutId = setTimeout(() => {
+      console.log('⏰ [API Route] Timeout de 30s atingido');
+      controller.abort();
+    }, 30000); // 30 second timeout (aumentado)
     
+    console.log('🚀 [API Route] Iniciando fetch...');
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
         'REST-API-Key': API_KEY,
         'Accept': 'application/json',
-        'User-Agent': 'Distrito-HipHop-Website/1.0'
+        'User-Agent': 'Distrito-HipHop-Website/1.0',
+        'Cache-Control': 'no-cache'
       },
       signal: controller.signal
     });
+    console.log('🏁 [API Route] Fetch completado');
     
     clearTimeout(timeoutId);
     
+    console.log('📡 [API Route] Resposta recebida:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok
+    });
+    
     if (!response.ok) {
-      console.error('AtoM API error:', response.status, response.statusText);
+      console.error('❌ [API Route] AtoM API error:', response.status, response.statusText);
       throw new Error(`AtoM API returned ${response.status}: ${response.statusText}`);
     }
     
     const data = await response.json();
-    console.log('✅ Successfully fetched real data from AtoM API:', data.total, 'items');
+    console.log('✅ [API Route] Dados recebidos com sucesso:', {
+      total: data.total,
+      count: data.results?.length || 0
+    });
     
     // Add CORS headers and return data
     return NextResponse.json(data, {
@@ -102,7 +132,11 @@ export async function GET(request) {
     });
     
   } catch (error) {
-    console.error('❌ AtoM API error:', error.message);
+    console.error('❌ [API Route] Erro capturado:', {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    });
     
     // Determine specific error message based on response
     let errorDetails = 'O servidor do acervo está temporariamente fora do ar.';

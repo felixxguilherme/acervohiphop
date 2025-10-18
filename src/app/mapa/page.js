@@ -1,9 +1,21 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import StackedPagesScroll from "@/components/ui/stack"
-import { motion } from "motion/react"
+import { motion, AnimatePresence } from "motion/react"
 import { CartoonButton } from "@/components/ui/cartoon-button";
+import HeaderApp from '@/components/html/HeaderApp';
+
 export default function Mapa() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
       {/* Tela de carregamento - mesma da homepage */}
@@ -313,8 +325,9 @@ export default function Mapa() {
               </div>
             </div>
           </motion.div>
-        </motion.div>
+        </AnimatePresence>
       </div>
     </div>
-  )
+    </>
+  );
 }
