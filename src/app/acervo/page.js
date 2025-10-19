@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import HeaderApp from '@/components/html/HeaderApp';
 import { useAcervo } from '@/contexts/AcervoContext';
 import { motion } from 'motion/react';
+import { fetchCompat } from '@/utils/httpClient';
 
 // Helper para labels dos campos
 const getFieldLabel = (field) => {
@@ -51,8 +52,7 @@ const Acervo = () => {
   // Estado para busca por creator
   const [searchByCreator, setSearchByCreator] = useState('');
   
-  // Estado para mostrar detalhes do item
-  const [selectedItem, setSelectedItem] = useState(null);
+  // Estado removido - agora usamos página separada para detalhes
   
   // Estado local para resultados de creator (substitui temporariamente o contexto)
   const [creatorResults, setCreatorResults] = useState(null);
@@ -102,7 +102,7 @@ const Acervo = () => {
       }
       
       console.log(`[Acervo] Buscando página ${page}:`, url);
-      const response = await fetch(url);
+      const response = await fetchCompat(url);
       const data = await response.json();
       
       // Usar estado local para controle total da paginação
@@ -142,7 +142,7 @@ const Acervo = () => {
       const url = `/api/acervo?creators=${creatorId}&limit=100`;
       
       console.log(`[Acervo] Buscando todos os itens do creator ${creatorId}:`, url);
-      const response = await fetch(url);
+      const response = await fetchCompat(url);
       
       if (!response.ok) {
         throw new Error(`Erro ${response.status}: ${response.statusText}`);
@@ -176,7 +176,24 @@ const Acervo = () => {
   // Função para navegar entre páginas
   const goToPage = async (page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Scroll inteligente: vai para a área de resultados ao invés do topo
+    const resultsSection = document.getElementById('results-section');
+    if (resultsSection) {
+      const sectionTop = resultsSection.offsetTop;
+      const currentScroll = window.pageYOffset;
+      const offset = 100; // Deixa um espaço do topo
+      const targetPosition = Math.max(0, sectionTop - offset);
+      
+      // Se o usuário já está próximo da área de resultados, mantém a posição
+      // Senão, faz scroll para a área de resultados
+      if (Math.abs(currentScroll - targetPosition) > 200) {
+        window.scrollTo({ 
+          top: targetPosition, 
+          behavior: 'smooth' 
+        });
+      }
+    }
     
     // Recarregar dados com paginação real (exceto creator)
     if (creatorResults?.creatorId) {
@@ -213,23 +230,15 @@ const Acervo = () => {
   })();
   
   // Função para abrir detalhes do item
-  const openItemDetails = async (slug) => {
-    try {
-      const response = await fetch(`https://base.acervodistritohiphop.com.br/index.php/api/informationobjects/${slug}`);
-      const itemDetails = await response.json();
-      setSelectedItem(itemDetails);
-    } catch (error) {
-      console.error('Erro ao carregar detalhes do item:', error);
-    }
+  const openItemDetails = (slug) => {
+    // Navegar para a página de detalhes do item
+    window.location.href = `/acervo/item/${slug}`;
   };
 
   // Função para navegar para página do artista
   const goToArtistPage = (creatorId) => {
-    // Rolar para o topo e depois buscar por creator
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setTimeout(() => {
-      handleCreatorSearch(creatorId);
-    }, 500);
+    // Navegar para a página de detalhes do artista
+    window.location.href = `/acervo/artista/${creatorId}`;
   };
 
   // Função para carregar dados dos artistas em destaque
@@ -244,7 +253,7 @@ const Acervo = () => {
       const artistsWithData = await Promise.all(
         artists.map(async (artist) => {
           try {
-            const response = await fetch(`/api/acervo?creators=${artist.id}&limit=100`);
+            const response = await fetchCompat(`/api/acervo?creators=${artist.id}&limit=100`);
             const data = await response.json();
             
             return {
@@ -497,6 +506,7 @@ const Acervo = () => {
 
         {/* Contador de Resultados e Paginação */}
         <motion.div 
+          id="results-section"
           className="mb-6 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -685,129 +695,6 @@ const Acervo = () => {
         )}
 
 
-        
-        {/* Modal de Detalhes do Item */}
-        {selectedItem && (
-          <motion.div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedItem(null)}
-          >
-            <motion.div 
-              className="bg-white border-4 border-black max-w-4xl max-h-[90vh] overflow-y-auto p-6"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-2xl font-dirty-stains text-theme-primary">
-                  {selectedItem.title || 'Sem título'}
-                </h2>
-                <button
-                  onClick={() => setSelectedItem(null)}
-                  className="text-2xl hover:bg-gray-100 w-8 h-8 flex items-center justify-center border border-black"
-                >
-                  ×
-                </button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Informações principais */}
-                <div className="space-y-4">
-                  {selectedItem.reference_code && (
-                    <div>
-                      <strong className="font-dirty-stains">Código de Referência:</strong>
-                      <p className="font-sometype-mono">{selectedItem.reference_code}</p>
-                    </div>
-                  )}
-                  
-                  {selectedItem.physical_characteristics && (
-                    <div>
-                      <strong className="font-dirty-stains">Características Físicas:</strong>
-                      <p className="font-sometype-mono">{selectedItem.physical_characteristics}</p>
-                    </div>
-                  )}
-                  
-                  {selectedItem.creation_dates && selectedItem.creation_dates.length > 0 && (
-                    <div>
-                      <strong className="font-dirty-stains">Datas de Criação:</strong>
-                      <p className="font-sometype-mono">{selectedItem.creation_dates.join(', ')}</p>
-                    </div>
-                  )}
-                  
-                  {selectedItem.level_of_description && (
-                    <div>
-                      <strong className="font-dirty-stains">Nível de Descrição:</strong>
-                      <p className="font-sometype-mono">{selectedItem.level_of_description}</p>
-                    </div>
-                  )}
-                  
-                  {selectedItem.scope_and_content && (
-                    <div>
-                      <strong className="font-dirty-stains">Âmbito e Conteúdo:</strong>
-                      <p className="font-sometype-mono text-sm">{selectedItem.scope_and_content}</p>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Mídia e links */}
-                <div className="space-y-4">
-                  {selectedItem.digital_object_url && (
-                    <div>
-                      <strong className="font-dirty-stains">Objeto Digital:</strong>
-                      <div className="mt-2">
-                        <img 
-                          src={selectedItem.digital_object_url.replace('https://acervodistrito', 'https://base.acervodistrito')}
-                          alt={selectedItem.title || 'Objeto digital'}
-                          className="w-full max-w-md border-2 border-black"
-                          onError={(e) => { e.target.style.display = 'none'; }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  
-                  {selectedItem.notes && selectedItem.notes.length > 0 && (
-                    <div>
-                      <strong className="font-dirty-stains">Notas:</strong>
-                      <div className="space-y-1">
-                        {selectedItem.notes.map((note, index) => (
-                          <p key={index} className="font-sometype-mono text-sm bg-gray-100 p-2 border border-gray-300">
-                            {note}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Links externos */}
-              <div className="mt-6 pt-4 border-t-2 border-gray-200">
-                <div className="flex flex-wrap gap-3">
-                  <a
-                    href={`https://base.acervodistritohiphop.com.br/index.php/${selectedItem.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-blue-500 text-white border-2 border-black font-dirty-stains hover:bg-blue-600 transition-colors"
-                  >
-                    🔗 Ver no Sistema Original
-                  </a>
-                  <a
-                    href={`https://base.acervodistritohiphop.com.br/index.php/api/informationobjects/${selectedItem.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-green-500 text-white border-2 border-black font-dirty-stains hover:bg-green-600 transition-colors"
-                  >
-                    📡 Ver API JSON
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
       </div>
     </div>
   );

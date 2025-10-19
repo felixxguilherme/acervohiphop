@@ -4,6 +4,7 @@ import CardParallax from '../components/CardParallax.jsx';
 import { useScroll, useMotionValueEvent } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import Lenis from 'lenis';
+import { useAcervo } from '@/contexts/AcervoContext';
 
 import HeaderApp from '@/components/html/HeaderApp';
 import PolaroidCard from '@/components/PolaroidPhoto';
@@ -56,6 +57,9 @@ const projects = [
 ]
 
 export default function Home() {
+  // Hooks do contexto
+  const { loadStatistics, statistics, loadAllItems, allItems } = useAcervo();
+  
   const container = useRef(null);
   const [lenis, setLenis] = useState(null);
   const [showSpacer, setShowSpacer] = useState(true); // Estado para controlar o spacer
@@ -112,6 +116,12 @@ export default function Home() {
     }
   }, [lenis]);
 
+  // Carregar dados iniciais
+  useEffect(() => {
+    loadStatistics();
+    loadAllItems(24); // Carrega primeiros 24 itens
+  }, [loadStatistics, loadAllItems]);
+
 
   return (
     <main ref={container} className="main">
@@ -132,73 +142,6 @@ export default function Home() {
         return <CardParallax key={project.slug || `p_${i}`} i={i} {...project} progress={scrollYProgress} range={[i * .25, 1]} targetScale={targetScale} />
       })}
       </section>
-
-
-      <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-black pb-0">
-
-
-        {/* Decorative elements */}
-        <div className="absolute inset-0 z-10 pointer-events-none decorative-elements">
-
-          {/* Spray effects */}
-          <div
-            className="absolute top-0 left-15 w-64 h-64 bg-contain bg-no-repeat"
-            style={{
-              backgroundImage: "url('/cursor02.png')"
-            }}
-          />
-
-          <div
-            className="absolute top-0 -right-15 w-32 h-32 bg-contain bg-no-repeat"
-            style={{
-              backgroundImage: "url('/spray_preto-1.png')"
-            }}
-          />
-
-          <div
-            className="absolute bottom-32 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
-            style={{
-              backgroundImage: "url('/spray_preto-2.png')"
-            }}
-          />
-        </div>
-
-        {/* Main content */}
-        <div className="relative z-20 text-center max-w-6xl mx-auto px-6">
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-2xl md:text-3xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
-          >
-            Arquivo bruto, direto e factual. Capturando a evolução das expressões artísticas que sobreviveram à exclusão e invisibilidade. Memória viva que inspira e transforma gerações.
-          </motion.p>
-
-
-          {/* Call to Action */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="space-y-6"
-          >
-            <CartoonButton
-              label="EXPLORAR ACERVO COMPLETO"
-              color="bg-black text-white"
-              onClick={() => window.location.href = '/acervo'}
-              className="text-xl px-8 py-4 mx-auto"
-            />
-
-            {/* <div className="flex flex-wrap justify-center gap-4 text-sm font-sometype-mono text-theme-secondary">
-              <span>📸 {artistsData.reduce((total, result) => total + result.total, 0)} itens no acervo</span>
-              <span>🎭 {artistsData.length} artistas em destaque</span>
-              <span>📅 4 décadas de história</span>
-            </div> */}
-          </motion.div>
-        </div>
-      </section>
-
 
 
       {/* Spacer to push content below the sticky cards */}
@@ -518,7 +461,7 @@ export default function Home() {
               onClick={() => window.location.href = '/acervo'}
               className="text-xl px-8 py-4"
             />            <p className="font-sometype-mono text-sm text-theme-secondary mt-4">
-              Mais de xxx itens documentando 4 décadas de cultura Hip Hop
+              {statistics?.totalItems ? `Mais de ${statistics.totalItems} itens` : 'Centenas de itens'} documentando 4 décadas de cultura Hip Hop
             </p>          </motion.div>
         </div>
       </section>
@@ -577,7 +520,7 @@ export default function Home() {
                 <div className="w-1/2 pr-8 text-right">
                   <div
                     style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}}
-                    className="border-4 border-black p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                    className="p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
                     <div className="font-scratchy font-black text-black text-2xl mb-2">1980</div>
                     <h3 className="font-dirty-stains text-3xl text-black mb-3">PRIMEIROS PASSOS</h3>
                     <p className="font-sometype-mono text-sm text-black font-bold leading-relaxed">
@@ -586,7 +529,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="relative z-10">
-                  <div className="w-8 h-8 bg-red-500 border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                  <div className="w-8 h-8 bg-black border-4 border-[#FFFCF2] rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
                 <div className="w-1/2 pl-8"></div>
               </motion.div>
@@ -601,10 +544,10 @@ export default function Home() {
               >
                 <div className="w-1/2 pr-8"></div>
                 <div className="relative z-10">
-                  <div className="w-8 h-8 bg-yellow-400 border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                  <div className="w-8 h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
                 <div className="w-1/2 pl-8">
-                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="bg-yellow-400 border-4 border-black p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
                     <div className="font-scratchy font-black text-black text-2xl mb-2">1995</div>
                     <h3 className="font-dirty-stains text-3xl text-black mb-3">PRIMEIRO ENCONTRO</h3>
                     <p className="font-sometype-mono text-sm text-black font-bold leading-relaxed">
@@ -623,7 +566,7 @@ export default function Home() {
                 className="flex items-center"
               >
                 <div className="w-1/2 pr-8 text-right">
-                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="bg-blue-400 border-4 border-black p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
                     <div className="font-scratchy font-black text-black text-2xl mb-2">2001</div>
                     <h3 className="font-dirty-stains text-3xl text-black mb-3">ERA DIGITAL</h3>
                     <p className="font-sometype-mono text-sm text-black font-bold leading-relaxed">
@@ -632,7 +575,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="relative z-10">
-                  <div className="w-8 h-8 bg-blue-400 border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                  <div className="w-8 h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
                 <div className="w-1/2 pl-8"></div>
               </motion.div>
@@ -647,10 +590,10 @@ export default function Home() {
               >
                 <div className="w-1/2 pr-8"></div>
                 <div className="relative z-10">
-                  <div className="w-8 h-8 bg-green-400 border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                  <div className="w-8 h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
                 <div className="w-1/2 pl-8">
-                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="bg-green-400 border-4 border-black p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
                     <div className="font-scratchy font-black text-black text-2xl mb-2">2020</div>
                     <h3 className="font-dirty-stains text-3xl text-black mb-3">PATRIMÔNIO CULTURAL</h3>
                     <p className="font-sometype-mono text-sm text-black font-bold leading-relaxed">
@@ -662,29 +605,70 @@ export default function Home() {
 
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-black pb-0">
+
+
+        {/* Decorative elements */}
+        <div className="absolute inset-0 z-10 pointer-events-none decorative-elements">
+
+          {/* Spray effects */}
+          <div
+            className="absolute bottom-0 left-15 w-64 h-64 bg-contain bg-no-repeat"
+            style={{
+              backgroundImage: "url('/cursor02.png')"
+            }}
+          />
+
+          <div
+            className="absolute top-0 -right-15 w-32 h-32 bg-contain bg-no-repeat"
+            style={{
+              backgroundImage: "url('/spray_preto-1.png')"
+            }}
+          />
+
+          <div
+            className="absolute top-5 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
+            style={{
+              backgroundImage: "url('/spray_preto-2.png')"
+            }}
+          />
+        </div>
+
+        {/* Main content */}
+        <div className="relative z-20 text-center max-w-6xl mx-auto px-6">
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-2xl md:text-3xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
+          >
+            Arquivo bruto, direto e factual. Capturando a evolução das expressões artísticas que sobreviveram à exclusão e invisibilidade. Memória viva que inspira e transforma gerações.
+          </motion.p>
+
 
           {/* Call to Action */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mt-20"
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="space-y-6"
           >
-            <div className="bg-[#DC143C] p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-              <h3 className="font-dirty-stains text-3xl text-black mb-4">
-                <strong>EXPLORE A CRONOLOGIA COMPLETA</strong>
-              </h3>
-              <p className="font-sometype-mono text-black font-bold mb-6 max-w-2xl mx-auto">
-                Quer conhecer mais detalhes sobre cada período? Acesse nossa timeline interativa completa!
-              </p>
-              <CartoonButton
-                label="VER TIMELINE COMPLETA"
-                color="bg-yellow-300 text-black"
-                onClick={() => window.location.href = '/acervo#timeline'}
-                className="text-lg px-8 py-4"
-              />
-            </div>
+            <CartoonButton
+              label="EXPLORAR ACERVO COMPLETO"
+              color="bg-black text-white"
+              onClick={() => window.location.href = '/acervo'}
+              className="text-xl px-8 py-4 mx-auto"
+            />
+
+            {/* <div className="flex flex-wrap justify-center gap-4 text-sm font-sometype-mono text-theme-secondary">
+              <span>📸 {artistsData.reduce((total, result) => total + result.total, 0)} itens no acervo</span>
+              <span>🎭 {artistsData.length} artistas em destaque</span>
+              <span>📅 4 décadas de história</span>
+            </div> */}
           </motion.div>
         </div>
       </section>
