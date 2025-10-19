@@ -12,11 +12,17 @@ export default function HeaderApp({ title, showTitle = false }) {
   const { theme } = useTheme();
   const [currentTheme, setCurrentTheme] = useState('light');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     // Carrega o tema do localStorage no primeiro render
     const savedTheme = localStorage.getItem('theme') || 'light';
     setCurrentTheme(savedTheme);
+    
+    // Delay para evitar conflitos com animações da página
+    setTimeout(() => {
+      setIsInitialized(true);
+    }, 100);
   }, []);
 
   useEffect(() => {
@@ -24,29 +30,53 @@ export default function HeaderApp({ title, showTitle = false }) {
     setCurrentTheme(theme);
   }, [theme]);
   useEffect(() => {
+    // Só inicializa o scroll listener após a página estar carregada
+    if (!isInitialized) return;
+
     let ticking = false;
-    const SCROLL_THRESHOLD = 100; // Threshold em pixels para ativar o estado "scrolled"
-    const HYSTERESIS = 20; // Histerese para evitar alternância rápida
+    let lastScrollY = 0;
+    const SCROLL_THRESHOLD = 100;
+    const HYSTERESIS = 30;
+    const MIN_SCROLL_DIFF = 5;
 
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
           
-          // Implementa histerese: só muda o estado se ultrapassar o threshold com margem
+          // Só processa se houve mudança significativa no scroll
+          if (Math.abs(currentScrollY - lastScrollY) < MIN_SCROLL_DIFF) {
+            ticking = false;
+            return;
+          }
+          
+          // Implementa histerese com mais estabilidade
           if (currentScrollY > SCROLL_THRESHOLD + HYSTERESIS && !isScrolled) {
             setIsScrolled(true);
           } else if (currentScrollY < SCROLL_THRESHOLD - HYSTERESIS && isScrolled) {
             setIsScrolled(false);
           }
           
+          lastScrollY = currentScrollY;
           ticking = false;
         });
         ticking = true;
       }
-    };    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isScrolled]); // Dependência necessária para verificar estado atual
+    };
+
+    // Debounce adicional para evitar chamadas excessivas
+    let timeoutId;
+    const debouncedHandleScroll = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleScroll, 16); // ~60fps
+    };
+
+    window.addEventListener('scroll', debouncedHandleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', debouncedHandleScroll);
+      clearTimeout(timeoutId);
+    };
+  }, [isScrolled, isInitialized]);
 
   return (
     <motion.header
@@ -62,8 +92,8 @@ export default function HeaderApp({ title, showTitle = false }) {
         height: isScrolled ? 'auto' : 'auto'
       }}
       transition={{ 
-        duration: 0.4,
-        ease: [0.25, 0.1, 0.25, 1]
+        duration: 0.5,
+        ease: [0.23, 1, 0.32, 1] // Easing mais suave
       }}
     >
       <motion.div 
@@ -72,88 +102,81 @@ export default function HeaderApp({ title, showTitle = false }) {
           minHeight: isScrolled ? '70px' : '200px'
         }}
         transition={{ 
-          duration: 0.4,
-          ease: [0.25, 0.1, 0.25, 1]
+          duration: 0.5,
+          ease: [0.23, 1, 0.32, 1] // Mesmo easing para consistência
         }}
       >
-        {isScrolled ? (
-          /* Layout compacto durante scroll */
-          <div className="relative h-full">
-            <div className="grid grid-cols-12 h-full">
-              {/* Primeira coluna: Spinning text ocupando toda altura */}
-              <div className="col-span-2 flex items-center justify-center border-r-3 border-theme h-full">
-                <Link href="/">
-                  <SpinningText
-                    radius={6}
-                    className="h-12 w-12 text-sm tracking-[0.3em] font-scratchy"
-                  >
-                    acervo • hip-hop •
-                  </SpinningText>
-                </Link>
-              </div>
-
-              {/* Segunda coluna: Navegação compacta */}
-              <div className="col-span-10 flex items-center justify-center px-4 md:px-8 py-3">
-                <nav className="flex gap-2 md:gap-3">
-                  <Link href="/acervo">
-                    <AnimatedButton textSize="text-lg" text="ACERVO" backgroundMode="static" imagePath="marca-texto-vermelho.png" />
-                  </Link>
-                  <Link href="/mapa">
-                    <AnimatedButton textSize="text-lg" text="MAPA" backgroundMode="static" imagePath="marca-texto-azul.png" />
-                  </Link>
-                  <Link href="/revista">
-                    <AnimatedButton textSize="text-lg" text="REVISTA" backgroundMode="static" imagePath="marca-texto-verde.png" />
-                  </Link>
-                </nav>
-              </div>
-            </div>
-            
-            {/* Toggle de tema fixo no canto superior direito */}
-            <div className="absolute top-2 right-2">
-              <ThemeToggle />
-            </div>
-          </div>
-        ) : (
-          /* Layout completo quando no topo */
-          <div className="relative">
-            <div className="grid grid-cols-12 h-full min-h-[200px]">
-              {/* Primeira coluna: Imagem e Spinning text - grade vertical */}
-              <div className="col-span-2 grid grid-rows-2 border-r-3 border-theme">
-                {/* Container da imagem */}
-                {showTitle && title ? (
-                  <div className="flex items-center justify-center border-b-3 border-theme">
-                    <motion.img
-                      src="/spray_preto-2.png"
-                      alt="Spray decoration"
-                      className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.8, delay: 0.5 }}
-                    />
-                  </div>
-                ) : (
-                  <div className="border-b-3 border-theme"></div>
+        {/* Layout único que transiciona suavemente */}
+        <div className="relative">
+          <div className="grid grid-cols-12 h-full">
+            {/* Primeira coluna: Transições suaves entre estados */}
+            <div className="col-span-2 border-r-3 border-theme flex flex-col">
+              {/* Container da imagem - apenas visível quando expandido */}
+              <motion.div 
+                className="flex items-center justify-center border-b-3 border-theme"
+                animate={{ 
+                  height: isScrolled ? '0px' : 'auto',
+                  opacity: isScrolled ? 0 : 1
+                }}
+                transition={{ 
+                  duration: 0.5,
+                  ease: [0.23, 1, 0.32, 1]
+                }}
+                style={{ overflow: 'hidden' }}
+              >
+                {showTitle && title && (
+                  <motion.img
+                    src="/spray_preto-2.png"
+                    alt="Spray decoration"
+                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.5 }}
+                  />
                 )}
-                
-                {/* Spinning text */}
-                <Link href="/" className="flex items-center justify-center">
-                  <div className="scale-120 md:scale-120">
+              </motion.div>
+              
+              {/* Spinning text - sempre presente */}
+              <div className="flex items-center justify-center flex-1">
+                <Link href="/">
+                  <motion.div
+                    animate={{
+                      scale: isScrolled ? 0.6 : 1
+                    }}
+                    transition={{ 
+                      duration: 0.5,
+                      ease: [0.23, 1, 0.32, 1]
+                    }}
+                  >
                     <SpinningText
-                      radius={8}
-                      className="h-20 w-20 text-base md:text-lg tracking-[0.35em] font-scratchy"
+                      radius={isScrolled ? 6 : 8}
+                      className={`${isScrolled ? 'h-12 w-12 text-sm' : 'h-20 w-20 text-base md:text-lg'} tracking-[0.3em] font-scratchy transition-all duration-500`}
                     >
-                      acervo • hip-hop • Distrito Federal •
+                      {isScrolled ? 'acervo • hip-hop •' : 'acervo • hip-hop • Distrito Federal •'}
                     </SpinningText>
-                  </div>
+                  </motion.div>
                 </Link>
               </div>
+            </div>
 
-              {/* Segunda coluna: Título e Navegação */}
-              <div className="col-span-10 flex flex-col items-center justify-center px-4 md:px-8 py-4 md:py-6">
-                {/* Título */}
+            {/* Segunda coluna: Conteúdo que transiciona */}
+            <div className="col-span-10 flex flex-col items-center justify-center">
+              {/* Título - apenas visível quando expandido */}
+              <motion.div
+                animate={{ 
+                  height: isScrolled ? '0px' : 'auto',
+                  opacity: isScrolled ? 0 : 1,
+                  marginBottom: isScrolled ? '0px' : '24px'
+                }}
+                transition={{ 
+                  duration: 0.5,
+                  ease: [0.23, 1, 0.32, 1]
+                }}
+                style={{ overflow: 'hidden' }}
+              >
                 {showTitle && title && (
                   <motion.h1
-                    className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-theme-primary text-center mb-6 md:mb-8"
+                    className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-theme-primary text-center"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.3 }}
@@ -166,28 +189,53 @@ export default function HeaderApp({ title, showTitle = false }) {
                     {title}
                   </motion.h1>
                 )}
-                
-                {/* Navegação principal */}
-                <nav className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6">
-                  <Link href="/acervo">
-                    <AnimatedButton textSize="text-3xl" text="ACERVO" backgroundMode="static" imagePath="marca-texto-vermelho.png" />
-                  </Link>
-                  <Link href="/mapa">
-                    <AnimatedButton textSize="text-3xl" text="MAPA" backgroundMode="static" imagePath="marca-texto-azul.png" />
-                  </Link>
-                  <Link href="/revista">
-                    <AnimatedButton textSize="text-3xl" text="REVISTA" backgroundMode="static" imagePath="marca-texto-verde.png" />
-                  </Link>
-                </nav>
-              </div>
-            </div>
-            
-            {/* Toggle de tema fixo no canto superior direito */}
-            <div className="absolute top-2 right-2">
-              <ThemeToggle />
+              </motion.div>
+              
+              {/* Navegação - adapta tamanho baseado no estado */}
+              <motion.nav 
+                className={`flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 w-full ${!isScrolled ? 'border-black border-t-3' : ''}`}
+                animate={{
+                  paddingTop: isScrolled ? '12px' : '0px',
+                  paddingBottom: isScrolled ? '12px' : '0px'
+                }}
+                transition={{ 
+                  duration: 0.5,
+                  ease: [0.23, 1, 0.32, 1]
+                }}
+              >
+                <Link href="/acervo">
+                  <AnimatedButton 
+                    textSize={isScrolled ? "text-lg" : "text-3xl"} 
+                    text="ACERVO" 
+                    backgroundMode="static" 
+                    imagePath="marca-texto-vermelho.png" 
+                  />
+                </Link>
+                <Link href="/mapa">
+                  <AnimatedButton 
+                    textSize={isScrolled ? "text-lg" : "text-3xl"} 
+                    text="MAPA" 
+                    backgroundMode="static" 
+                    imagePath="marca-texto-azul.png" 
+                  />
+                </Link>
+                <Link href="/revista">
+                  <AnimatedButton 
+                    textSize={isScrolled ? "text-lg" : "text-3xl"} 
+                    text="REVISTA" 
+                    backgroundMode="static" 
+                    imagePath="marca-texto-verde.png" 
+                  />
+                </Link>
+              </motion.nav>
             </div>
           </div>
-        )}
+          
+          {/* Toggle de tema fixo no canto superior direito */}
+          <div className="absolute top-2 right-2">
+            <ThemeToggle />
+          </div>
+        </div>
       </motion.div>
     </motion.header>
   );
