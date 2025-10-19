@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useReducer, useCallback } from 'react';
 import atomService from '@/services/atomService';
+import { fetchCompat } from '@/utils/httpClient';
 
 // Tipos de ações
 const ACTIONS = {
@@ -254,7 +255,7 @@ export function AcervoProvider({ children }) {
       
       if (!query?.trim()) {
         // Se não há query, carrega itens padrão
-        const response = await fetch('/api/acervo?limit=24');
+        const response = await fetchCompat('/api/acervo?limit=24');
         const data = await response.json();
         
         dispatch({
@@ -267,7 +268,7 @@ export function AcervoProvider({ children }) {
         const url = `/api/acervo?sq0=${encodeURIComponent(query.trim())}&sf0=${field}`;
         console.info('[AcervoContext] 📋 URL da busca:', url);
         
-        const response = await fetch(url);
+        const response = await fetchCompat(url);
         if (!response.ok) {
           throw new Error(`Erro ${response.status}: ${response.statusText}`);
         }
@@ -325,14 +326,15 @@ export function AcervoProvider({ children }) {
 
   // Carregar item específico
   const loadItem = useCallback(async (slug) => {
-    // Verifica cache primeiro
-    if (state.itemsCache.has(slug)) {
+    // Verifica cache primeiro usando a função de acesso direto ao estado
+    const cachedItem = state.itemsCache.get(slug);
+    if (cachedItem) {
       dispatch({
         type: ACTIONS.SET_ITEM_DETAILS,
         slug,
-        item: state.itemsCache.get(slug)
+        item: cachedItem
       });
-      return state.itemsCache.get(slug);
+      return cachedItem;
     }
     
     dispatch({ type: ACTIONS.SET_LOADING, section: 'item', value: true });
@@ -342,7 +344,7 @@ export function AcervoProvider({ children }) {
       console.info('[AcervoContext] 🎯 Carregando item:', slug);
       
       // Busca detalhes do item específico
-      const response = await fetch(`/api/acervo/${slug}`);
+      const response = await fetchCompat(`/api/acervo/${slug}`);
       if (!response.ok) {
         throw new Error(`Item não encontrado: ${response.status}`);
       }
@@ -364,7 +366,7 @@ export function AcervoProvider({ children }) {
     } finally {
       dispatch({ type: ACTIONS.SET_LOADING, section: 'item', value: false });
     }
-  }, [state.itemsCache]);
+  }, []);
 
   // Carregar coleções
   const loadCollections = useCallback(async () => {
@@ -429,8 +431,55 @@ export function AcervoProvider({ children }) {
     dispatch({ type: ACTIONS.SET_GEOJSON, geoJson: null });
   }, []);
 
+  // Carregar itens de um creator específico com detalhes
+  const loadCreatorAndDetails = useCallback(async (creatorId, forceReload = false) => {
+    console.info('[AcervoContext] 🎭 Carregando itens do creator:', creatorId);
+    
+    try {
+      // Buscar todos os itens com paginação
+      let allItems = [];
+      let skip = 0;
+      const limit = 50;
+      
+      // Primeira chamada para obter total
+      const firstResponse = await fetchCompat(`/api/acervo?creators=${creatorId}&limit=${limit}`);
+      if (!firstResponse.ok) {
+        throw new Error(`Erro na API: ${firstResponse.status}`);
+      }
+      
+      const firstData = await firstResponse.json();
+      const total = firstData.total || 0;
+      allItems = firstData.results || [];
+      
+      console.info(`[AcervoContext] 📊 Creator ${creatorId}: ${allItems.length}/${total} itens`);
+      
+      // Buscar páginas adicionais se necessário
+      if (total > allItems.length) {
+        for (skip = limit; skip < total; skip += limit) {
+          console.info(`[AcervoContext] 📄 Buscando página skip=${skip}`);
+          
+          const response = await fetchCompat(`/api/acervo?creators=${creatorId}&limit=${limit}&skip=${skip}`);
+          if (response.ok) {
+            const pageData = await response.json();
+            const newItems = pageData.results || [];
+            allItems = [...allItems, ...newItems];
+            
+            console.info(`[AcervoContext] ➕ Adicionados ${newItems.length} itens (total: ${allItems.length}/${total})`);
+          }
+        }
+      }
+      
+      console.info(`[AcervoContext] ✅ Creator ${creatorId} completo: ${allItems.length} itens carregados`);
+      return allItems;
+      
+    } catch (error) {
+      console.error('[AcervoContext] ❌ Erro ao carregar dados do creator:', error);
+      throw error;
+    }
+  }, []);
+
   // Carregar dados do mapa (creator 3312) com paginação
-  const loadMapData = useCallback(async (creatorId = '3312', forceReload = false) => {
+  const loadMapData = useCallback(async (creatorId = '8337', forceReload = false) => {
     if (state.mapData.length > 0 && !forceReload) return; // Já carregado
     
     dispatch({ type: ACTIONS.SET_LOADING, section: 'map', value: true });
@@ -445,7 +494,7 @@ export function AcervoProvider({ children }) {
       const limit = 50; // Lotes menores para mais controle
       
       // Primeira chamada para obter total
-      const firstResponse = await fetch(`/api/acervo?creators=${creatorId}&limit=${limit}`);
+      const firstResponse = await fetchCompat(`/api/acervo?creators=${creatorId}&limit=${limit}`);
       if (!firstResponse.ok) {
         throw new Error(`Erro na API: ${firstResponse.status}`);
       }
@@ -461,7 +510,7 @@ export function AcervoProvider({ children }) {
         for (skip = limit; skip < total; skip += limit) {
           console.info(`[AcervoContext] 📄 Buscando página skip=${skip}`);
           
-          const response = await fetch(`/api/acervo?creators=${creatorId}&limit=${limit}&skip=${skip}`);
+          const response = await fetchCompat(`/api/acervo?creators=${creatorId}&limit=${limit}&skip=${skip}`);
           if (response.ok) {
             const pageData = await response.json();
             const newItems = pageData.results || [];
@@ -496,7 +545,7 @@ export function AcervoProvider({ children }) {
         if (!item.slug) continue;
         
         try {
-          const detailResponse = await fetch(`/api/acervo/${item.slug}`);
+          const detailResponse = await fetchCompat(`/api/acervo/${item.slug}`);
           if (detailResponse.ok) {
             const details = await detailResponse.json();
             
@@ -684,6 +733,7 @@ export function AcervoProvider({ children }) {
     loadStatistics,
     clearSearch,
     clearCache,
+    getCreatorItems: loadCreatorAndDetails,
     
     // Ações do mapa
     loadMapData,
