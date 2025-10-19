@@ -12,7 +12,7 @@ export async function GET(request) {
     
     // Extract query parameters - AtoM 2.9 compliant
     const limit = searchParams.get('limit') || '20';
-    const offset = searchParams.get('offset') || searchParams.get('skip') || '0';
+    const skip = searchParams.get('skip') || '0';
     const sort = searchParams.get('sort') || 'lastUpdated';
     const topLod = searchParams.get('topLod');
     const onlyMedia = searchParams.get('onlyMedia');
@@ -23,7 +23,7 @@ export async function GET(request) {
     const so0 = searchParams.get('so0');
     
     console.log('📋 [API Route] Parâmetros recebidos:', {
-      limit, offset, sort, sq0, sf0, so0
+      limit, skip, sort, sq0, sf0, so0
     });
     
     // Date filters
@@ -44,18 +44,20 @@ export async function GET(request) {
     let apiParams;
     
     if (sq0 && sf0) {
-      // Para busca: apenas parâmetros de busca
-      console.log('🔍 [API Route] Modo busca - usando apenas sq0 e sf0');
+      // Para busca: parâmetros de busca com paginação
+      console.log('🔍 [API Route] Modo busca - usando sq0, sf0, limit e skip');
       apiParams = new URLSearchParams({
         sq0,
-        sf0
+        sf0,
+        limit,
+        skip
       });
     } else {
       // Para listagem: parâmetros completos
       console.log('📄 [API Route] Modo listagem - usando todos os parâmetros');
       apiParams = new URLSearchParams({
         limit,
-        offset,
+        skip,
         sort,
         sf_culture: languages || 'pt'
       });
@@ -63,20 +65,20 @@ export async function GET(request) {
       // Basic filters apenas para listagem
       if (topLod) apiParams.append('topLod', '1');
       if (onlyMedia) apiParams.append('onlyMedia', '1');
+      
+      // Date filters apenas para listagem
+      if (startDate) apiParams.append('startDate', startDate);
+      if (endDate) apiParams.append('endDate', endDate);
+      
+      // AtoM 2.9 new parameters - levels only for now
+      if (levels) apiParams.append('levels', levels);
+      
+      // Taxonomy filters (AtoM 2.9) apenas para listagem
+      if (creators) apiParams.append('creators', creators);
+      if (subjects) apiParams.append('subjects', subjects);
+      if (genres) apiParams.append('genres', genres);
+      if (places) apiParams.append('places', places);
     }
-    
-    // Date filters
-    if (startDate) apiParams.append('startDate', startDate);
-    if (endDate) apiParams.append('endDate', endDate);
-    
-    // AtoM 2.9 new parameters - levels only for now
-    if (levels) apiParams.append('levels', levels);
-    
-    // Taxonomy filters (AtoM 2.9)
-    if (creators) apiParams.append('creators', creators);
-    if (subjects) apiParams.append('subjects', subjects);
-    if (genres) apiParams.append('genres', genres);
-    if (places) apiParams.append('places', places);
     
     const apiUrl = `${ATOM_API_BASE}/informationobjects?${apiParams}`;
     
