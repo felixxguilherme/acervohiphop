@@ -5,6 +5,7 @@
  */
 
 // AIDEV-NOTE: Removed all static mock data imports - using only real API
+import { fetchCompat } from '@/utils/httpClient';
 
 class AtomService {
   constructor() {
@@ -32,7 +33,7 @@ class AtomService {
 
     console.info('[AtomService] ➡️ Requesting', url.pathname + url.search);
 
-    const response = await fetch(url.toString());
+    const response = await fetchCompat(url.toString());
 
     if (!response.ok) {
       console.error('[AtomService] ❌ Request failed', {

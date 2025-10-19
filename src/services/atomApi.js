@@ -1,4 +1,6 @@
 // AIDEV-NOTE: Service for consuming AtoM API via Next.js API route to avoid CORS issues
+import { fetchCompat } from '@/utils/httpClient';
+
 const API_BASE = '/api/acervo'; // Use local API route
 
 const defaultHeaders = {
@@ -63,7 +65,7 @@ export async function getInformationObjects(options = {}) {
     const url = `${API_BASE}?${params}`;
     console.log('🔍 Fetching from local API:', url);
     
-    const response = await fetch(url, {
+    const response = await fetchCompat(url, {
       method: 'GET',
       headers: defaultHeaders
     });
@@ -112,7 +114,7 @@ export async function getInformationObject(slug) {
     const url = `/api/acervo/${slug}`;
     console.log('Fetching item details:', url);
     
-    const response = await fetch(url, {
+    const response = await fetchCompat(url, {
       method: 'GET',
       headers: defaultHeaders
     });
