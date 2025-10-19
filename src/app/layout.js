@@ -5,6 +5,7 @@ import { dirtyStainsFont } from "./fonts";
 import HeaderApp from "@/components/html/HeaderApp";
 import FooterApp from "@/components/html/FooterApp";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { AcervoProvider } from "@/contexts/AcervoContext";
 import ThemeBackground from "@/components/ThemeBackground";
 
 export const metadata = {
@@ -20,14 +21,16 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning={true}
       >
         <ThemeProvider>
-          <ThemeBackground />
-          <div className="min-h-screen flex flex-col relative z-10">
-            
-              {children}
-                   
-            {/* Footer */}
-            <FooterApp />
-          </div>
+          <AcervoProvider>
+            <ThemeBackground />
+            <div className="min-h-screen flex flex-col relative z-10">
+              
+                {children}
+                     
+              {/* Footer */}
+              <FooterApp />
+            </div>
+          </AcervoProvider>
         </ThemeProvider>
       </body>
     </html>
