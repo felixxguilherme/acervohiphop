@@ -1,5 +1,6 @@
 // AIDEV-NOTE: API route for individual information objects
 import { NextResponse } from 'next/server';
+import { fetchCompat } from '@/utils/httpClient';
 
 const ATOM_API_BASE = 'https://base.acervodistritohiphop.com.br/index.php/api';
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
@@ -11,7 +12,7 @@ export async function GET(request, { params }) {
     
     console.log('Fetching individual item:', apiUrl);
     
-    const response = await fetch(apiUrl, {
+    const response = await fetchCompat(apiUrl, {
       method: 'GET',
       headers: {
         'REST-API-Key': API_KEY,

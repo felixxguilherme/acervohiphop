@@ -1,5 +1,6 @@
 // AIDEV-NOTE: API route to proxy requests to AtoM API - no fallbacks
 import { NextResponse } from 'next/server';
+import { fetchCompat } from '@/utils/httpClient';
 
 const ATOM_API_BASE = 'https://base.acervodistritohiphop.com.br/index.php/api';
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY
@@ -93,7 +94,7 @@ export async function GET(request) {
     }, 30000); // 30 second timeout (aumentado)
     
     console.log('🚀 [API Route] Iniciando fetch...');
-    const response = await fetch(apiUrl, {
+    const response = await fetchCompat(apiUrl, {
       method: 'GET',
       headers: {
         'REST-API-Key': API_KEY,
