@@ -355,13 +355,13 @@ export default function Home() {
         {/* Elementos decorativos */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           <div
-            className="absolute top-20 -right-10 w-24 h-24 bg-contain bg-no-repeat"
+            className="absolute top-20 -right-10 w-40 h-40 bg-contain bg-no-repeat"
             style={{
               backgroundImage: "url('/spray_preto-1.png')"
             }}
           />
           <div
-            className="absolute bottom-20 left-10 w-20 h-20 bg-contain bg-no-repeat rotate-12"
+            className="absolute bottom-20 left-10 w-40 h-40 bg-contain bg-no-repeat rotate-12"
             style={{
               backgroundImage: "url('/spray_preto-2.png')"
             }}
@@ -514,14 +514,14 @@ export default function Home() {
           />
         </div>
 
-        <div className="max-w-6xl mx-auto px-6 relative z-20">
+        <div className="max-w-6xl mx-auto relative z-20">
           {/* Título da seção */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-left mb-16"
+            className="text-left mb-16 border-black border-b-3 w-full px-6"
           >
             <h2 className="marca-texto-amarelo text-4xl md:text-5xl font-dirty-stains text-white mb-6 px-6">
               4 DÉCADAS DE HISTÓRIA
@@ -550,7 +550,7 @@ export default function Home() {
                 <div className="w-1/2 pr-8 text-right">
                   <div
                     style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}}
-                    className="p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                    className="p-10 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
                     <div className="font-scratchy font-black text-black text-2xl mb-2">1980</div>
                     <h3 className="font-dirty-stains text-3xl text-black mb-3">PRIMEIROS PASSOS</h3>
                     <p className="font-sometype-mono text-sm text-black font-bold leading-relaxed">

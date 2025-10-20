@@ -15,7 +15,7 @@ export default function FooterApp() {
   
   return (
   <footer
-      className="relative z-10 border-t-3 border-solid border-theme text-center bg-[#FFFCF2] dark:bg-[#312F2C]"
+      className="relative z-10 border-b-3 border-l-3 border-r-3 border-solid border-theme text-center bg-[#FFFCF2] dark:bg-[#312F2C]"
       style={{
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
       }}

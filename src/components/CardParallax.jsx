@@ -42,7 +42,7 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
     >
       <motion.div 
         style={{backgroundColor: color, scale, top:`calc(-5vh + ${i * 25}px)`}} 
-        className="card"
+        className="card fundo-base border-black border-3"
       >
         <h2 className="font-dirty-stains">{title}</h2>
         <div className="body">

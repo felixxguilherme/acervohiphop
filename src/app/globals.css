@@ -301,7 +301,7 @@ body.theme-light h4,
 body.theme-light h5,
 body.theme-light h6 {
   color: #000000;
-  font-family: var(--font-scratchy);
+  font-family: var(--font-sometype-mono-italic);
 }
 
 body.theme-dark h3,
