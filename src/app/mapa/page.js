@@ -364,7 +364,7 @@ export default function Mapa() {
                         </div>
                         <p className="font-dirty-stains text-xl mb-2">Carregando regiões mapeadas...</p>
                         <p className="font-sometype-mono text-sm text-gray-600">
-                          🗺️ Processando dados do acervo para gerar coordenadas geográficas
+                          🗺️ Processando dados do acervo para gerar coordenadas geográficas automaticamente
                         </p>
                       </div>
                     </div>
