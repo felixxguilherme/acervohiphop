@@ -429,6 +429,21 @@ export function AcervoProvider({ children }) {
     dispatch({ type: ACTIONS.SET_TAXONOMIES, taxonomies: null });
     dispatch({ type: ACTIONS.SET_MAP_DATA, data: [] });
     dispatch({ type: ACTIONS.SET_GEOJSON, geoJson: null });
+    
+    // Limpar também o localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        // Remover cache do mapa
+        ['8337', '3312'].forEach(creatorId => {
+          localStorage.removeItem(`mapData_${creatorId}`);
+          localStorage.removeItem(`geoJson_${creatorId}`);
+          localStorage.removeItem(`mapCache_timestamp_${creatorId}`);
+        });
+        console.info('[AcervoContext] 🧹 Cache do localStorage limpo');
+      } catch (error) {
+        console.warn('[AcervoContext] ⚠️ Erro ao limpar cache do localStorage:', error);
+      }
+    }
   }, []);
 
   // Carregar itens de um creator específico com detalhes
@@ -478,9 +493,65 @@ export function AcervoProvider({ children }) {
     }
   }, []);
 
-  // Carregar dados do mapa com carregamento progressivo otimizado
+  // Carregar dados do mapa com carregamento progressivo otimizado e cache persistente
   const loadMapData = useCallback(async (creatorId = '8337', forceReload = false, fastMode = true) => {
-    if (state.mapData.length > 0 && !forceReload) return; // Já carregado
+    // Verificar cache em memória primeiro
+    if (state.mapData.length > 0 && state.geoJson && !forceReload) {
+      console.info('[AcervoContext] 🎯 Dados do mapa já carregados em memória');
+      return;
+    }
+
+    // Verificar cache no localStorage
+    if (!forceReload && typeof window !== 'undefined') {
+      try {
+        const cachedMapData = localStorage.getItem(`mapData_${creatorId}`);
+        const cachedGeoJson = localStorage.getItem(`geoJson_${creatorId}`);
+        const cacheTimestamp = localStorage.getItem(`mapCache_timestamp_${creatorId}`);
+        
+        // Cache válido por 24 horas
+        const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas
+        const now = Date.now();
+        
+        if (cachedMapData && cachedGeoJson && cacheTimestamp) {
+          const timestamp = parseInt(cacheTimestamp);
+          if (now - timestamp < CACHE_DURATION) {
+            console.info('[AcervoContext] 🎯 Carregando dados do mapa do localStorage (cache válido)');
+            
+            const mapData = JSON.parse(cachedMapData);
+            const geoJson = JSON.parse(cachedGeoJson);
+            
+            // Calcular estatísticas
+            const itemsWithCoordinates = geoJson.features?.filter(f => f.properties.has_real_coordinates).length || 0;
+            const statistics = {
+              totalItems: geoJson.features?.length || 0,
+              itemsWithCoordinates,
+              itemsWithoutCoordinates: (geoJson.features?.length || 0) - itemsWithCoordinates,
+              extractionSuccessRate: geoJson.metadata?.coordinate_statistics?.extraction_success_rate || '0%'
+            };
+            
+            dispatch({
+              type: ACTIONS.SET_MAP_DATA,
+              data: mapData,
+              statistics
+            });
+            
+            dispatch({
+              type: ACTIONS.SET_GEOJSON,
+              geoJson
+            });
+            
+            return;
+          } else {
+            console.info('[AcervoContext] ⏰ Cache expirado, removendo do localStorage');
+            localStorage.removeItem(`mapData_${creatorId}`);
+            localStorage.removeItem(`geoJson_${creatorId}`);
+            localStorage.removeItem(`mapCache_timestamp_${creatorId}`);
+          }
+        }
+      } catch (error) {
+        console.warn('[AcervoContext] ⚠️ Erro ao ler cache do localStorage:', error);
+      }
+    }
     
     dispatch({ type: ACTIONS.SET_LOADING, section: 'map', value: true });
     dispatch({ type: ACTIONS.SET_ERROR, section: 'map', error: null });
@@ -590,7 +661,19 @@ export function AcervoProvider({ children }) {
       });
       
       // Gerar GeoJSON automaticamente
-      generateGeoJson(itemsWithDetails);
+      const geoJson = generateGeoJson(itemsWithDetails);
+      
+      // Salvar no localStorage para cache persistente
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(`mapData_${creatorId}`, JSON.stringify(itemsWithDetails));
+          localStorage.setItem(`geoJson_${creatorId}`, JSON.stringify(geoJson));
+          localStorage.setItem(`mapCache_timestamp_${creatorId}`, Date.now().toString());
+          console.info('[AcervoContext] 💾 Dados do mapa salvos no localStorage');
+        } catch (error) {
+          console.warn('[AcervoContext] ⚠️ Erro ao salvar cache no localStorage:', error);
+        }
+      }
       
     } catch (error) {
       console.error('[AcervoContext] ❌ Erro ao carregar dados do mapa:', error);
@@ -598,7 +681,7 @@ export function AcervoProvider({ children }) {
     } finally {
       dispatch({ type: ACTIONS.SET_LOADING, section: 'map', value: false });
     }
-  }, [state.mapData.length]);
+  }, []);
 
   // Gerar GeoJSON a partir dos dados do mapa
   const generateGeoJson = useCallback((items = state.mapData) => {
@@ -697,7 +780,7 @@ export function AcervoProvider({ children }) {
     console.info(`[AcervoContext] ✅ GeoJSON gerado: ${features.length} features, ${itemsWithCoordinates} com coordenadas reais`);
     
     return geoJson;
-  }, [state.mapData]);
+  }, []);
 
   // Atualizar feature específica no GeoJSON
   const updateGeoJsonFeature = useCallback((featureId, updates) => {
@@ -753,8 +836,40 @@ export function AcervoProvider({ children }) {
         case 'collections': return state.collections.length > 0;
         case 'taxonomies': return !!state.taxonomies;
         case 'search': return state.searchResults.length > 0;
+        case 'map': return state.mapData.length > 0;
         default: return false;
       }
+    },
+    
+    // Utilitário para verificar cache
+    getCacheStatus: () => {
+      if (typeof window === 'undefined') return null;
+      
+      const cacheInfo = {};
+      ['8337', '3312'].forEach(creatorId => {
+        const timestamp = localStorage.getItem(`mapCache_timestamp_${creatorId}`);
+        const mapData = localStorage.getItem(`mapData_${creatorId}`);
+        const geoJson = localStorage.getItem(`geoJson_${creatorId}`);
+        
+        if (timestamp && mapData && geoJson) {
+          const age = Date.now() - parseInt(timestamp);
+          const ageHours = Math.floor(age / (1000 * 60 * 60));
+          const mapDataSize = Math.round(mapData.length / 1024);
+          const geoJsonSize = Math.round(geoJson.length / 1024);
+          
+          cacheInfo[creatorId] = {
+            cached: true,
+            ageHours,
+            mapDataSizeKB: mapDataSize,
+            geoJsonSizeKB: geoJsonSize,
+            totalSizeKB: mapDataSize + geoJsonSize
+          };
+        } else {
+          cacheInfo[creatorId] = { cached: false };
+        }
+      });
+      
+      return cacheInfo;
     }
   };
 

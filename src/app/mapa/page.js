@@ -87,22 +87,32 @@ const MapaContent = () => {
   // Estado local para controlar carregamento das regiões separadamente
   const [regionsLoading, setRegionsLoading] = useState(false);
 
-  // Load map data de forma assíncrona (não bloqueia a página)
+  // Load map data de forma assíncrona (não bloqueia a página) - COM CACHE
   useEffect(() => {
+    // Verificar se já temos dados carregados
+    if (geoJson?.features?.length > 0) {
+      console.info('[Mapa] 🎯 Dados do mapa já carregados, pulando requisição');
+      return;
+    }
+
     const loadMapDataAsync = async () => {
       setRegionsLoading(true);
       try {
-        await loadMapData('8337', false, false); // Carregar todos os dados (modo completo)
+        console.info('[Mapa] 🗺️ Iniciando carregamento dos dados do mapa');
+        await loadMapData('8337', false, true); // Modo rápido por padrão
       } catch (error) {
-        console.error('Erro ao carregar dados do mapa:', error);
+        console.error('[Mapa] ❌ Erro ao carregar dados do mapa:', error);
       } finally {
         setRegionsLoading(false);
       }
     };
 
     // Delay para permitir que a página renderize primeiro
-    setTimeout(loadMapDataAsync, 100);
-  }, [loadMapData]);
+    const timeoutId = setTimeout(loadMapDataAsync, 100);
+    
+    // Cleanup do timeout se o componente for desmontado
+    return () => clearTimeout(timeoutId);
+  }, []); // Dependências vazias para executar apenas uma vez
 
   // Convert GeoJSON features to locations format for the map
   const locations = geoJson?.features?.map(feature => ({
