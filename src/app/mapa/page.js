@@ -14,7 +14,7 @@ import MapSearchComponent from '@/components/mapa/MapSearchComponent';
 import TourMenu from '@/components/mapa/TourMenu';
 import MapboxStorytellingOverlay from '@/components/mapa/MapboxStorytellingOverlay';
 import LayerControl from '@/components/mapa/LayerControl';
-import MapLockIndicatorSimple from '@/components/mapa/MapLockIndicatorSimple';
+
 import storiesMapboxFormat from '@/data/storiesMapboxFormat';
 import { iconTypes } from '@/components/mapa/MapIcons';
 import { useAcervo } from '@/contexts/AcervoContext';
@@ -437,133 +437,80 @@ const MapaContent = () => {
                       )}
                     </button>
                     
-                    <div style={{ height: isFullscreen ? '100vh' : '600px', position: 'relative' }}>
+                    <div style={{ height: isFullscreen ? '100vh' : '600px', position: isFullscreen ? 'fixed' : 'relative', top: isFullscreen ? 0 : 'auto', left: isFullscreen ? 0 : 'auto', width: isFullscreen ? '100vw' : '100%', zIndex: isFullscreen ? 9999 : 'auto' }}>
                       {isFullscreen ? (
-                        /* Layout expandido com grid customizado */
-                        <div className="h-full grid grid-cols-5 bg-theme-background border-2 border-black">
-                          {/* Menu lateral - 1/5 da tela */}
-                          <div className="col-span-1 bg-white border-r-2 border-black p-4 overflow-y-auto">
-                            <h3 className="text-lg font-dirty-stains text-theme-primary mb-4 text-left">BUSCA E CAMADAS</h3>
-                            
-                            {/* Search Component */}
-                            <div className="mb-6">
-                              <MapSearchComponent
-                                isFullscreen={isFullscreen}
-                                onLocationFilter={handleLocationFilter}
-                                onMarkerClick={handleMarkerClick}
-                                selectedLocation={selectedLocation}
-                              />
-                            </div>
-                            
-                            {/* Layer Control */}
-                            <div className="mb-6">
-                              <LayerControl isVisible={true} />
-                            </div>
-                            
-                            {/* Informações do POI selecionado */}
-                            {selectedLocation && (
-                              <div className="bg-theme-background border-2 border-black p-4">
-                                <h4 className="font-dirty-stains text-lg text-theme-primary mb-2">LOCAL SELECIONADO</h4>
-                                <h5 className="font-dirty-stains text-md mb-2">{selectedLocation.name}</h5>
-                                <p className="font-sometype-mono text-sm text-gray-700 mb-3">{selectedLocation.description}</p>
-                                <div className="flex flex-wrap gap-2">
-                                  <span className="bg-blue-100 text-blue-800 px-2 py-1 border border-blue-300 text-xs font-sometype-mono">
-                                    {selectedLocation.itemCount} {selectedLocation.itemCount === 1 ? 'item' : 'itens'}
-                                  </span>
-                                  {selectedLocation.has_real_coordinates && (
-                                    <span className="bg-green-100 text-green-800 px-2 py-1 border border-green-300 text-xs font-sometype-mono">
-                                      GPS
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          
-                          {/* Área principal - 4/5 da tela */}
-                          <div className="col-span-4 flex flex-col">
-                            {/* Barra de tours - 1/4 da altura */}
-                            <div className="h-1/4 bg-white border-b-2 border-black p-4 overflow-y-auto">
-                              <h3 className="text-lg font-dirty-stains text-theme-primary mb-4 text-left">TOURS INTERATIVOS</h3>
-                              <TourMenu
-                                isFullscreen={isFullscreen}
-                                onTourSelect={handleTourSelect}
-                                selectedTour={selectedTour}
-                              />
-                              
-                              {/* Mapbox Storytelling Overlay */}
-                              {selectedTour && (
-                                <MapboxStorytellingOverlay
-                                  selectedTour={selectedTour}
-                                  onMapMove={handleMapFlyTo}
-                                  onChapterChange={handleChapterChange}
-                                  isVisible={true}
-                                />
-                              )}
-                            </div>
-                            
-                            {/* Mapa - 3/4 da altura */}
-                            <div className="flex-1 relative">
-                              <MapRenderer
-                        ref={mapRef}
-                        {...viewState}
-                        onLoad={(evt) => {
-                          console.log('Map loaded successfully');
-                        }}
-                        onMove={evt => {
-                          // Always update viewState but prevent user interaction during tour
-                          setViewState(evt.viewState);
-                        }}
-                        style={{ 
-                          width: '100%', 
-                          height: '100%',
-                          cursor: 'grab'
-                        }}
-                        mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
-                        attributionControl={false}
-                      >
-                        {filteredLocations.map((location) => (
-                          <Marker
-                            key={location.id}
-                            longitude={location.coordinates.lng}
-                            latitude={location.coordinates.lat}
-                            onClick={(e) => {
-                              e.originalEvent.stopPropagation();
-                              handleMarkerClick(location);
+                        /* Layout fullscreen - mapa tela inteira com menus flutuantes */
+                        <div className="h-full relative">
+                          {/* Mapa ocupando toda a tela */}
+                          <MapRenderer
+                            ref={mapRef}
+                            {...viewState}
+                            onLoad={(evt) => {
+                              console.log('Map loaded successfully');
                             }}
+                            onMove={evt => {
+                              setViewState(evt.viewState);
+                            }}
+                            style={{ 
+                              width: '100%', 
+                              height: '100%',
+                              cursor: 'grab'
+                            }}
+                            mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
+                            attributionControl={false}
                           >
-                            <motion.div
-                              whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
-                              whileTap={{ scale: 0.9 }}
-                              animate={{
-                                scale: (selectedTour && 
-                                  checkTourLocationMatch(selectedTour.chapters[currentChapter], location)) 
-                                  ? 1.3 : 1,
-                                backgroundColor: (selectedTour &&
-                                  checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                  ? '#f8e71c' : '#fae523'
-                              }}
-                              transition={{ duration: 0.5, ease: "easeOut" }}
-                              className={`w-8 h-8 border-3 border-black rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
-                                selectedTour ? 'ring-2 ring-white/50' : ''
-                              }`}
-                              style={{
-                                backgroundColor: (selectedTour &&
-                                  checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                  ? '#f8e71c' : '#fae523'
-                              }}
-                            >
-                              {location.isRandomPoint ? (
-                                // AIDEV-NOTE: Render custom SVG icon for random points
-                                (() => {
-                                  const IconComponent = getIconComponent(location);
-                                  return IconComponent ? (
-                                    <IconComponent 
-                                      size={20} 
-                                      color={(selectedTour &&
-                                        checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                        ? '#f8e71c' : '#fae523'} 
-                                    />
+                            {filteredLocations.map((location) => (
+                              <Marker
+                                key={location.id}
+                                longitude={location.coordinates.lng}
+                                latitude={location.coordinates.lat}
+                                onClick={(e) => {
+                                  e.originalEvent.stopPropagation();
+                                  handleMarkerClick(location);
+                                }}
+                              >
+                                <motion.div
+                                  whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  animate={{
+                                    scale: (selectedTour && 
+                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location)) 
+                                      ? 1.3 : 1,
+                                    backgroundColor: (selectedTour &&
+                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                      ? '#f8e71c' : '#fae523'
+                                  }}
+                                  transition={{ duration: 0.5, ease: "easeOut" }}
+                                  className={`w-8 h-8 border-3 border-black rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
+                                    selectedTour ? 'ring-2 ring-white/50' : ''
+                                  }`}
+                                  style={{
+                                    backgroundColor: (selectedTour &&
+                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                      ? '#f8e71c' : '#fae523'
+                                  }}
+                                >
+                                  {location.isRandomPoint ? (
+                                    (() => {
+                                      const IconComponent = getIconComponent(location);
+                                      return IconComponent ? (
+                                        <IconComponent 
+                                          size={20} 
+                                          color={(selectedTour &&
+                                            checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                            ? '#f8e71c' : '#fae523'} 
+                                        />
+                                      ) : (
+                                        <motion.div
+                                          animate={{
+                                            scale: (selectedTour &&
+                                              checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                              ? 1.2 : 1
+                                          }}
+                                          className="w-3 h-3 bg-black rounded-full"
+                                        />
+                                      );
+                                    })()
                                   ) : (
                                     <motion.div
                                       animate={{
@@ -573,27 +520,36 @@ const MapaContent = () => {
                                       }}
                                       className="w-3 h-3 bg-black rounded-full"
                                     />
-                                  );
-                                })()
-                              ) : (
-                                // AIDEV-NOTE: Default marker for original locations
-                                <motion.div
-                                  animate={{
-                                    scale: (selectedTour &&
-                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                      ? 1.2 : 1
-                                  }}
-                                  className="w-3 h-3 bg-black rounded-full"
-                                />
-                              )}
-                            </motion.div>
-                          </Marker>
-                        ))}
-
-                                {/* Popup apenas no modo fullscreen - agora no menu lateral */}
-                              </MapRenderer>
-                            </div>
-                          </div>
+                                  )}
+                                </motion.div>
+                              </Marker>
+                            ))}
+                          </MapRenderer>
+                          
+                          {/* Menus flutuantes preservados */}
+                          <TourMenu
+                            isFullscreen={isFullscreen}
+                            onTourSelect={handleTourSelect}
+                            selectedTour={selectedTour}
+                          />
+                          
+                          <LayerControl isVisible={isFullscreen && !selectedTour} />
+                          
+                          <MapboxStorytellingOverlay
+                            selectedTour={selectedTour}
+                            onMapMove={handleMapFlyTo}
+                            onChapterChange={handleChapterChange}
+                            isVisible={isFullscreen && !!selectedTour}
+                          />
+                          
+                          {!selectedTour && (
+                            <MapSearchComponent
+                              isFullscreen={isFullscreen}
+                              onLocationFilter={handleLocationFilter}
+                              onMarkerClick={handleMarkerClick}
+                              selectedLocation={selectedLocation}
+                            />
+                          )}
                         </div>
                       ) : (
                         /* Layout normal */
@@ -950,6 +906,52 @@ const MapaContent = () => {
                   )}
                 </div>
               </motion.section>
+
+              <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-black p-8">
+              
+              
+                      {/* Decorative elements */}
+                      <div className="absolute inset-0 z-10 pointer-events-none decorative-elements">
+              
+                        {/* Spray effects */}
+                        <div
+                          className="absolute -bottom-10 left-15 w-64 h-64 bg-contain bg-no-repeat"
+                          style={{
+                            backgroundImage: "url('/cursor02.png')"
+                          }}
+                        />
+              
+                        <div
+                          className="absolute top-0 -right-15 w-32 h-32 bg-contain bg-no-repeat"
+                          style={{
+                            backgroundImage: "url('/spray_preto-1.png')"
+                          }}
+                        />
+              
+                        <div
+                          className="absolute top-5 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
+                          style={{
+                            backgroundImage: "url('/spray_preto-2.png')"
+                          }}
+                        />
+                      </div>
+              
+                      {/* Main content */}
+                      <div className="relative z-20 text-center max-w-6xl mx-auto px-6">
+                        {/* Subtitle */}
+                        <motion.p
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.8, delay: 0.3 }}
+                          className="mt-15 text-2xl md:text-2xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
+                        >
+                          Este é o Mapa das Batalhas: uma ferramenta da nossa plataforma interativa que conecta as Batalhas de MC´s do DF, mostrando de forma dinâmica e precisa onde e quando a cultura urbana se manifestou e continua a pulsar.
+
+Neste mapa, geolocalizações e arquivos se unem para criar um panorama da resistência cultural do DF, mapeando encontros, datas e trajetórias que desenham o território Hip Hop. Nosso mapa permite navegar por essa geografia em tempo real, onde a memória se move e se transforma em dados dinâmicos. A cada clique, você mergulha na história do Hip Hop DF.
+Veja o Distrito Federal além dos setores e monumentos. Aqui, traçamos pontos que conectam a força de uma cultura que nasceu à margem. E com isso, fazemos do território um palco, onde cada batalha é parte dessa construção. Ao acessar, surpreenda-se com a potência desta cidade, agora também construída por você. 
+                        </motion.p>
+                      </div>
+                    </section>
 
               {/* Modal de detalhes do local */}
               {selectedLocation && (

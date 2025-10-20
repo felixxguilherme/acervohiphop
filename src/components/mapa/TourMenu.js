@@ -22,22 +22,22 @@ const TourMenu = ({ isFullscreen, onTourSelect, selectedTour }) => {
       exit={{ opacity: 0, y: -100 }}
       className="fixed top-4 left-1/2 transform -translate-x-1/2 z-30 w-96 max-w-[calc(100vw-2rem)]"
     >
-      <div className="bg-black/90 backdrop-blur-md border-2 border-yellow-400 rounded-lg shadow-2xl">
+      <div className="bg-[#fae523] border-3 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
         {/* Menu Header */}
-        <div className="p-4 border-b border-white/20">
+        <div className="p-4 border-b-3 border-black">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="text-yellow-400 text-xl">🗺️</div>
+              <div className="text-black text-xl">🗺️</div>
               <div>
-                <h3 className="font-dirty-stains text-xl text-white">TOURS INTERATIVOS</h3>
-                <p className="text-white/60 text-xs font-mono">
+                <h3 className="font-dirty-stains text-xl text-black">TOURS INTERATIVOS</h3>
+                <p className="text-black/60 text-xs font-sometype-mono">
                   {selectedTour ? selectedTour.title : 'Selecione uma história para explorar'}
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="bg-yellow-400 hover:bg-yellow-300 text-black px-3 py-2 rounded text-sm font-mono transition-colors flex items-center gap-2"
+              className="bg-black text-[#fae523] hover:bg-gray-800 px-3 py-2 border-2 border-black text-sm font-sometype-mono transition-colors flex items-center gap-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
             >
               {selectedTour ? 'Trocar' : 'Escolher'} Tour
               <span className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
@@ -66,42 +66,42 @@ const TourMenu = ({ isFullscreen, onTourSelect, selectedTour }) => {
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ scale: 1.02, x: 4 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-300 ${
+                    className={`w-full text-left p-4 border-2 border-black transition-all duration-300 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
                       selectedTour?.id === tour.id
-                        ? 'bg-yellow-400/20 border-yellow-400 shadow-lg'
-                        : 'bg-white/5 border-white/20 hover:border-white/40 hover:bg-white/10'
+                        ? 'bg-black text-[#fae523]'
+                        : 'bg-white text-black hover:bg-gray-100'
                     }`}
                   >
                     <div className="flex gap-4">
                       {/* Tour Thumbnail */}
                       <div className="flex-shrink-0">
-                        <div className="w-16 h-12 rounded bg-yellow-400/20 border border-white/20 flex items-center justify-center">
+                        <div className="w-16 h-12 bg-[#fae523] border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                           <span className="text-2xl">📖</span>
                         </div>
                       </div>
                       
                       {/* Tour Info */}
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-dirty-stains text-lg text-white mb-1 line-clamp-1">
+                        <h4 className={`font-dirty-stains text-lg mb-1 line-clamp-1 ${selectedTour?.id === tour.id ? 'text-[#fae523]' : 'text-black'}`}>
                           {tour.title}
                         </h4>
-                        <p className="text-white/70 text-xs mb-2 line-clamp-2">
+                        <p className={`text-xs mb-2 line-clamp-2 font-sometype-mono ${selectedTour?.id === tour.id ? 'text-[#fae523]/70' : 'text-black/70'}`}>
                           {tour.subtitle}
                         </p>
                         
                         {/* Tour Metadata */}
                         <div className="flex items-center gap-3 text-xs">
-                          <span className="flex items-center gap-1 text-yellow-400">
+                          <span className={`flex items-center gap-1 ${selectedTour?.id === tour.id ? 'text-[#fae523]' : 'text-black'}`}>
                             📍 {tour.chapters.length} capítulos
                           </span>
-                          <span className="flex items-center gap-1 text-white/60">
+                          <span className={`flex items-center gap-1 ${selectedTour?.id === tour.id ? 'text-[#fae523]/60' : 'text-black/60'}`}>
                             👤 {tour.author || tour.byline}
                           </span>
                         </div>
                         
                         {/* Theme indicator */}
                         <div className="flex gap-1 mt-2 flex-wrap">
-                          <span className="bg-white/10 text-white/80 px-2 py-1 rounded text-xs border border-white/20">
+                          <span className={`px-2 py-1 text-xs border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${selectedTour?.id === tour.id ? 'bg-[#fae523] text-black' : 'bg-black text-[#fae523]'}`}>
                             {tour.theme}
                           </span>
                         </div>
@@ -110,11 +110,11 @@ const TourMenu = ({ isFullscreen, onTourSelect, selectedTour }) => {
                       {/* Selection Indicator */}
                       <div className="flex-shrink-0 flex items-center">
                         {selectedTour?.id === tour.id ? (
-                          <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                            <div className="w-3 h-3 bg-black rounded-full"></div>
+                          <div className="w-6 h-6 bg-[#fae523] border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                            <div className="w-3 h-3 bg-black"></div>
                           </div>
                         ) : (
-                          <div className="w-6 h-6 border-2 border-white/40 rounded-full"></div>
+                          <div className="w-6 h-6 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"></div>
                         )}
                       </div>
                     </div>
@@ -123,17 +123,17 @@ const TourMenu = ({ isFullscreen, onTourSelect, selectedTour }) => {
               </div>
 
               {/* Quick Actions */}
-              <div className="p-4 border-t border-white/10">
+              <div className="p-4 border-t-3 border-black">
                 <div className="flex gap-2 text-xs">
                   <button
                     onClick={() => onTourSelect(null)}
-                    className="flex-1 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded border border-white/20 transition-colors"
+                    className="flex-1 bg-white hover:bg-gray-100 text-black px-3 py-2 border-2 border-black transition-colors font-sometype-mono shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
                   >
                     🚫 Sair do Tour
                   </button>
                   <button
                     onClick={() => setIsExpanded(false)}
-                    className="flex-1 bg-yellow-400/20 hover:bg-yellow-400/30 text-yellow-400 px-3 py-2 rounded border border-yellow-400/40 transition-colors"
+                    className="flex-1 bg-black hover:bg-gray-800 text-[#fae523] px-3 py-2 border-2 border-black transition-colors font-sometype-mono shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
                   >
                     ✨ Explorar Livre
                   </button>
@@ -145,13 +145,13 @@ const TourMenu = ({ isFullscreen, onTourSelect, selectedTour }) => {
 
         {/* Current Tour Status */}
         {selectedTour && !isExpanded && (
-          <div className="p-3 border-t border-white/10">
+          <div className="p-3 border-t-3 border-black">
             <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2 text-white/80">
+              <div className="flex items-center gap-2 text-black/80 font-sometype-mono">
                 <span>📖</span>
                 <span>Capítulo 1 de {selectedTour.chapters.length}</span>
               </div>
-              <div className="text-yellow-400">
+              <div className="text-black font-sometype-mono">
                 ▶️ Tour Ativo
               </div>
             </div>
