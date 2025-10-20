@@ -41,7 +41,7 @@ export default function Mapa() {
     const loadMapDataAsync = async () => {
       setRegionsLoading(true);
       try {
-        await loadMapData();
+        await loadMapData('8337', false, false); // Carregar todos os dados (modo completo)
       } catch (error) {
         console.error('Erro ao carregar dados do mapa:', error);
       } finally {
@@ -53,17 +53,6 @@ export default function Mapa() {
     setTimeout(loadMapDataAsync, 100);
   }, [loadMapData]);
 
-  // Função para carregar mais dados se necessário
-  const loadMoreData = async () => {
-    setRegionsLoading(true);
-    try {
-      await loadMapData('8337', true, false); // Modo completo
-    } catch (error) {
-      console.error('Erro ao carregar dados completos:', error);
-    } finally {
-      setRegionsLoading(false);
-    }
-  };
 
   // Convert GeoJSON features to locations format for the map
   const locations = geoJson?.features?.map(feature => ({
@@ -314,21 +303,10 @@ export default function Mapa() {
                 >
                   <div className="text-center mb-8">
                     <h3 className="font-dirty-stains text-4xl text-black mb-4">REGIÕES MAPEADAS</h3>
-                    <div className="flex flex-col items-center gap-2">
-                      <p className="font-sometype-mono text-lg text-black/80">
-                        {locations.length} {locations.length === 1 ? 'região mapeada' : 'regiões mapeadas'}
-                        {totalPages > 1 && ` - Página ${currentPage} de ${totalPages}`}
-                      </p>
-                      {locations.length > 0 && locations.length < 100 && (
-                        <button
-                          onClick={loadMoreData}
-                          disabled={isRegionsLoading}
-                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white border-2 border-black font-dirty-stains text-sm transition-colors"
-                        >
-                          {isRegionsLoading ? '⏳ Carregando...' : '📈 Carregar Mais Regiões'}
-                        </button>
-                      )}
-                    </div>
+                    <p className="font-sometype-mono text-lg text-black/80">
+                      {locations.length} {locations.length === 1 ? 'região mapeada' : 'regiões mapeadas'}
+                      {totalPages > 1 && ` - Página ${currentPage} de ${totalPages}`}
+                    </p>
                   </div>
                   
                   {mapError && (
@@ -344,14 +322,17 @@ export default function Mapa() {
                   {isRegionsLoading ? (
                     <div className="text-center py-12">
                       <div className="bg-white/90 border-2 border-black rounded-lg p-8 max-w-md mx-auto">
-                        <div className="flex justify-center mb-4">
-                          <div className="flex gap-1">
+                        <div className="flex justify-center mb-4 h-8">
+                          <div className="flex gap-1 items-end">
                             {[0, 1, 2].map((index) => (
                               <motion.div
                                 key={index}
-                                className="w-3 h-8 bg-[#fae523] rounded-sm border border-black"
-                                initial={{ height: 8 }}
-                                animate={{ height: [8, 32, 8] }}
+                                className="w-3 bg-[#fae523] rounded-sm border border-black"
+                                style={{ height: '8px' }}
+                                animate={{ 
+                                  scaleY: [1, 3, 1],
+                                  transformOrigin: 'bottom'
+                                }}
                                 transition={{
                                   duration: 0.8,
                                   repeat: Infinity,
