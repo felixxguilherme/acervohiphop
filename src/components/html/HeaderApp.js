@@ -138,21 +138,22 @@ export default function HeaderApp({ title, showTitle = false }) {
                 )}
               </motion.div>
               
-              {/* Spinning text - sempre presente */}
+              {/* Spinning text - sempre presente e centralizado */}
               <div className="flex items-center justify-center flex-1">
                 <Link href="/">
                   <motion.div
                     animate={{
-                      scale: isScrolled ? 0.6 : 1
+                      scale: isScrolled ? 0.8 : 1
                     }}
                     transition={{ 
                       duration: 0.5,
                       ease: [0.23, 1, 0.32, 1]
                     }}
+                    className="flex items-center justify-center"
                   >
                     <SpinningText
-                      radius={isScrolled ? 4 : 6}
-                      className={`${isScrolled ? 'h-8 w-8 text-xs' : 'h-16 w-16 text-xs sm:text-sm md:text-base'} tracking-[0.2em] font-scratchy transition-all duration-500`}
+                      radius={isScrolled ? 5.5 : 6}
+                      className={`${isScrolled ? 'h-12 w-12 text-sm' : 'h-16 w-16 text-xs sm:text-sm md:text-base'} tracking-[0.2em] font-scratchy transition-all duration-500`}
                     >
                       {isScrolled ? 'acervo • hip-hop •' : 'acervo • hip-hop • DF •'}
                     </SpinningText>
@@ -199,7 +200,7 @@ export default function HeaderApp({ title, showTitle = false }) {
               >
                 <Link href="/">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-sm" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-base" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
                     text="HOME" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-amarelo" 
@@ -207,7 +208,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/acervo">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-sm" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-base" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
                     text="ACERVO" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-vermelho" 
@@ -215,7 +216,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/mapa">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-sm" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-base" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
                     text="MAPA" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-azul" 
@@ -223,7 +224,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/revista">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-sm" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-base" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
                     text="REVISTA" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-verde" 

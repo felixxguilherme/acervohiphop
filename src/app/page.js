@@ -590,8 +590,8 @@ export default function Home() {
       </section>
 
       {/* SEÇÃO TIMELINE HISTÓRICA SIMPLES */}
-      <section className="relative py-20 overflow-hidden border-black border-t-3 border-l-3 border-r-3">
-        {/* Elementos decorativos */}
+      {/* <section className="relative py-20 overflow-hidden border-black border-t-3 border-l-3 border-r-3">
+       
         <div className="absolute inset-0 z-10 pointer-events-none">
           <div
             className="absolute -top-10 left-8 w-48 h-48 bg-contain bg-no-repeat"
@@ -608,7 +608,7 @@ export default function Home() {
         </div>
 
         <div className="mx-auto relative z-20">
-          {/* Título da seção */}
+         
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -619,20 +619,18 @@ export default function Home() {
             <h2 className="marca-texto-amarelo text-4xl md:text-5xl font-dirty-stains text-white mb-6 px-6">
               4 DÉCADAS DE HISTÓRIA
             </h2>
-            {/* <p className="text-xl md:text-2xl font-sometype-mono text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              Marcos fundamentais que moldaram o Hip Hop do Distrito Federal
-            </p> */}
+            
           </motion.div>
 
-          {/* Timeline Container */}
+          
           <div className="relative">
-            {/* Linha central vertical - desktop / Linha esquerda - mobile */}
+            
             <div className="absolute left-8 md:left-1/2 md:transform md:-translate-x-1/2 w-1 bg-black h-full top-0"></div>
             
-            {/* Anos da Timeline */}
+           
             <div className="space-y-24">
               
-              {/* 1980 - Lado Esquerdo */}
+            
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -657,7 +655,7 @@ export default function Home() {
                 <div className="hidden md:block md:w-1/2 md:pl-8"></div>
               </motion.div>
 
-              {/* 1995 - Lado Direito */}
+              
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -680,7 +678,7 @@ export default function Home() {
                 </div>
               </motion.div>
 
-              {/* 2001 - Lado Esquerdo */}
+              
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -703,7 +701,7 @@ export default function Home() {
                 <div className="hidden md:block md:w-1/2 md:pl-8"></div>
               </motion.div>
 
-              {/* 2020 - Lado Direito */}
+              
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -729,9 +727,9 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-black pb-0">
+      <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-black p-8">
 
 
         {/* Decorative elements */}
@@ -739,7 +737,7 @@ export default function Home() {
 
           {/* Spray effects */}
           <div
-            className="absolute bottom-0 left-15 w-64 h-64 bg-contain bg-no-repeat"
+            className="absolute -bottom-10 left-15 w-64 h-64 bg-contain bg-no-repeat"
             style={{
               backgroundImage: "url('/cursor02.png')"
             }}
@@ -767,9 +765,11 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-2xl md:text-3xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
+            className="mt-15 text-2xl md:text-2xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
           >
-            Arquivo bruto, direto e factual. Capturando a evolução das expressões artísticas que sobreviveram à exclusão e invisibilidade. Memória viva que inspira e transforma gerações.
+            O arquivo é muito mais que um depósito de papel ou um monólito de verdade única; é trincheira. É onde agora lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios, exclusão e invisibilidade. O arquivo bruto, direto e factual. Sem filtros, sem medo. Porque a verdade não precisa de retoques; ela precisa chegar e ser ouvida. O acervo pretende refletir essa vitalidade, capturando a evolução das expressões artísticas e das narrativas desse movimento. Essa potente fonte que é o Hip Hop, se abastece com nossos percursos, fazendo com que o fluxo nunca seque.
+Não tem como falar de memória sem falar de quem a construiu, corporificam nossa pesquisa grandes pilares desta cultura no Distrito Federal que apoiam o Projeto. Memória não é passado morto; são vidas que ecoam no presente e avançam para quem vem depois. É o legado vivo que inspira e transforma. Arquivos não mais encarnados, mas a arte não morre; ela nos consome, sobrevive e se expande. A memória cultural não é um registro estático do passado, mas uma entidade dinâmica que ressoa no presente e influencia o futuro. Cada história compartilhada, cada som, fotografia, baile e parede são o Hip Hop. Porque, no fim, o que a gente faz é simples: a gente compra a briga.
+Se você está na mesma luta, o Acervo te espera. 
           </motion.p>
 
 
