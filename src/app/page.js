@@ -119,8 +119,21 @@ export default function Home() {
   // Carregar dados iniciais
   useEffect(() => {
     loadStatistics();
-    loadAllItems(24); // Carrega primeiros 24 itens
+    loadAllItems(24); // Carrega primeiros 24 itens para destaques
   }, [loadStatistics, loadAllItems]);
+
+  // Selecionar itens em destaque dos dados reais
+  const featuredItems = allItems.slice(0, 3).map((item, index) => ({
+    ...item,
+    category: index === 0 ? 'Marco Histórico' : index === 1 ? 'Duelos Épicos' : 'Revolução Visual',
+    description: index === 0 
+      ? 'Documentos históricos que marcaram momentos importantes da cultura Hip Hop no DF'
+      : index === 1 
+      ? 'Registros únicos das batalhas de freestyle e apresentações que definiram a cena'
+      : 'Arquivo fotográfico que documenta a evolução visual e artística do movimento',
+    tapeColor: index === 0 ? 'yellow' : index === 1 ? 'blue' : 'green',
+    rotation: index === 0 ? -2 : index === 1 ? 3 : -1
+  }));
 
 
   return (
@@ -305,7 +318,7 @@ export default function Home() {
       </section> */}
 
       {/* SEÇÃO DESTAQUES DO ACERVO */}
-      <section className="relative bg-theme-background overflow-hidden pb-20 pt-16 border-black border-r-3 border-l-3">
+      <section className="relative bg-theme-background overflow-hidden pb-20 pt-16 border-black border-r-3 border-l-3 border-t-3">
         {/* Elementos decorativos */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           <div
@@ -322,129 +335,82 @@ export default function Home() {
           />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 relative z-20">
+        <div className="relative z-20 w-full">
           {/* Título da seção */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-left mb-16 border-black border-b-3 w-full pb-6 px-6"
           >
             <h2 className="text-4xl md:text-5xl font-dirty-stains text-theme-primary mb-6">
               DESTAQUES
             </h2>
-            <p className="text-xl md:text-2xl font-sometype-mono text-theme-secondary max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl font-sometype-mono text-theme-secondary max-w-4xl leading-relaxed">
               Mergulhe na história viva do Hip Hop do DF através de documentos únicos que contam nossa trajetória
             </p>
           </motion.div>
 
-          {/* Grid de itens em destaque */}
+          {/* Grid de itens em destaque - DADOS REAIS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-            {/* Item 1 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              viewport={{ once: true }}
-              className="group cursor-pointer"
-            >
-              <div className="relative">
-                <PolaroidCard
-                  src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&crop=center"
-                  alt="Primeiro Encontro de Hip Hop do DF"
-                  caption="PRIMEIRO ENCONTRO"
-                  subtitle="Hip Hop DF - 1994"
-                  tapeColor="yellow"
-                  rotation={-2}
-                  className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 rounded-lg" />
-              </div>
-              <div className="mt-6 text-center">
-                <h3 className="font-dirty-stains text-2xl text-theme-primary mb-3">
-                  Marco Histórico
-                </h3>
-                <p className="font-sometype-mono text-sm text-theme-secondary mb-4">
-                  Documentos históricos do primeiro grande evento de Hip Hop organizado no Distrito Federal, reunindo toda a cena emergente da época.
-                </p>
-                <CartoonButton
-                  label="VER MAIS"
-                  color="bg-yellow-400"
-                  onClick={() => window.location.href = '/acervo?search=primeiro+encontro+hip+hop'}
-                />
-              </div>
-            </motion.div>
-
-            {/* Item 2 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="group cursor-pointer"
-            >
-              <div className="relative">
-                <PolaroidCard
-                  src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop&crop=center"
-                  alt="Batalhas da Rodoviária"
-                  caption="BATALHAS NA RODO"
-                  subtitle="Duelos de MC - 2000s"
-                  tapeColor="blue"
-                  rotation={3}
-                  className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 rounded-lg" />
-              </div>
-              <div className="mt-6 text-center">
-                <h3 className="font-dirty-stains text-2xl text-theme-primary mb-3">
-                  Duelos Épicos
-                </h3>
-                <p className="font-sometype-mono text-sm text-theme-secondary mb-4">
-                  Registros únicos das batalhas de freestyle que transformaram a Rodoviária do Plano Piloto no epicentro do rap nacional.
-                </p>
-                <CartoonButton
-                  label="VER MAIS"
-                  color="bg-blue-400"
-                  onClick={() => window.location.href = '/acervo?search=batalha+rodoviaria'}
-                />
-              </div>
-            </motion.div>
-
-            {/* Item 3 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              viewport={{ once: true }}
-              className="group cursor-pointer"
-            >
-              <div className="relative">
-                <PolaroidCard
-                  src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop&crop=center"
-                  alt="Grafites do DF"
-                  caption="ARTE NAS RUAS"
-                  subtitle="Grafite DF - 1990s"
-                  tapeColor="green"
-                  rotation={-1}
-                  className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 rounded-lg" />
-              </div>
-              <div className="mt-6 text-center">
-                <h3 className="font-dirty-stains text-2xl text-theme-primary mb-3">
-                  Revolução Visual
-                </h3>
-                <p className="font-sometype-mono text-sm text-theme-secondary mb-4">
-                  Arquivo fotográfico dos primeiros grafites que coloriram as paredes de Brasília, documentando o nascimento da arte urbana local.
-                </p>
-                <CartoonButton
-                  label="VER MAIS"
-                  color="bg-green-400"
-                  onClick={() => window.location.href = '/acervo?search=grafite+brasilia'}
-                />
-              </div>
-            </motion.div>
+            {featuredItems.length > 0 ? featuredItems.map((item, index) => (
+              <motion.div
+                key={item.slug || index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+                viewport={{ once: true }}
+                className="group cursor-pointer"
+              >
+                <div className="relative">
+                  <PolaroidCard
+                    src={item.thumbnail_url || `https://images.unsplash.com/photo-${index === 0 ? '1571019613454-1cb2f99b2d8b' : index === 1 ? '1493225457124-a3eb161ffa5f' : '1514525253161-7a46d19cd819'}?w=400&h=400&fit=crop&crop=center`}
+                    alt={item.title || 'Item do Acervo'}
+                    caption={item.title ? item.title.toUpperCase().substring(0, 20) : item.category.toUpperCase()}
+                    subtitle={item.creation_dates?.[0] || `Acervo Hip Hop DF`}
+                    tapeColor={item.tapeColor}
+                    rotation={item.rotation}
+                    className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 rounded-lg" />
+                </div>
+                <div className="mt-6 text-center">
+                  <h3 className="font-dirty-stains text-2xl text-theme-primary mb-3">
+                    {item.category}
+                  </h3>
+                  <p className="font-sometype-mono text-sm text-theme-secondary mb-4">
+                    {item.scope_and_content || item.description}
+                  </p>
+                  <CartoonButton
+                    label="VER MAIS"
+                    color={`bg-${item.tapeColor}-400`}
+                    onClick={() => window.location.href = `/acervo/item/${item.slug}`}
+                  />
+                </div>
+              </motion.div>
+            )) : (
+              // Fallback loading state
+              [0, 1, 2].map((index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+                  viewport={{ once: true }}
+                  className="group cursor-pointer"
+                >
+                  <div className="relative">
+                    <div className="w-full h-96 bg-gray-200 rounded-lg animate-pulse"></div>
+                  </div>
+                  <div className="mt-6 text-center">
+                    <div className="h-8 bg-gray-200 rounded animate-pulse mb-3"></div>
+                    <div className="h-20 bg-gray-200 rounded animate-pulse mb-4"></div>
+                    <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                  </div>
+                </motion.div>
+              ))
+            )}
           </div>
 
           {/* Call to Action */}

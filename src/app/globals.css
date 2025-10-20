@@ -263,21 +263,28 @@ body.theme-dark .text-theme-muted {
 /* Estilos globais para textos */
 body.theme-light {
   color: #000000;
-  font-family: var(--font-scratchy);
+  font-family: var(--font-sometype-mono-italic);
 }
 
 body.theme-dark {
   color: #ffffff;
-  font-family: var(--font-scratchy);
+  font-family: var(--font-sometype-mono-italic);
 }
 
 /* Títulos principais com Dirty Stains */
-body.theme-light h1,
-body.theme-light h2 {
+body.theme-light h1 {
   color: #000000;
   font-family: var(--font-dirty-stains);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+body.theme-light h2 {
+  color: #000000;
+  font-family: var(--font-sometype-mono-italic);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: bold;
 }
 
 body.theme-dark h1,

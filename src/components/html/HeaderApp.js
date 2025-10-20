@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { SpinningText } from "../magicui/spinning-text";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ThemeToggle from "../ThemeToggle";
 
 export default function HeaderApp({ title, showTitle = false }) {
@@ -13,6 +13,7 @@ export default function HeaderApp({ title, showTitle = false }) {
   const [currentTheme, setCurrentTheme] = useState('light');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const isScrolledRef = useRef(false);
 
   useEffect(() => {
     // Carrega o tema do localStorage no primeiro render
@@ -29,6 +30,11 @@ export default function HeaderApp({ title, showTitle = false }) {
     // Atualiza quando o tema muda
     setCurrentTheme(theme);
   }, [theme]);
+
+  // Sincronizar ref com estado
+  useEffect(() => {
+    isScrolledRef.current = isScrolled;
+  }, [isScrolled]);
   useEffect(() => {
     // Só inicializa o scroll listener após a página estar carregada
     if (!isInitialized) return;
@@ -50,10 +56,10 @@ export default function HeaderApp({ title, showTitle = false }) {
             return;
           }
           
-          // Implementa histerese com mais estabilidade
-          if (currentScrollY > SCROLL_THRESHOLD + HYSTERESIS && !isScrolled) {
+          // Implementa histerese com mais estabilidade usando ref
+          if (currentScrollY > SCROLL_THRESHOLD + HYSTERESIS && !isScrolledRef.current) {
             setIsScrolled(true);
-          } else if (currentScrollY < SCROLL_THRESHOLD - HYSTERESIS && isScrolled) {
+          } else if (currentScrollY < SCROLL_THRESHOLD - HYSTERESIS && isScrolledRef.current) {
             setIsScrolled(false);
           }
           
@@ -76,7 +82,7 @@ export default function HeaderApp({ title, showTitle = false }) {
       window.removeEventListener('scroll', debouncedHandleScroll);
       clearTimeout(timeoutId);
     };
-  }, [isScrolled, isInitialized]);
+  }, [isInitialized]); // Removido isScrolled das dependências
 
   return (
     <motion.header

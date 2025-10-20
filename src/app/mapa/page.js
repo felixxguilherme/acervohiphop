@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -114,30 +114,34 @@ const MapaContent = () => {
     return () => clearTimeout(timeoutId);
   }, []); // Dependências vazias para executar apenas uma vez
 
-  // Convert GeoJSON features to locations format for the map
-  const locations = geoJson?.features?.map(feature => ({
-    id: feature.properties.id,
-    name: feature.properties.title,
-    description: feature.properties.archival_history || 'Sem descrição disponível',
-    coordinates: {
-      lng: feature.geometry.coordinates[0],
-      lat: feature.geometry.coordinates[1]
-    },
-    itemCount: 1,
-    items: [{
-      thumbnail: feature.properties.thumbnail_url,
-      title: feature.properties.title,
-      date: feature.properties.creation_dates?.[0] || 'Data não informada'
-    }],
-    slug: feature.properties.id,
-    reference_code: feature.properties.reference_code,
-    place_access_points: feature.properties.place_access_points,
-    has_real_coordinates: feature.properties.has_real_coordinates,
-    isRandomPoint: !feature.properties.has_real_coordinates
-  })) || [];
+  // Convert GeoJSON features to locations format for the map (memoized)
+  const locations = useMemo(() => {
+    if (!geoJson?.features) return [];
+    
+    return geoJson.features.map(feature => ({
+      id: feature.properties.id,
+      name: feature.properties.title,
+      description: feature.properties.archival_history || 'Sem descrição disponível',
+      coordinates: {
+        lng: feature.geometry.coordinates[0],
+        lat: feature.geometry.coordinates[1]
+      },
+      itemCount: 1,
+      items: [{
+        thumbnail: feature.properties.thumbnail_url,
+        title: feature.properties.title,
+        date: feature.properties.creation_dates?.[0] || 'Data não informada'
+      }],
+      slug: feature.properties.id,
+      reference_code: feature.properties.reference_code,
+      place_access_points: feature.properties.place_access_points,
+      has_real_coordinates: feature.properties.has_real_coordinates,
+      isRandomPoint: !feature.properties.has_real_coordinates
+    }));
+  }, [geoJson]);
 
   // Set filtered locations state for search functionality
-  const [filteredLocations, setFilteredLocations] = useState(locations);
+  const [filteredLocations, setFilteredLocations] = useState([]);
   
   // Update filtered locations when locations change
   useEffect(() => {
