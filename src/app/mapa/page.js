@@ -2,7 +2,21 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import Link from 'next/link';
+import Image from 'next/image';
+import AnimatedButton from '@/components/AnimatedButton';
 import HeaderApp from '@/components/html/HeaderApp';
+import { Marker, Popup } from 'react-map-gl/maplibre';
+import { MapProvider } from '@/contexts/MapContext';
+import MapRenderer from '@/components/mapa/MapRenderer';
+import { useMapLayers } from '@/hooks/useMapLayers';
+import MapSearchComponent from '@/components/mapa/MapSearchComponent';
+import TourMenu from '@/components/mapa/TourMenu';
+import MapboxStorytellingOverlay from '@/components/mapa/MapboxStorytellingOverlay';
+import LayerControl from '@/components/mapa/LayerControl';
+import MapLockIndicatorSimple from '@/components/mapa/MapLockIndicatorSimple';
+import storiesMapboxFormat from '@/data/storiesMapboxFormat';
+import { iconTypes } from '@/components/mapa/MapIcons';
 import { useAcervo } from '@/contexts/AcervoContext';
 import { 
   Pagination, 
@@ -13,8 +27,9 @@ import {
   PaginationPrevious 
 } from '@/components/ui/pagination';
 
-export default function Mapa() {
-  // Context hook for real data
+// AIDEV-NOTE: Internal component that uses map context
+const MapaContent = () => {
+  // Context hook for real data from development branch
   const { 
     mapData, 
     geoJson, 
@@ -24,10 +39,46 @@ export default function Mapa() {
     getError 
   } = useAcervo();
 
+  const mapLayers = useMapLayers();
+
+  // AIDEV-NOTE: Initialize map layers when component mounts
+  useEffect(() => {
+    mapLayers.initializeDefaultLayers();
+  }, []);
+
+  // AIDEV-NOTE: Helper function to get icon component for random points
+  const getIconComponent = (location) => {
+    if (!location.isRandomPoint || !location.iconType) return null;
+    const iconType = iconTypes.find(icon => icon.name === location.iconType);
+    return iconType ? iconType.component : null;
+  };
+
+  // AIDEV-NOTE: Helper function to check if tour chapter matches location
+  const checkTourLocationMatch = (chapter, location) => {
+    if (!chapter || !chapter.location || !location) return false;
+    
+    // Check if coordinates are close enough (within ~100m)
+    const chapterLng = chapter.location.center[0];
+    const chapterLat = chapter.location.center[1];
+    const locationLng = location.coordinates.lng;
+    const locationLat = location.coordinates.lat;
+    
+    const distance = Math.sqrt(
+      Math.pow(chapterLng - locationLng, 2) + Math.pow(chapterLat - locationLat, 2)
+    );
+    
+    return distance < 0.001; // Approximately 100m
+  };
+
   const [isMapLoading, setIsMapLoading] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [selectedTour, setSelectedTour] = useState(null);
+  const [currentChapter, setCurrentChapter] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const flyToTimeoutRef = useRef(null);
   
   // Estados para paginação
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,7 +104,6 @@ export default function Mapa() {
     setTimeout(loadMapDataAsync, 100);
   }, [loadMapData]);
 
-
   // Convert GeoJSON features to locations format for the map
   const locations = geoJson?.features?.map(feature => ({
     id: feature.properties.id,
@@ -76,32 +126,147 @@ export default function Mapa() {
     isRandomPoint: !feature.properties.has_real_coordinates
   })) || [];
 
+  // Set filtered locations state for search functionality
+  const [filteredLocations, setFilteredLocations] = useState(locations);
+  
+  // Update filtered locations when locations change
+  useEffect(() => {
+    setFilteredLocations(locations);
+  }, [locations]);
+
+  // Set viewState for map with default center
+  const [viewState, setViewState] = useState({
+    longitude: -47.9292, // Brasília center
+    latitude: -15.7801,
+    zoom: 10,
+    bearing: 0,
+    pitch: 0
+  });
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setTimeout(() => setIsMapLoading(false), 800);
     }
   }, []);
 
-  const handleLocationClick = (location) => {
+  const handleMarkerClick = (location) => {
     setSelectedLocation(location);
+    setViewState({
+      ...viewState,
+      longitude: location.coordinates.lng,
+      latitude: location.coordinates.lat,
+      zoom: 12
+    });
+  };
+
+  // AIDEV-NOTE: Handler for search component to filter map locations
+  const handleLocationFilter = (locations) => {
+    setFilteredLocations(locations);
+  };
+
+  // AIDEV-NOTE: Handler for tour selection and management
+  const handleTourSelect = (tour) => {
+    setSelectedTour(tour);
+    setCurrentChapter(0);
+    
+    if (tour) {
+      // Move to first chapter location with flyTo
+      const firstChapter = tour.chapters[0];
+      handleMapFlyTo({
+        longitude: firstChapter.location.center[0],
+        latitude: firstChapter.location.center[1],
+        zoom: firstChapter.location.zoom || 13,
+        bearing: firstChapter.location.bearing || 0,
+        pitch: firstChapter.location.pitch || 0,
+        speed: firstChapter.location.speed || 2
+      });
+    }
+  };
+
+  // AIDEV-NOTE: Handler for map movement with smooth transitions
+  const handleMapMove = (newViewState) => {
+    setIsAnimating(true);
+    setViewState({
+      ...viewState,
+      ...newViewState
+    });
+    
+    // Reset animation flag after transition
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 1500);
+  };
+
+  // AIDEV-NOTE: Handler for flyTo using MapLibre GL JS native method
+  const handleMapFlyTo = (flyToOptions) => {
+    if (!mapRef.current) return;
+    
+    setIsAnimating(true);
+    
+    const map = mapRef.current.getMap();
+    const speed = flyToOptions.speed || 2;
+    const duration = Math.max(1000, Math.min(4000, 2000 / speed));
+    
+    console.log('🚁 Flying to:', {
+      center: [flyToOptions.longitude, flyToOptions.latitude],
+      zoom: flyToOptions.zoom,
+      bearing: flyToOptions.bearing,
+      pitch: flyToOptions.pitch,
+      duration,
+      speed
+    });
+    
+    // Use MapLibre's native flyTo method
+    map.flyTo({
+      center: [flyToOptions.longitude, flyToOptions.latitude],
+      zoom: flyToOptions.zoom || map.getZoom(),
+      bearing: flyToOptions.bearing !== undefined ? flyToOptions.bearing : map.getBearing(),
+      pitch: flyToOptions.pitch !== undefined ? flyToOptions.pitch : map.getPitch(),
+      duration: duration,
+      essential: true
+    });
+    
+    // Reset animation flag after transition
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, duration + 200);
+  };
+
+  // AIDEV-NOTE: Handler for chapter changes during tour
+  const handleChapterChange = (chapterIndex) => {
+    setCurrentChapter(chapterIndex);
   };
 
   const toggleFullscreen = async () => {
     if (!mapContainerRef.current) return;
 
     if (!isFullscreen) {
+      // Entrar em tela cheia
       try {
         if (mapContainerRef.current.requestFullscreen) {
           await mapContainerRef.current.requestFullscreen();
+        } else if (mapContainerRef.current.mozRequestFullScreen) {
+          await mapContainerRef.current.mozRequestFullScreen();
+        } else if (mapContainerRef.current.webkitRequestFullscreen) {
+          await mapContainerRef.current.webkitRequestFullscreen();
+        } else if (mapContainerRef.current.msRequestFullscreen) {
+          await mapContainerRef.current.msRequestFullscreen();
         }
         setIsFullscreen(true);
       } catch (error) {
         console.error('Erro ao entrar em tela cheia:', error);
       }
     } else {
+      // Sair da tela cheia
       try {
         if (document.exitFullscreen) {
           await document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          await document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          await document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          await document.msExitFullscreen();
         }
         setIsFullscreen(false);
       } catch (error) {
@@ -123,8 +288,15 @@ export default function Mapa() {
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
     };
   }, []);
 
@@ -260,34 +432,164 @@ export default function Mapa() {
                     </button>
                     
                     <div style={{ height: isFullscreen ? '100vh' : '600px', position: 'relative' }}>
-                      {/* Mapa placeholder com indicação dos dados carregados */}
-                      <div className="w-full h-full bg-gradient-to-br from-blue-100 to-green-100 flex items-center justify-center">
-                        <div className="text-center p-8">
-                          <div className="mb-6">
-                            <div className="w-16 h-16 bg-[#fae523] border-4 border-black rounded-full mx-auto mb-4 flex items-center justify-center">
-                              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                              </svg>
+                      {/* Tour Components - only visible in fullscreen */}
+                      <TourMenu
+                        isFullscreen={isFullscreen}
+                        onTourSelect={handleTourSelect}
+                        selectedTour={selectedTour}
+                      />
+                      
+                      {/* AIDEV-NOTE: Layer control component */}
+                      <LayerControl isVisible={isFullscreen && !selectedTour} />
+                      
+                      {/* AIDEV-NOTE: Mapbox Storytelling Overlay */}
+                      <MapboxStorytellingOverlay
+                        selectedTour={selectedTour}
+                        onMapMove={handleMapFlyTo}
+                        onChapterChange={handleChapterChange}
+                        isVisible={isFullscreen && !!selectedTour}
+                      />
+                      
+                      {/* Search Component - only visible in fullscreen when no tour selected */}
+                      {!selectedTour && (
+                        <MapSearchComponent
+                          isFullscreen={isFullscreen}
+                          onLocationFilter={handleLocationFilter}
+                          onMarkerClick={handleMarkerClick}
+                          selectedLocation={selectedLocation}
+                        />
+                      )}
+                      
+                      <MapRenderer
+                        ref={mapRef}
+                        {...viewState}
+                        onLoad={(evt) => {
+                          console.log('Map loaded successfully');
+                        }}
+                        onMove={evt => {
+                          // Always update viewState but prevent user interaction during tour
+                          setViewState(evt.viewState);
+                        }}
+                        style={{ 
+                          width: '100%', 
+                          height: '100%',
+                          cursor: 'grab'
+                        }}
+                        mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
+                        attributionControl={false}
+                      >
+                        {filteredLocations.map((location) => (
+                          <Marker
+                            key={location.id}
+                            longitude={location.coordinates.lng}
+                            latitude={location.coordinates.lat}
+                            onClick={(e) => {
+                              e.originalEvent.stopPropagation();
+                              handleMarkerClick(location);
+                            }}
+                          >
+                            <motion.div
+                              whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
+                              whileTap={{ scale: 0.9 }}
+                              animate={{
+                                scale: (selectedTour && 
+                                  checkTourLocationMatch(selectedTour.chapters[currentChapter], location)) 
+                                  ? 1.3 : 1,
+                                backgroundColor: (selectedTour &&
+                                  checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                  ? '#f8e71c' : '#fae523'
+                              }}
+                              transition={{ duration: 0.5, ease: "easeOut" }}
+                              className={`w-8 h-8 border-3 border-black rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
+                                selectedTour ? 'ring-2 ring-white/50' : ''
+                              }`}
+                              style={{
+                                backgroundColor: (selectedTour &&
+                                  checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                  ? '#f8e71c' : '#fae523'
+                              }}
+                            >
+                              {location.isRandomPoint ? (
+                                // AIDEV-NOTE: Render custom SVG icon for random points
+                                (() => {
+                                  const IconComponent = getIconComponent(location);
+                                  return IconComponent ? (
+                                    <IconComponent 
+                                      size={20} 
+                                      color={(selectedTour &&
+                                        checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                        ? '#f8e71c' : '#fae523'} 
+                                    />
+                                  ) : (
+                                    <motion.div
+                                      animate={{
+                                        scale: (selectedTour &&
+                                          checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                          ? 1.2 : 1
+                                      }}
+                                      className="w-3 h-3 bg-black rounded-full"
+                                    />
+                                  );
+                                })()
+                              ) : (
+                                // AIDEV-NOTE: Default marker for original locations
+                                <motion.div
+                                  animate={{
+                                    scale: (selectedTour &&
+                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                      ? 1.2 : 1
+                                  }}
+                                  className="w-3 h-3 bg-black rounded-full"
+                                />
+                              )}
+                            </motion.div>
+                          </Marker>
+                        ))}
+
+                        {selectedLocation && !selectedTour && (
+                          <Popup
+                            longitude={selectedLocation.coordinates.lng}
+                            latitude={selectedLocation.coordinates.lat}
+                            anchor="bottom"
+                            onClose={() => setSelectedLocation(null)}
+                            closeButton={true}
+                            className="custom-popup"
+                          >
+                            <div className="bg-white border-2 border-black rounded-lg p-4 min-w-[250px]">
+                              <h3 className="font-dirty-stains text-2xl mb-2 text-black">{selectedLocation.name}</h3>
+                              <p className="font-sometype-mono text-sm text-black/80 mb-3">{selectedLocation.description}</p>
+                              <div className="flex items-center gap-2 mb-3">
+                                <span className="bg-[#fae523] text-black px-2 py-1 rounded text-xs font-sometype-mono border border-black">
+                                  {selectedLocation.itemCount} itens
+                                </span>
+                                {selectedLocation.has_real_coordinates && (
+                                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-sometype-mono border border-green-300">
+                                    GPS
+                                  </span>
+                                )}
+                              </div>
+                              {selectedLocation.items && selectedLocation.items.length > 0 && (
+                                <div className="border-t border-black/20 pt-3">
+                                  <h4 className="font-sometype-mono text-sm font-bold mb-2">Item em destaque:</h4>
+                                  <div className="flex gap-3">
+                                    {selectedLocation.items[0].thumbnail && (
+                                      <img 
+                                        src={selectedLocation.items[0].thumbnail} 
+                                        alt={selectedLocation.items[0].title}
+                                        className="w-12 h-12 object-cover rounded border border-black"
+                                      />
+                                    )}
+                                    <div>
+                                      <p className="font-sometype-mono text-xs font-semibold text-black">{selectedLocation.items[0].title}</p>
+                                      <p className="font-sometype-mono text-xs text-black/60">{selectedLocation.items[0].date}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                            <h3 className="font-dirty-stains text-2xl mb-2">Mapa Interativo</h3>
-                            <p className="font-sometype-mono text-sm text-gray-600 mb-4">
-                              {locations.length} locais carregados do acervo
-                            </p>
-                            {mapStatistics && (
-                              <p className="font-sometype-mono text-xs text-gray-500">
-                                {mapStatistics.extractionSuccessRate} de precisão GPS
-                              </p>
-                            )}
-                          </div>
-                          <div className="bg-white/90 border-2 border-black rounded-lg p-4 max-w-md mx-auto">
-                            <p className="font-sometype-mono text-sm">
-                              🗺️ Componente de mapa em desenvolvimento<br/>
-                              📍 Dados do acervo carregados com sucesso<br/>
-                              ⚡ Coordenadas extraídas automaticamente
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                          </Popup>
+                        )}
+                      </MapRenderer>
                     </div>
                   </div>
                 </div>
@@ -358,12 +660,24 @@ export default function Mapa() {
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.7 + index * 0.1 }}
                         whileHover={{ scale: 1.02, y: -5 }}
-                        onClick={() => handleLocationClick(location)}
+                        onClick={() => handleMarkerClick(location)}
                         className="bg-white/90 backdrop-blur-sm border-3 border-black rounded-lg p-6 cursor-pointer shadow-lg"
                       >
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-6 h-6 bg-[#fae523] border-2 border-black rounded-full flex items-center justify-center">
-                            <div className="w-2 h-2 bg-black rounded-full"></div>
+                            {location.isRandomPoint ? (
+                              // AIDEV-NOTE: Show custom icon for random points in location list
+                              (() => {
+                                const IconComponent = getIconComponent(location);
+                                return IconComponent ? (
+                                  <IconComponent size={16} color="#000" />
+                                ) : (
+                                  <div className="w-2 h-2 bg-black rounded-full"></div>
+                                );
+                              })()
+                            ) : (
+                              <div className="w-2 h-2 bg-black rounded-full"></div>
+                            )}
                           </div>
                           <h4 className="font-dirty-stains text-2xl text-black">{location.name}</h4>
                         </div>
@@ -382,10 +696,10 @@ export default function Mapa() {
                             )}
                           </div>
                           <button 
-                            onClick={() => handleLocationClick(location)}
+                            onClick={() => handleMarkerClick(location)}
                             className="font-sometype-mono text-sm text-black hover:text-black/70 underline"
                           >
-                            Ver detalhes →
+                            Ver no mapa →
                           </button>
                         </div>
                         
@@ -546,4 +860,15 @@ export default function Mapa() {
       </div>
     </>
   );
-}
+};
+
+// AIDEV-NOTE: Main component wrapped with MapProvider
+const Mapa = () => {
+  return (
+    <MapProvider>
+      <MapaContent />
+    </MapProvider>
+  );
+};
+
+export default Mapa;
