@@ -57,24 +57,10 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
               <div className="mt-3 space-y-1 text-sm">
                 {itemTitle && (
                   <p className="font-sometype-mono opacity-90 text-sm">
-                    <strong>📸 Destaque:</strong> {itemTitle.length > 60 ? `${itemTitle.substring(0, 60)}...` : itemTitle}
+                    <strong className="marca-texto-vermelho">Destaque:</strong> {itemTitle.length > 60 ? `${itemTitle.substring(0, 60)}...` : itemTitle}
                   </p>
                 )}
-                {itemDate && (
-                  <p className="font-sometype-mono opacity-80">
-                    <strong>📅 Ano:</strong> {itemDate}
-                  </p>
-                )}
-                {reference_code && (
-                  <p className="font-sometype-mono opacity-80">
-                    <strong>Código:</strong> {reference_code}
-                  </p>
-                )}
-                {creation_dates && creation_dates.length > 0 && (
-                  <p className="font-sometype-mono opacity-80">
-                    <strong>Data:</strong> {creation_dates[0]}
-                  </p>
-                )}
+                
                 {place_access_points && place_access_points.length > 0 && (
                   <p className="font-sometype-mono opacity-80">
                     <strong>Local:</strong> {place_access_points[0]}

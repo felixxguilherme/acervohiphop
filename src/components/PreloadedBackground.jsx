@@ -51,12 +51,6 @@ const PreloadedBackground = ({
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Loading indicator (opcional) */}
-      {!imageLoaded && !imageError && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin opacity-30"></div>
-        </div>
-      )}
       
       {children}
     </div>
