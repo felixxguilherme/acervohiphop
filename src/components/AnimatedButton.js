@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'motion/react';
 
-const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' }) => {
+const AnimatedButton = ({ text, imagePath, backgroundClass, textSize, backgroundMode = 'hover' }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const isStaticBackground = useMemo(() => backgroundMode === 'static', [backgroundMode]);
@@ -43,8 +43,9 @@ const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' })
         }}
       />
 
-      {/* Imagem que aparece na hover */}
+      {/* Background que aparece na hover */}
       <motion.div
+        className={backgroundClass}
         style={{
           position: 'absolute',
           top: 0,
@@ -52,9 +53,12 @@ const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' })
           right: 0,
           bottom: 0,
           zIndex: -1,
-          backgroundImage: `url(${imagePath})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          // Fallback para imagePath se backgroundClass não for fornecida
+          ...(imagePath && !backgroundClass && {
+            backgroundImage: `url(${imagePath})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }),
           overflow: 'hidden'
         }}
         initial={{ scaleX: 0, originX: 0 }}
