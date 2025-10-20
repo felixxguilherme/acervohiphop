@@ -20,9 +20,6 @@ export default function AcervoCompleto() {
           sort: 'lastUpdated'
         });
         
-        console.log('📚 Total items in acervo:', response.total);
-        console.log('📋 Items received:', response.results?.length);
-        
         setAllItems(response.results || []);
         
       } catch (err) {

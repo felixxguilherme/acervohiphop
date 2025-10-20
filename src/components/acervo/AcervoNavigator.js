@@ -27,23 +27,12 @@ const AcervoNavigator = () => {
     setLoading(true);
     setError(null);
     
-    try {
-      console.log('🔄 Carregando dados iniciais da API real...');
-      
+    try {      
       const [allItems, collectionsData, mediaData] = await Promise.all([
         atomService.getItems({ limit: 1000 }),
         atomService.getCollections({ limit: 50 }),
         atomService.getMediaItems({ limit: 50 })
       ]);
-
-      console.log('✅ Dados recebidos da API:', {
-        allItems: allItems.total,
-        collections: collectionsData.total,
-        media: mediaData.total
-      });
-      
-      console.log('📁 Coleções da API:', collectionsData.results);
-      console.log('🖼️ Mídia da API:', mediaData.results);
 
       setItems(allItems.results || []);
       setCollections(collectionsData.results || []);
@@ -52,12 +41,6 @@ const AcervoNavigator = () => {
         total: allItems.total || 0,
         collections: collectionsData.total || 0,
         media: mediaData.total || 0
-      });
-      
-      console.log('🎯 Estados atualizados:', {
-        itemsCount: allItems.results?.length,
-        collectionsCount: collectionsData.results?.length,
-        mediaCount: mediaData.results?.length
       });
       
     } catch (error) {
@@ -116,9 +99,7 @@ const AcervoNavigator = () => {
     </motion.div>
   );
 
-  const ItemCard = ({ item, index }) => {
-    console.log(`🎯 Renderizando item ${index}:`, item);
-    
+  const ItemCard = ({ item, index }) => {    
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -132,7 +113,7 @@ const AcervoNavigator = () => {
               src={item.thumbnail_url}
               alt={item.title}
               className="w-full h-full object-cover"
-              onError={(e) => console.log('❌ Erro ao carregar imagem:', e.target.src)}
+              onError={(e) => console.log('Erro ao carregar imagem:', e.target.src)}
             />
           </div>
         )}
@@ -246,13 +227,7 @@ const AcervoNavigator = () => {
     </div>
   );
 
-  const CollectionsSection = () => {
-    console.log('🔍 CollectionsSection - Estado atual:', {
-      loading,
-      collectionsLength: collections.length,
-      collections: collections
-    });
-    
+  const CollectionsSection = () => {    
     return (
       <div className="space-y-6">
         <div className="text-center">
@@ -312,7 +287,6 @@ const AcervoNavigator = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {collections.map((collection, index) => {
-              console.log(`📦 Renderizando coleção ${index}:`, collection);
               return (
                 <ItemCard key={collection.slug} item={collection} index={index} />
               );

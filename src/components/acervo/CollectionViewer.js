@@ -13,19 +13,16 @@ const CollectionCard = ({ collection, onViewDetails, isExpanded, onToggle }) => 
     if (!isExpanded && !details && collection.slug !== 'erro-api-fallback') {
       setLoading(true);
       try {
-        console.log('🔍 Carregando detalhes para:', collection.slug);
         let detailData;
         
         try {
           // Try API first
           detailData = await getInformationObject(collection.slug);
-          console.log('✅ Detalhes carregados da API:', detailData);
         } catch (apiError) {
           console.warn('⚠️ API falhou, usando fallback estático:', apiError.message);
           // Fallback to static data
           detailData = getStaticItemDetails(collection.slug);
           detailData._isStaticFallback = true;
-          console.log('✅ Detalhes carregados do fallback:', detailData);
         }
         
         setDetails(detailData);
@@ -249,7 +246,6 @@ export default function CollectionViewer() {
     const fetchCollections = async () => {
       try {
         setLoading(true);
-        console.log('🔍 Buscando coleções...');
         
         let response;
         let isUsingFallback = false;
@@ -257,14 +253,12 @@ export default function CollectionViewer() {
         try {
           // Try API first
           response = await getCollections({ limit: 100 });
-          console.log('✅ Resposta da API recebida:', response);
         } catch (apiError) {
           console.warn('⚠️ API falhou, usando dados estáticos:', apiError.message);
           // Use static fallback
           response = getStaticCollections({ limit: 100 });
           isUsingFallback = true;
           setError('API temporariamente indisponível - usando dados estáticos');
-          console.log('✅ Resposta do fallback:', response);
         }
         
         if (response && response.results && response.results.length > 0) {

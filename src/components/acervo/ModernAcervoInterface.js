@@ -55,14 +55,11 @@ const ModernAcervoInterface = () => {
     setError(null);
     
     try {
-      console.log('🔄 Carregando todos os itens...');
       const response = await getInformationObjects({
         limit: itemsPerPage,
         sort: 'alphabetic',
         languages: 'pt'
       });
-      
-      console.log('📡 Resposta inicial da API:', response);
       
       setItems(response.results || []);
       setTotalItems(response.total || 0);
@@ -105,13 +102,7 @@ const ModernAcervoInterface = () => {
       if (filters.onlyMedia) params.onlyMedia = true;
       if (filters.topLod) params.topLod = true;
 
-      console.log('🔍 ModernAcervoInterface - Parâmetros enviados para API:', params);
-      console.log('🔍 Search term:', `"${searchTerm}"`, 'Search field:', searchField, 'Search operator:', searchOperator);
-
       const response = await getInformationObjects(params);
-      
-      console.log('📡 Resposta da API:', response);
-      console.log('📊 Total de resultados:', response?.total, 'Itens recebidos:', response?.results?.length);
       
       setItems(response.results || []);
       setTotalItems(response.total || 0);

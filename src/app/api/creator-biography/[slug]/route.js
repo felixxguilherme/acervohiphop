@@ -6,8 +6,6 @@ export async function GET(request, { params }) {
     const { slug } = await params;
     const atomUrl = `https://base.acervodistritohiphop.com.br/index.php/${slug}`;
     
-    console.log('🌐 Fazendo scraping da página:', atomUrl);
-    
     const response = await fetchCompat(atomUrl, {
       headers: {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -113,13 +111,6 @@ function extractBiographicalInfo(html) {
     if (!data.city && html.includes('DF')) {
       data.city = 'Brasília, DF';
     }
-    
-    console.log('📖 Dados extraídos:', {
-      name: data.name,
-      biographyLength: data.biography?.length || 0,
-      birthDate: data.birthDate,
-      city: data.city
-    });
     
   } catch (error) {
     console.error('❌ Erro ao extrair dados do HTML:', error);

@@ -20,7 +20,6 @@ const MapboxStorytellingOverlay = ({
     if (!selectedTour || !isVisible) {
       // Cleanup if conditions not met
       if (scrollamaInstance.current) {
-        console.log('🧹 Scrollama: Cleaning up (conditions not met)');
         scrollamaInstance.current.destroy();
         scrollamaInstance.current = null;
       }
@@ -29,11 +28,9 @@ const MapboxStorytellingOverlay = ({
 
     // Prevent re-initialization if already exists for same tour
     if (scrollamaInstance.current) {
-      console.log('⚠️ Scrollama: Already initialized for tour:', selectedTour.title);
+      console.log('Scrollama: Already initialized for tour:', selectedTour.title);
       return;
     }
-
-    console.log('🚀 Scrollama: Initializing for tour:', selectedTour.title);
     
     // Add small delay to ensure DOM is ready
     const initTimer = setTimeout(() => {
@@ -52,25 +49,17 @@ const MapboxStorytellingOverlay = ({
           
           // AIDEV-NOTE: Prevent duplicate triggers for same chapter
           if (index === lastTriggeredIndex) {
-            console.log('⏭️ Scrollama: Skipping duplicate trigger for chapter', index);
+            console.log('Scrollama: Skipping duplicate trigger for chapter', index);
             return;
           }
           
           lastTriggeredIndex = index;
           const chapter = selectedTour.chapters[index];
           
-          console.log('📍 Scrollama: onStepEnter (once)', {
-            chapterIndex: index,
-            direction,
-            chapterTitle: chapter?.title,
-            timestamp: Date.now()
-          });
-          
           setActiveChapter(index);
           
           // Trigger map flyTo with debouncing
           if (onMapMove && chapter && chapter.location) {
-            console.log('🚁 Scrollama: Triggering flyTo for chapter', index);
             onMapMove({
               longitude: chapter.location.center[0],
               latitude: chapter.location.center[1],
@@ -97,7 +86,6 @@ const MapboxStorytellingOverlay = ({
     return () => {
       clearTimeout(initTimer);
       if (scrollamaInstance.current) {
-        console.log('🧹 Scrollama: Cleaning up');
         scrollamaInstance.current.destroy();
         scrollamaInstance.current = null;
       }

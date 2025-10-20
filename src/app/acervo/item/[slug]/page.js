@@ -41,8 +41,6 @@ const ItemDetailPage = () => {
         setLoading(true);
         setError(null);
         
-        console.log('🔍 Carregando item:', slug);
-        
         const item = await loadItem(slug);
         if (!item) {
           throw new Error('Item não encontrado');
@@ -50,7 +48,6 @@ const ItemDetailPage = () => {
         
         // Se não tem thumbnail_url, tentar buscar da API de lista
         if (!item.thumbnail_url) {
-          console.log('🔄 Thumbnail não encontrada, buscando da API de lista...');
           try {
             const listResponse = await fetchCompat(`/api/acervo?sq0=${encodeURIComponent(item.title)}&sf0=title&limit=1`);
             if (listResponse.ok) {
@@ -58,7 +55,6 @@ const ItemDetailPage = () => {
               const foundItem = listData.results?.find(listItem => listItem.slug === slug);
               if (foundItem?.thumbnail_url) {
                 item.thumbnail_url = foundItem.thumbnail_url;
-                console.log('✅ Thumbnail encontrada na API de lista:', item.thumbnail_url);
               }
             }
           } catch (error) {
@@ -68,18 +64,6 @@ const ItemDetailPage = () => {
 
         setItemData(item);
         setHasLoaded(true);
-        console.log('✅ Item carregado:', item.title);
-        console.log('🖼️ URL da thumbnail final:', item.thumbnail_url);
-        console.log('📊 Dados completos do item:', item);
-        console.log('🔍 Campos disponíveis:', Object.keys(item));
-        console.log('🖼️ Campos relacionados a imagem:', Object.keys(item).filter(key => 
-          key.toLowerCase().includes('image') || 
-          key.toLowerCase().includes('thumb') || 
-          key.toLowerCase().includes('digital') || 
-          key.toLowerCase().includes('url') ||
-          key.toLowerCase().includes('media') ||
-          key.toLowerCase().includes('file')
-        ));
         
       } catch (err) {
         console.error('❌ Erro ao carregar item:', err);
@@ -211,7 +195,6 @@ const ItemDetailPage = () => {
                           url = url.replace('https://acervodistrito', 'https://base.acervodistrito');
                           url = url.replace('http://acervodistrito', 'https://base.acervodistrito');
                         }
-                        console.log('URL da imagem:', url);
                         return url;
                       })()} 
                       alt={itemData.title}

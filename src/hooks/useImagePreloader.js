@@ -28,7 +28,6 @@ const useImagePreloader = (imageSrc, options = {}) => {
     const timeoutId = setTimeout(() => {
       setError(true);
       setLoading(false);
-      console.warn(`Timeout carregando imagem: ${imageSrc}`);
     }, timeout);
 
     img.onload = () => {
@@ -43,7 +42,6 @@ const useImagePreloader = (imageSrc, options = {}) => {
       setError(true);
       setLoading(false);
       setLoaded(false);
-      console.error(`Erro carregando imagem: ${imageSrc}`);
     };
 
     img.src = imageSrc;

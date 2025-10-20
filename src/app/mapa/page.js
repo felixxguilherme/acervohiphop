@@ -221,15 +221,6 @@ const MapaContent = () => {
     const speed = flyToOptions.speed || 2;
     const duration = Math.max(1000, Math.min(4000, 2000 / speed));
     
-    console.log('🚁 Flying to:', {
-      center: [flyToOptions.longitude, flyToOptions.latitude],
-      zoom: flyToOptions.zoom,
-      bearing: flyToOptions.bearing,
-      pitch: flyToOptions.pitch,
-      duration,
-      speed
-    });
-    
     // Use MapLibre's native flyTo method
     map.flyTo({
       center: [flyToOptions.longitude, flyToOptions.latitude],

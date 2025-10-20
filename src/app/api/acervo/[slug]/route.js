@@ -10,8 +10,6 @@ export async function GET(request, { params }) {
     const { slug } = await params;
     const apiUrl = `${ATOM_API_BASE}/informationobjects/${slug}`;
     
-    console.log('Fetching individual item:', apiUrl);
-    
     const response = await fetchCompat(apiUrl, {
       method: 'GET',
       headers: {

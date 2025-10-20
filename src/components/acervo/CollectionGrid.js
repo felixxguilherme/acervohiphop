@@ -110,9 +110,6 @@ export default function CollectionGrid({ onSelectCollection }) {
           }))
           .sort((a, b) => b.totalItems - a.totalItems);
         
-        console.log('📚 Collections detected:', collectionsArray.length);
-        console.log('🔍 Collections details:', collectionsArray);
-        
         setCollections(collectionsArray);
         
       } catch (err) {

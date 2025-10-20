@@ -6,7 +6,6 @@ const ATOM_API_BASE = 'https://base.acervodistritohiphop.com.br/index.php/api';
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY
 
 export async function GET(request) {
-  console.log('🔥 [API Route] Recebida requisição em:', new Date().toISOString());
   
   try {
     const { searchParams } = new URL(request.url);
@@ -23,9 +22,6 @@ export async function GET(request) {
     const sf0 = searchParams.get('sf0');
     const so0 = searchParams.get('so0');
     
-    console.log('📋 [API Route] Parâmetros recebidos:', {
-      limit, skip, sort, sq0, sf0, so0
-    });
     
     // Date filters
     const startDate = searchParams.get('startDate');
@@ -46,7 +42,6 @@ export async function GET(request) {
     
     if (sq0 && sf0) {
       // Para busca: parâmetros de busca com paginação
-      console.log('🔍 [API Route] Modo busca - usando sq0, sf0, limit e skip');
       apiParams = new URLSearchParams({
         sq0,
         sf0,
@@ -55,7 +50,6 @@ export async function GET(request) {
       });
     } else {
       // Para listagem: parâmetros completos
-      console.log('📄 [API Route] Modo listagem - usando todos os parâmetros');
       apiParams = new URLSearchParams({
         limit,
         skip,
@@ -83,17 +77,13 @@ export async function GET(request) {
     
     const apiUrl = `${ATOM_API_BASE}/informationobjects?${apiParams}`;
     
-    console.log('🌐 [API Route] Fazendo requisição para:', apiUrl);
-    console.log('🔑 [API Route] Usando API Key:', API_KEY ? 'Configurada' : 'FALTANDO!');
     
     // Make request to AtoM API - only real data, fail if unavailable
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
-      console.log('⏰ [API Route] Timeout de 30s atingido');
       controller.abort();
     }, 30000); // 30 second timeout (aumentado)
     
-    console.log('🚀 [API Route] Iniciando fetch...');
     const response = await fetchCompat(apiUrl, {
       method: 'GET',
       headers: {
@@ -104,15 +94,9 @@ export async function GET(request) {
       },
       signal: controller.signal
     });
-    console.log('🏁 [API Route] Fetch completado');
     
     clearTimeout(timeoutId);
     
-    console.log('📡 [API Route] Resposta recebida:', {
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok
-    });
     
     if (!response.ok) {
       console.error('❌ [API Route] AtoM API error:', response.status, response.statusText);
@@ -120,10 +104,6 @@ export async function GET(request) {
     }
     
     const data = await response.json();
-    console.log('✅ [API Route] Dados recebidos com sucesso:', {
-      total: data.total,
-      count: data.results?.length || 0
-    });
     
     // Add CORS headers and return data
     return NextResponse.json(data, {

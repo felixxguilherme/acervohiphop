@@ -21,7 +21,6 @@ const ImagePreloader = () => {
           img.fetchPriority = 'high'; // Prioridade alta
           img.onload = () => resolve(src);
           img.onerror = () => {
-            console.warn(`Falha ao precarregar: ${src}`);
             resolve(src); // Não falhar por uma imagem
           };
           img.src = src;
@@ -30,9 +29,9 @@ const ImagePreloader = () => {
 
       try {
         await Promise.allSettled(imagePromises);
-        console.log('✅ Imagens críticas pré-carregadas');
+        // Imagens críticas pré-carregadas
       } catch (error) {
-        console.warn('⚠️ Erro no pré-carregamento:', error);
+        // Erro no pré-carregamento
       }
     };
 

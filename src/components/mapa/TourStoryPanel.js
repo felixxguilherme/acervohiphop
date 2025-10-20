@@ -22,7 +22,6 @@ const TourStoryPanel = ({
     if (!selectedTour || !isFullscreen) {
       // Cleanup if conditions not met
       if (scrollamaInstance.current) {
-        console.log('🧹 TourPanel: Cleaning up (conditions not met)');
         scrollamaInstance.current.destroy();
         scrollamaInstance.current = null;
       }
@@ -31,11 +30,8 @@ const TourStoryPanel = ({
 
     // Prevent re-initialization if already exists for same tour
     if (scrollamaInstance.current) {
-      console.log('⚠️ TourPanel: Already initialized for tour:', selectedTour.title);
       return;
     }
-
-    console.log('🚀 TourPanel: Initializing for tour:', selectedTour.title);
 
     // Add small delay to ensure DOM is ready
     const initTimer = setTimeout(() => {
@@ -54,18 +50,12 @@ const TourStoryPanel = ({
           
           // AIDEV-NOTE: Prevent duplicate triggers for same chapter
           if (index === lastTriggeredIndex) {
-            console.log('⏭️ TourPanel: Skipping duplicate trigger for chapter', index);
+            console.log('TourPanel: Skipping duplicate trigger for chapter', index);
             return;
           }
           
           lastTriggeredIndex = index;
           const chapter = selectedTour.chapters[index];
-          
-          console.log('📍 TourPanel: onStepEnter (once)', {
-            chapterIndex: index,
-            chapterTitle: chapter?.title,
-            timestamp: Date.now()
-          });
           
           setActiveChapter(index);
           
@@ -97,7 +87,6 @@ const TourStoryPanel = ({
     return () => {
       clearTimeout(initTimer);
       if (scrollamaInstance.current) {
-        console.log('🧹 TourPanel: Cleaning up');
         scrollamaInstance.current.destroy();
         scrollamaInstance.current = null;
       }

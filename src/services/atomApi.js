@@ -63,14 +63,11 @@ export async function getInformationObjects(options = {}) {
     params.append('sf_culture', options.languages || 'pt');
     
     const url = `${API_BASE}?${params}`;
-    console.log('🔍 Fetching from local API:', url);
     
     const response = await fetchCompat(url, {
       method: 'GET',
       headers: defaultHeaders
     });
-    
-    console.log('📡 Response status:', response.status, response.statusText);
     
     if (!response.ok) {
       console.error('❌ Response not ok:', response.status, response.statusText);
@@ -78,7 +75,6 @@ export async function getInformationObjects(options = {}) {
       let errorMessage = `${response.status} ${response.statusText}`;
       try {
         const errorData = await response.json();
-        console.log('📡 Error response data:', errorData);
         if (errorData.isApiError && response.status === 503) {
           // This is a 503 error from our API route - AtoM is down
           console.warn('🔄 AtoM API unavailable');
@@ -96,7 +92,6 @@ export async function getInformationObjects(options = {}) {
     }
     
     const data = await response.json();
-    console.log('✅ Successfully fetched:', data.total, 'items');
     return data;
     
   } catch (error) {
@@ -112,7 +107,6 @@ export async function getInformationObjects(options = {}) {
 export async function getInformationObject(slug) {
   try {
     const url = `/api/acervo/${slug}`;
-    console.log('Fetching item details:', url);
     
     const response = await fetchCompat(url, {
       method: 'GET',

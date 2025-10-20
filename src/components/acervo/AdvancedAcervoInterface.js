@@ -90,19 +90,9 @@ const AdvancedAcervoInterface = () => {
       const { q, field, ...otherFilters } = filters;
       Object.assign(searchParams, otherFilters);
       
-      console.log('🔍 BUSCA POR "' + filters.q + '"');
-      console.log('🔍 Filtros recebidos:', filters);
-      console.log('🔍 Parâmetros de busca construídos:', searchParams);
-      
       const results = await getInformationObjects(searchParams);
       
-      console.log('✅ RESPOSTA COMPLETA DA API:', results);
-      console.log('✅ Total de itens encontrados:', results.total);
-      console.log('✅ Array de resultados:', results.results);
-      console.log('✅ Quantidade no array:', results.results?.length);
-      
       if (results.results && results.results.length > 0) {
-        console.log('📝 TODOS OS RESULTADOS:');
         results.results.forEach((item, index) => {
           console.log(`${index + 1}. ${item.title} (${item.reference_code || item.slug})`);
         });
@@ -128,7 +118,6 @@ const AdvancedAcervoInterface = () => {
   };
 
   const handleSearchReset = () => {
-    console.log('🔄 Reset da busca');
     setSearchResults([]);
     setSearchFilters({});
     setTaxonomyFilters({});

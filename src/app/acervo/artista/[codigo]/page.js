@@ -85,7 +85,6 @@ const CreatorDetailPage = () => {
     if (!slug) return null;
 
     try {
-      console.log('🌐 Buscando biografia via web para:', slug);
       
       // Criar uma API route interna para fazer o scraping server-side
       // (pois CORS impede fazer direto do browser)
@@ -106,7 +105,6 @@ const CreatorDetailPage = () => {
 
   // Função para carregar itens do creator usando API local (mesmo que os cards)
   const loadCreatorItemsFromAPI = async (creatorId) => {
-    console.log('🔍 Buscando itens do creator', creatorId, 'via API local');
     
     let allItems = [];
     let skip = 0;
@@ -115,7 +113,6 @@ const CreatorDetailPage = () => {
     try {
       // Primeira requisição para saber o total
       const firstUrl = `/api/acervo?creators=${creatorId}&limit=${limit}&skip=${skip}`;
-      console.log('📡 Primeira requisição:', firstUrl);
       
       const firstResponse = await fetchCompat(firstUrl);
       
@@ -127,15 +124,11 @@ const CreatorDetailPage = () => {
       const total = firstData.total || 0;
       allItems = firstData.results || [];
       
-      console.log(`📊 Primeira página: ${allItems.length}/${total} itens`);
-      
       // Se há mais itens, buscar o restante
       if (total > allItems.length) {
-        console.log('📄 Buscando páginas adicionais...');
         
         for (skip = limit; skip < total; skip += limit) {
           const url = `/api/acervo?creators=${creatorId}&limit=${limit}&skip=${skip}`;
-          console.log(`🔍 Buscando página skip=${skip}:`, url);
           
           const response = await fetchCompat(url);
           
@@ -143,15 +136,12 @@ const CreatorDetailPage = () => {
             const pageData = await response.json();
             const newItems = pageData.results || [];
             allItems = [...allItems, ...newItems];
-            
-            console.log(`➕ Adicionados ${newItems.length} itens (total: ${allItems.length}/${total})`);
           } else {
             console.warn(`⚠️ Erro na página skip=${skip}: ${response.status}`);
           }
         }
       }
       
-      console.log(`✅ Creator ${creatorId} completo: ${allItems.length} itens carregados`);
       return allItems;
       
     } catch (error) {
@@ -166,11 +156,8 @@ const CreatorDetailPage = () => {
         setLoading(true);
         setError(null);
         
-        console.log('🎭 Carregando dados do creator:', codigo);
-        
         // Buscar itens do creator usando API externa diretamente
         const items = await loadCreatorItemsFromAPI(codigo);
-        console.log('📦 Itens encontrados:', items.length);
         setCreatorItems(items);
         
         // Buscar informações do creator
@@ -188,9 +175,7 @@ const CreatorDetailPage = () => {
         // Tentar buscar biografia real via web scraping
         try {
           const webBiography = await fetchCreatorBiographyFromWeb(codigo);
-          if (webBiography) {
-            console.log('📖 Biografia encontrada via web:', webBiography.name);
-            
+          if (webBiography) {            
             // Mesclar dados da web com dados existentes
             creatorInfo = {
               ...creatorInfo,
@@ -207,7 +192,6 @@ const CreatorDetailPage = () => {
         }
         
         setCreatorData(creatorInfo);
-        console.log('✅ Dados do creator carregados:', creatorInfo.name);
         
       } catch (err) {
         console.error('❌ Erro ao carregar dados do creator:', err);
