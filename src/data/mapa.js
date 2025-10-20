@@ -1,6 +1,4 @@
 // dRESPOSTA PARA MAPA/GEOLOCALIZAÇÃO
-import { generateRandomPoints } from '@/utils/randomPoints';
-
 const atomMapResponse = {
   "locations": [
     {
@@ -105,9 +103,5 @@ const atomMapResponse = {
     "lng": -47.9292
   }
 };
-
-// AIDEV-NOTE: Add random points to existing locations for enhanced map experience
-const randomPoints = generateRandomPoints(15);
-atomMapResponse.locations = [...atomMapResponse.locations, ...randomPoints];
 
 export default atomMapResponse;
