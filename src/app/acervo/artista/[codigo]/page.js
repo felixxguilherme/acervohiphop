@@ -270,12 +270,14 @@ const CreatorDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
-        <HeaderApp />
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="font-sometype-mono">Carregando dados do artista...</p>
+      <div>
+        <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
+        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-lg font-sometype-mono">Carregando dados do artista...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -284,17 +286,22 @@ const CreatorDetailPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white">
-        <HeaderApp />
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <p className="text-red-500 font-sometype-mono mb-4">Erro: {error}</p>
-            <button 
-              onClick={() => window.history.back()}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Voltar
-            </button>
+      <div>
+        <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
+        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <div className="bg-theme-background border-2 border-black p-6">
+                <p className="font-dirty-stains text-xl mb-2">Erro ao carregar artista</p>
+                <p className="font-sometype-mono mb-4">{error}</p>
+                <button 
+                  onClick={() => window.history.back()}
+                  className="px-4 py-2 bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors font-dirty-stains"
+                >
+                  Voltar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -302,31 +309,40 @@ const CreatorDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <HeaderApp />
+    <div>
+      <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
       
-      <main className="pt-20">
+      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+        <main>
         {/* Hero Section com Imagem e Nome */}
         <motion.section 
-          className="relative h-[70vh] overflow-hidden"
+          className="mb-12 px-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="container mx-auto px-4 h-full relative">
-            <div className="relative h-full w-[90%] mx-auto">
-              <img 
-                src={creatorData.image} 
-                alt={creatorData.name}
-                className="w-full h-full object-cover rounded-lg shadow-2xl"
-              />
-              <div className="absolute bottom-6 left-6 bg-black bg-opacity-70 text-white p-6 rounded-lg">
-                <h1 className="text-4xl md:text-6xl font-dirty-stains mb-2">
+          <div className="bg-theme-background">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-1">
+                <img 
+                  src={creatorData.image} 
+                  alt={creatorData.name}
+                  className="w-full h-96 object-cover border-2 border-black"
+                />
+              </div>
+              <div className="lg:col-span-2 flex flex-col justify-center">
+                <h1 className="text-4xl md:text-6xl font-dirty-stains text-theme-primary mb-4">
                   {creatorData.name}
                 </h1>
-                <p className="text-lg font-sometype-mono opacity-90">
-                  {creatorData.city}
+                <p className="text-lg font-sometype-mono text-gray-600 mb-4">
+                  📍 {creatorData.city}
                 </p>
+                {creatorData.birthDate && (
+                  <p className="text-md font-sometype-mono text-gray-600 flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Nascimento: {formatDate(creatorData.birthDate)}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -334,28 +350,18 @@ const CreatorDetailPage = () => {
 
         {/* Biografia */}
         <motion.section 
-          className="py-16 bg-gray-50"
+          className="px-6"
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="container mx-auto px-4 max-w-4xl">
-            <h2 className="text-3xl font-dirty-stains mb-8 text-center">Biografia</h2>
-            <div className="bg-white p-8 rounded-lg shadow-lg">
+          <div className="bg-theme-background">
+            <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left border-black border-b-2 border-t-8 py-8">BIOGRAFIA</h2>
+            <div className="border-black border-b-8 pb-6">
               <p className="text-lg leading-relaxed font-sometype-mono text-gray-700">
                 {creatorData.biography}
               </p>
-              {creatorData.birthDate && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Calendar className="w-5 h-5" />
-                    <span className="font-sometype-mono">
-                      Nascimento: {formatDate(creatorData.birthDate)}
-                    </span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </motion.section>
@@ -363,23 +369,18 @@ const CreatorDetailPage = () => {
         {/* Todos os Itens do Acervo */}
         <motion.section 
           id="all-items-section"
-          className="py-16"
+          className="px-6 py-8"
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="container mx-auto px-4">
-            <div className="flex items-center gap-3 justify-center mb-8">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-dirty-stains text-lg">📚</span>
-              </div>
-              <h2 className="text-3xl font-dirty-stains">Todos os Itens do Acervo</h2>
-            </div>
+          <div className="bg-theme-background">
+            <h2 className="text-4xl font-dirty-stains text-theme-primary py-8 border-black border-b-2 text-left">TODOS OS ITENS DO ACERVO</h2>
             
             {/* Contador e paginação */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-              <p className="text-lg font-sometype-mono mb-4 md:mb-0">
+              <p className="text-lg font-sometype-mono mb-4 md:mb-0 text-left">
                 {creatorItems.length} {creatorItems.length === 1 ? 'item encontrado' : 'itens encontrados'}
               </p>
               
@@ -390,7 +391,7 @@ const CreatorDetailPage = () => {
                     <button
                       onClick={() => goToPage(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className="px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains text-sm transition-colors"
+                      className="px-3 py-1 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains text-sm transition-colors"
                     >
                       ←
                     </button>
@@ -414,7 +415,7 @@ const CreatorDetailPage = () => {
                           onClick={() => goToPage(pageNum)}
                           className={`px-3 py-1 border-2 border-black font-dirty-stains text-sm transition-colors ${
                             pageNum === currentPage 
-                              ? 'bg-blue-500 text-white' 
+                              ? 'bg-blue-500 text-white hover:bg-blue-600' 
                               : 'bg-white hover:bg-gray-100'
                           }`}
                         >
@@ -426,7 +427,7 @@ const CreatorDetailPage = () => {
                     <button
                       onClick={() => goToPage(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className="px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains text-sm transition-colors"
+                      className="px-3 py-1 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains text-sm transition-colors"
                     >
                       →
                     </button>
@@ -440,7 +441,7 @@ const CreatorDetailPage = () => {
               {currentItems.map((item, index) => (
                 <motion.div 
                   key={item.slug || index}
-                  className="bg-white border-2 border-black p-4 hover:shadow-lg transition-all duration-300"
+                  className="bg-white border-2 border-black p-4 hover:bg-zinc-100 transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -518,29 +519,27 @@ const CreatorDetailPage = () => {
         {/* Discografia */}
         {discografia.length > 0 && (
           <motion.section 
-            className="py-16"
+            className="mb-12 px-6"
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 justify-center mb-8">
-                <Music className="w-8 h-8 text-blue-500" />
-                <h2 className="text-3xl font-dirty-stains">Discografia</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <div className="bg-theme-background">
+              <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">DISCOGRAFIA</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {discografia.map((item, index) => (
                   <motion.div 
                     key={item.slug || index}
-                    className="bg-white border-2 border-black p-6 hover:shadow-lg transition-shadow"
+                    className="bg-white border-2 border-black p-6 hover:bg-zinc-100 transition-all duration-300"
                     whileHover={{ scale: 1.02 }}
                   >
                     {item.thumbnail_url && (
                       <img 
-                        src={item.thumbnail_url} 
+                        src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')} 
                         alt={item.title}
-                        className="w-full h-48 object-cover mb-4 rounded"
+                        className="w-full h-48 object-cover mb-4 border-b-2 border-black"
+                        onError={(e) => { e.target.style.display = 'none'; }}
                       />
                     )}
                     <h3 className="font-dirty-stains text-xl mb-2">{item.title}</h3>
@@ -564,29 +563,27 @@ const CreatorDetailPage = () => {
         {/* Videografia */}
         {videografia.length > 0 && (
           <motion.section 
-            className="py-16 bg-gray-50"
+            className="mb-12 px-6"
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 justify-center mb-8">
-                <Video className="w-8 h-8 text-red-500" />
-                <h2 className="text-3xl font-dirty-stains">Videografia</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <div className="bg-theme-background border-2 border-black p-6">
+              <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">VIDEOGRAFIA</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {videografia.map((item, index) => (
                   <motion.div 
                     key={item.slug || index}
-                    className="bg-white border-2 border-black p-6 hover:shadow-lg transition-shadow"
+                    className="bg-white border-2 border-black p-6 hover:bg-zinc-100 transition-all duration-300"
                     whileHover={{ scale: 1.02 }}
                   >
                     {item.thumbnail_url && (
                       <img 
-                        src={item.thumbnail_url} 
+                        src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')} 
                         alt={item.title}
-                        className="w-full h-48 object-cover mb-4 rounded"
+                        className="w-full h-48 object-cover mb-4 border-b-2 border-black"
+                        onError={(e) => { e.target.style.display = 'none'; }}
                       />
                     )}
                     <h3 className="font-dirty-stains text-xl mb-2">{item.title}</h3>
@@ -610,22 +607,19 @@ const CreatorDetailPage = () => {
         {/* Colaborações para o Mapa */}
         {colaboracoesMapa.length > 0 && (
           <motion.section 
-            className="py-16"
+            className="mb-12 px-6"
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 justify-center mb-8">
-                <MapPin className="w-8 h-8 text-green-500" />
-                <h2 className="text-3xl font-dirty-stains">Colaborações para o Mapa</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="bg-theme-background border-2 border-black p-6">
+              <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">COLABORAÇÕES PARA O MAPA</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {colaboracoesMapa.map((item, index) => (
                   <motion.div 
                     key={item.slug || index}
-                    className="bg-white border-2 border-black p-6 hover:shadow-lg transition-shadow"
+                    className="bg-white border-2 border-black p-6 hover:bg-zinc-100 transition-all duration-300"
                     whileHover={{ scale: 1.02 }}
                   >
                     <h3 className="font-dirty-stains text-xl mb-2">{item.title}</h3>
@@ -654,21 +648,18 @@ const CreatorDetailPage = () => {
         {/* Timeline das Obras */}
         {timeline.length > 0 && (
           <motion.section 
-            className="py-16 bg-gray-50"
+            className="mb-12 px-6"
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 justify-center mb-8">
-                <Clock className="w-8 h-8 text-purple-500" />
-                <h2 className="text-3xl font-dirty-stains">Linha do Tempo</h2>
-              </div>
-              <div className="max-w-4xl mx-auto">
+            <div className="bg-theme-background">
+              <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">LINHA DO TEMPO</h2>
+              <div>
                 <div className="relative">
                   {/* Linha vertical */}
-                  <div className="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 w-0.5 h-full bg-purple-300"></div>
+                  <div className="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 w-0.5 h-full bg-black"></div>
                   
                   {timeline.map((item, index) => (
                     <motion.div 
@@ -680,13 +671,13 @@ const CreatorDetailPage = () => {
                       viewport={{ once: true }}
                     >
                       {/* Ponto na timeline */}
-                      <div className="absolute left-3 md:left-1/2 transform md:-translate-x-1/2 w-3 h-3 bg-purple-500 rounded-full border-2 border-white shadow-lg z-10"></div>
+                      <div className="absolute left-3 md:left-1/2 transform md:-translate-x-1/2 w-3 h-3 bg-black rounded-full border-2 border-white shadow-lg z-10"></div>
                       
                       {/* Conteúdo */}
                       <div className={`w-full md:w-5/12 ${
                         index % 2 === 0 ? 'md:ml-auto md:pl-8' : 'md:pr-8'
                       } ml-10 md:ml-0`}>
-                        <div className="bg-white border-2 border-black p-6 rounded-lg shadow-lg">
+                        <div className="bg-white border-2 border-black p-6">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-sometype-mono">
                               {formatDate(item.creation_dates[0])}
@@ -710,15 +701,15 @@ const CreatorDetailPage = () => {
 
         {/* Estatísticas Finais */}
         <motion.section 
-          className="py-16 bg-black text-white"
+          className="mb-12 px-6"
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-dirty-stains mb-8">Contribuição Total</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          <div className="bg-black border-2 border-black p-6 text-white text-center">
+            <h2 className="text-4xl font-dirty-stains text-white mb-8 text-left">CONTRIBUIÇÃO TOTAL</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div>
                 <div className="text-4xl font-dirty-stains text-blue-400 mb-2">
                   {creatorItems.length}
@@ -746,7 +737,8 @@ const CreatorDetailPage = () => {
             </div>
           </div>
         </motion.section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
