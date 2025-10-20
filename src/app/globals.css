@@ -400,6 +400,76 @@ body.theme-dark .border-theme-soft {
   height: 100% !important;
 }
 
+/* Background classes for fundo_base images */
+.fundo-base {
+  background-image: url('/fundo_base.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.fundo-base-preto {
+  background-image: url('/fundo_base_preto.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Background classes for marca-texto images */
+.marca-texto-vermelho {
+  background-image: url('/marca-texto-vermelho.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  padding: 0.2em 0.5em;
+}
+
+.marca-texto-azul {
+  background-image: url('/marca-texto-azul.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  padding: 0.2em 0.5em;
+}
+
+.marca-texto-verde {
+  background-image: url('/marca-texto-verde.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  padding: 0.2em 0.5em;
+}
+
+.marca-texto-amarelo {
+  background-image: url('/marca-texto-amarelo.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  padding: 0.2em 0.5em;
+}
+
+.marca-texto-rosa {
+  background-image: url('/marca-texto-rosa.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  padding: 0.2em 0.5em;
+}
+
+.marca-texto-roxo {
+  background-image: url('/marca-texto-roxo.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  padding: 0.2em 0.5em;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
