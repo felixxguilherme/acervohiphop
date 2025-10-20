@@ -181,7 +181,7 @@ export default function Home() {
           reference_code: vielaItem?.reference_code || ""
         },
         {
-          title: "ACERVO DIGITAL",
+          title: "",
           description: veraItem?.archival_history || "Documentos únicos preservados digitalmente.",
           src: veraItem?.thumbnail_url || "/fundo_base.jpg",
           link: "/acervo",
@@ -192,7 +192,7 @@ export default function Home() {
           reference_code: veraItem?.reference_code || ""
         },
         {
-          title: "MAPA DAS BATALHAS",
+          title: "",
           description: dinoBlackItem?.archival_history || "Geografia cultural do Hip Hop no DF",
           src: dinoBlackItem?.thumbnail_url || "/fundo_base.jpg",
           link: "/mapa",
@@ -203,7 +203,7 @@ export default function Home() {
           reference_code: dinoBlackItem?.reference_code || ""
         },
         {
-          title: "REVISTA DIGITAL",
+          title: "",
           description: revistaBizzItem?.archival_history || "Conteúdo editorial sobre a cultura Hip Hop",
           src: revistaBizzItem?.thumbnail_url || "/fundo_base_preto.jpg",
           link: "/revista",
@@ -268,13 +268,7 @@ export default function Home() {
       {/* CARDS PARALLAX */}
       
       <section className="relative">
-        {/* Spray effects */}
-          <div
-            className="absolute top-0 left-15 w-32 h-32 bg-contain bg-no-repeat z-20"
-            style={{
-              backgroundImage: "url('/cursor02.png')"
-            }}
-          />
+        {/* Spray effects */}          
           
         {projects.map((project, i) => {
         const targetScale = 1 - ((projects.length - i) * 0.05);

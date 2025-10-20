@@ -105,7 +105,7 @@ export default function HeaderApp({ title, showTitle = false }) {
       <motion.div 
         className="w-full border-theme overflow-hidden"
         style={{
-          minHeight: isScrolled ? '60px' : 'auto'
+          minHeight: isScrolled ? '80px' : 'auto'
         }}
       >
         {/* Layout único que transiciona suavemente */}
@@ -114,7 +114,8 @@ export default function HeaderApp({ title, showTitle = false }) {
             {/* Primeira coluna: Transições suaves entre estados */}
             <div className="col-span-2 border-r-3 border-theme flex flex-col">
               {/* Container da imagem - apenas visível quando expandido */}
-              <motion.div 
+              { !isScrolled && (
+                <motion.div 
                 className="flex items-center justify-center border-b-3 border-theme pt-6"
                 animate={{ 
                   height: isScrolled ? '0px' : 'auto',
@@ -137,6 +138,8 @@ export default function HeaderApp({ title, showTitle = false }) {
                   />
                 )}
               </motion.div>
+              )}
+              
               
               {/* Spinning text - sempre presente e centralizado */}
               <div className="flex items-center justify-center flex-1">
@@ -152,10 +155,10 @@ export default function HeaderApp({ title, showTitle = false }) {
                     className="flex items-center justify-center"
                   >
                     <SpinningText
-                      radius={isScrolled ? 5.5 : 6}
-                      className={`${isScrolled ? 'h-12 w-12 text-sm' : 'h-16 w-16 text-xs sm:text-sm md:text-base'} tracking-[0.2em] font-scratchy transition-all duration-500`}
+                      radius={isScrolled ? 6.5 : 6}
+                      className={`${isScrolled ? 'h-14 w-14 text-base' : 'h-16 w-16 text-xs sm:text-sm md:text-base'} tracking-[0.2em] font-scratchy transition-all duration-500`}
                     >
-                      {isScrolled ? 'acervo • hip-hop •' : 'acervo • hip-hop • DF •'}
+                      acervo • hip-hop • DF •
                     </SpinningText>
                   </motion.div>
                 </Link>
@@ -196,11 +199,11 @@ export default function HeaderApp({ title, showTitle = false }) {
               
               {/* Navegação - adapta tamanho baseado no estado */}
               <motion.nav 
-                className={`flex flex-wrap justify-center gap-1 sm:gap-2 md:gap-4 lg:gap-6 w-full px-2 ${!isScrolled ? 'border-black border-t-3 pt-4 pb-6' : 'py-3'}`}
+                className={`flex flex-wrap justify-center gap-1 sm:gap-2 md:gap-4 lg:gap-6 w-full px-2 ${!isScrolled ? 'border-black border-t-3 pt-4 pb-6' : 'py-4'}`}
               >
                 <Link href="/">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-base" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-lg" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
                     text="HOME" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-amarelo" 
@@ -208,7 +211,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/acervo">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-base" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-base" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
                     text="ACERVO" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-vermelho" 
@@ -216,7 +219,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/mapa">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-base" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-base" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
                     text="MAPA" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-azul" 
@@ -224,7 +227,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/revista">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-base" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-base" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
                     text="REVISTA" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-verde" 
