@@ -119,7 +119,7 @@ export default function HeaderApp({ title, showTitle = false }) {
             <div className="col-span-2 border-r-3 border-theme flex flex-col">
               {/* Container da imagem - apenas visível quando expandido */}
               <motion.div 
-                className="flex items-center justify-center border-b-3 border-theme"
+                className="flex items-center justify-center border-b-3 border-theme pt-6"
                 animate={{ 
                   height: isScrolled ? '0px' : 'auto',
                   opacity: isScrolled ? 0 : 1
@@ -182,7 +182,7 @@ export default function HeaderApp({ title, showTitle = false }) {
               >
                 {showTitle && title && (
                   <motion.h1
-                    className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-theme-primary text-center"
+                    className="font-dirty-stains pt-6 text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-theme-primary text-center"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.3 }}
@@ -214,7 +214,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                     textSize={isScrolled ? "text-lg" : "text-3xl"} 
                     text="HOME" 
                     backgroundMode="static" 
-                    imagePath="marca-texto-amarelo.png" 
+                    backgroundClass="marca-texto-amarelo" 
                   />
                 </Link>
                 <Link href="/acervo">
@@ -222,7 +222,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                     textSize={isScrolled ? "text-lg" : "text-3xl"} 
                     text="ACERVO" 
                     backgroundMode="static" 
-                    imagePath="marca-texto-vermelho.png" 
+                    backgroundClass="marca-texto-vermelho" 
                   />
                 </Link>
                 <Link href="/mapa">
@@ -230,7 +230,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                     textSize={isScrolled ? "text-lg" : "text-3xl"} 
                     text="MAPA" 
                     backgroundMode="static" 
-                    imagePath="marca-texto-azul.png" 
+                    backgroundClass="marca-texto-azul" 
                   />
                 </Link>
                 <Link href="/revista">
@@ -238,7 +238,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                     textSize={isScrolled ? "text-lg" : "text-3xl"} 
                     text="REVISTA" 
                     backgroundMode="static" 
-                    imagePath="marca-texto-verde.png" 
+                    backgroundClass="marca-texto-verde" 
                   />
                 </Link>
               </motion.nav>
