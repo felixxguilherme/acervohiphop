@@ -371,8 +371,10 @@ const MapaContent = () => {
       )}
 
       {/* Conteúdo da página */}
-      <div className={`relative z-10 overflow-hidden ${isPageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
+      <div className={`${isPageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
         <HeaderApp title="MAPA DO HIP HOP" showTitle={true} />
+        
+        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -386,45 +388,44 @@ const MapaContent = () => {
             }}
             className="w-full overflow-hidden"
           >
-            <div className="w-full">
               {/* Hero Section */}
-              <div className="container mx-auto px-4 py-8">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="text-center text-black mb-8"
-                >
-                  <h2 className="font-sometype-mono text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl mb-4 max-w-4xl mx-auto">
-                    Explore o mapa interativo da cultura Hip Hop no Distrito Federal
+              <motion.section 
+                className="mb-12 px-6"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="bg-theme-background pt-6">
+                  <h2 className="text-4xl font-dirty-stains text-theme-primary mb-4 text-left">
+                    MAPA INTERATIVO
                   </h2>
-                  <p className="font-sometype-mono text-lg text-black/80 max-w-2xl mx-auto">
-                    Descubra locais históricos, eventos marcantes e a geografia do movimento Hip Hop brasiliense
+                  <p className="font-sometype-mono text-lg text-gray-600 text-left mb-4">
+                    Explore locais históricos, eventos marcantes e a geografia do movimento Hip Hop brasiliense
                   </p>
                   {mapStatistics && (
-                    <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm font-sometype-mono">
-                      <span className="bg-[#fae523] text-black px-3 py-1 rounded border border-black">
+                    <div className="flex flex-wrap gap-4 text-sm font-sometype-mono">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 border border-blue-300">
                         {mapStatistics.totalItems} locais mapeados
                       </span>
-                      <span className="bg-white/90 text-black px-3 py-1 rounded border border-black">
+                      <span className="bg-green-100 text-green-800 px-2 py-1 border border-green-300">
                         {mapStatistics.extractionSuccessRate} precisão
                       </span>
                     </div>
                   )}
-                </motion.div>
-              </div>
+                </div>
+              </motion.section>
 
-              {/* Container do Mapa Placeholder */}
-              <motion.div
+              {/* Container do Mapa */}
+              <motion.section
+                className="mb-12 px-6"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4, duration: 0.6 }}
-                className="relative w-full"
               >
-                <div className="mx-4 md:mx-8 mb-8">
+                <div className="bg-theme-background">
                   <div 
                     ref={mapContainerRef}
-                    className={`border-4 border-black rounded-lg overflow-hidden shadow-2xl bg-gray-200 relative ${
+                    className={`border-2 border-black overflow-hidden bg-gray-200 relative ${
                       isFullscreen ? 'fullscreen-map' : ''
                     }`}
                   >
@@ -446,35 +447,73 @@ const MapaContent = () => {
                     </button>
                     
                     <div style={{ height: isFullscreen ? '100vh' : '600px', position: 'relative' }}>
-                      {/* Tour Components - only visible in fullscreen */}
-                      <TourMenu
-                        isFullscreen={isFullscreen}
-                        onTourSelect={handleTourSelect}
-                        selectedTour={selectedTour}
-                      />
-                      
-                      {/* AIDEV-NOTE: Layer control component */}
-                      <LayerControl isVisible={isFullscreen && !selectedTour} />
-                      
-                      {/* AIDEV-NOTE: Mapbox Storytelling Overlay */}
-                      <MapboxStorytellingOverlay
-                        selectedTour={selectedTour}
-                        onMapMove={handleMapFlyTo}
-                        onChapterChange={handleChapterChange}
-                        isVisible={isFullscreen && !!selectedTour}
-                      />
-                      
-                      {/* Search Component - only visible in fullscreen when no tour selected */}
-                      {!selectedTour && (
-                        <MapSearchComponent
-                          isFullscreen={isFullscreen}
-                          onLocationFilter={handleLocationFilter}
-                          onMarkerClick={handleMarkerClick}
-                          selectedLocation={selectedLocation}
-                        />
-                      )}
-                      
-                      <MapRenderer
+                      {isFullscreen ? (
+                        /* Layout expandido com grid customizado */
+                        <div className="h-full grid grid-cols-5 bg-theme-background border-2 border-black">
+                          {/* Menu lateral - 1/5 da tela */}
+                          <div className="col-span-1 bg-white border-r-2 border-black p-4 overflow-y-auto">
+                            <h3 className="text-lg font-dirty-stains text-theme-primary mb-4 text-left">BUSCA E CAMADAS</h3>
+                            
+                            {/* Search Component */}
+                            <div className="mb-6">
+                              <MapSearchComponent
+                                isFullscreen={isFullscreen}
+                                onLocationFilter={handleLocationFilter}
+                                onMarkerClick={handleMarkerClick}
+                                selectedLocation={selectedLocation}
+                              />
+                            </div>
+                            
+                            {/* Layer Control */}
+                            <div className="mb-6">
+                              <LayerControl isVisible={true} />
+                            </div>
+                            
+                            {/* Informações do POI selecionado */}
+                            {selectedLocation && (
+                              <div className="bg-theme-background border-2 border-black p-4">
+                                <h4 className="font-dirty-stains text-lg text-theme-primary mb-2">LOCAL SELECIONADO</h4>
+                                <h5 className="font-dirty-stains text-md mb-2">{selectedLocation.name}</h5>
+                                <p className="font-sometype-mono text-sm text-gray-700 mb-3">{selectedLocation.description}</p>
+                                <div className="flex flex-wrap gap-2">
+                                  <span className="bg-blue-100 text-blue-800 px-2 py-1 border border-blue-300 text-xs font-sometype-mono">
+                                    {selectedLocation.itemCount} {selectedLocation.itemCount === 1 ? 'item' : 'itens'}
+                                  </span>
+                                  {selectedLocation.has_real_coordinates && (
+                                    <span className="bg-green-100 text-green-800 px-2 py-1 border border-green-300 text-xs font-sometype-mono">
+                                      GPS
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Área principal - 4/5 da tela */}
+                          <div className="col-span-4 flex flex-col">
+                            {/* Barra de tours - 1/4 da altura */}
+                            <div className="h-1/4 bg-white border-b-2 border-black p-4 overflow-y-auto">
+                              <h3 className="text-lg font-dirty-stains text-theme-primary mb-4 text-left">TOURS INTERATIVOS</h3>
+                              <TourMenu
+                                isFullscreen={isFullscreen}
+                                onTourSelect={handleTourSelect}
+                                selectedTour={selectedTour}
+                              />
+                              
+                              {/* Mapbox Storytelling Overlay */}
+                              {selectedTour && (
+                                <MapboxStorytellingOverlay
+                                  selectedTour={selectedTour}
+                                  onMapMove={handleMapFlyTo}
+                                  onChapterChange={handleChapterChange}
+                                  isVisible={true}
+                                />
+                              )}
+                            </div>
+                            
+                            {/* Mapa - 3/4 da altura */}
+                            <div className="flex-1 relative">
+                              <MapRenderer
                         ref={mapRef}
                         {...viewState}
                         onLoad={(evt) => {
@@ -560,66 +599,191 @@ const MapaContent = () => {
                           </Marker>
                         ))}
 
-                        {selectedLocation && !selectedTour && (
-                          <Popup
-                            longitude={selectedLocation.coordinates.lng}
-                            latitude={selectedLocation.coordinates.lat}
-                            anchor="bottom"
-                            onClose={() => setSelectedLocation(null)}
-                            closeButton={true}
-                            className="custom-popup"
-                          >
-                            <div className="bg-white border-2 border-black rounded-lg p-4 min-w-[250px]">
-                              <h3 className="font-dirty-stains text-2xl mb-2 text-black">{selectedLocation.name}</h3>
-                              <p className="font-sometype-mono text-sm text-black/80 mb-3">{selectedLocation.description}</p>
-                              <div className="flex items-center gap-2 mb-3">
-                                <span className="bg-[#fae523] text-black px-2 py-1 rounded text-xs font-sometype-mono border border-black">
-                                  {selectedLocation.itemCount} itens
-                                </span>
-                                {selectedLocation.has_real_coordinates && (
-                                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-sometype-mono border border-green-300">
-                                    GPS
-                                  </span>
-                                )}
-                              </div>
-                              {selectedLocation.items && selectedLocation.items.length > 0 && (
-                                <div className="border-t border-black/20 pt-3">
-                                  <h4 className="font-sometype-mono text-sm font-bold mb-2">Item em destaque:</h4>
-                                  <div className="flex gap-3">
-                                    {selectedLocation.items[0].thumbnail && (
-                                      <img 
-                                        src={selectedLocation.items[0].thumbnail} 
-                                        alt={selectedLocation.items[0].title}
-                                        className="w-12 h-12 object-cover rounded border border-black"
-                                      />
-                                    )}
-                                    <div>
-                                      <p className="font-sometype-mono text-xs font-semibold text-black">{selectedLocation.items[0].title}</p>
-                                      <p className="font-sometype-mono text-xs text-black/60">{selectedLocation.items[0].date}</p>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
+                                {/* Popup apenas no modo fullscreen - agora no menu lateral */}
+                              </MapRenderer>
                             </div>
-                          </Popup>
-                        )}
-                      </MapRenderer>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Layout normal */
+                        <>
+                          {/* Tour Components - only visible in fullscreen */}
+                          <TourMenu
+                            isFullscreen={isFullscreen}
+                            onTourSelect={handleTourSelect}
+                            selectedTour={selectedTour}
+                          />
+                          
+                          {/* AIDEV-NOTE: Layer control component */}
+                          <LayerControl isVisible={isFullscreen && !selectedTour} />
+                          
+                          {/* AIDEV-NOTE: Mapbox Storytelling Overlay */}
+                          <MapboxStorytellingOverlay
+                            selectedTour={selectedTour}
+                            onMapMove={handleMapFlyTo}
+                            onChapterChange={handleChapterChange}
+                            isVisible={isFullscreen && !!selectedTour}
+                          />
+                          
+                          {/* Search Component - only visible in fullscreen when no tour selected */}
+                          {!selectedTour && (
+                            <MapSearchComponent
+                              isFullscreen={isFullscreen}
+                              onLocationFilter={handleLocationFilter}
+                              onMarkerClick={handleMarkerClick}
+                              selectedLocation={selectedLocation}
+                            />
+                          )}
+                          
+                          <MapRenderer
+                            ref={mapRef}
+                            {...viewState}
+                            onLoad={(evt) => {
+                              console.log('Map loaded successfully');
+                            }}
+                            onMove={evt => {
+                              // Always update viewState but prevent user interaction during tour
+                              setViewState(evt.viewState);
+                            }}
+                            style={{ 
+                              width: '100%', 
+                              height: '100%',
+                              cursor: 'grab'
+                            }}
+                            mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
+                            attributionControl={false}
+                          >
+                            {filteredLocations.map((location) => (
+                              <Marker
+                                key={location.id}
+                                longitude={location.coordinates.lng}
+                                latitude={location.coordinates.lat}
+                                onClick={(e) => {
+                                  e.originalEvent.stopPropagation();
+                                  handleMarkerClick(location);
+                                }}
+                              >
+                                <motion.div
+                                  whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  animate={{
+                                    scale: (selectedTour && 
+                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location)) 
+                                      ? 1.3 : 1,
+                                    backgroundColor: (selectedTour &&
+                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                      ? '#f8e71c' : '#fae523'
+                                  }}
+                                  transition={{ duration: 0.5, ease: "easeOut" }}
+                                  className={`w-8 h-8 border-3 border-black rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
+                                    selectedTour ? 'ring-2 ring-white/50' : ''
+                                  }`}
+                                  style={{
+                                    backgroundColor: (selectedTour &&
+                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                      ? '#f8e71c' : '#fae523'
+                                  }}
+                                >
+                                  {location.isRandomPoint ? (
+                                    // AIDEV-NOTE: Render custom SVG icon for random points
+                                    (() => {
+                                      const IconComponent = getIconComponent(location);
+                                      return IconComponent ? (
+                                        <IconComponent 
+                                          size={20} 
+                                          color={(selectedTour &&
+                                            checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                            ? '#f8e71c' : '#fae523'} 
+                                        />
+                                      ) : (
+                                        <motion.div
+                                          animate={{
+                                            scale: (selectedTour &&
+                                              checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                              ? 1.2 : 1
+                                          }}
+                                          className="w-3 h-3 bg-black rounded-full"
+                                        />
+                                      );
+                                    })()
+                                  ) : (
+                                    // AIDEV-NOTE: Default marker for original locations
+                                    <motion.div
+                                      animate={{
+                                        scale: (selectedTour &&
+                                          checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
+                                          ? 1.2 : 1
+                                      }}
+                                      className="w-3 h-3 bg-black rounded-full"
+                                    />
+                                  )}
+                                </motion.div>
+                              </Marker>
+                            ))}
+
+                            {selectedLocation && !selectedTour && (
+                              <Popup
+                                longitude={selectedLocation.coordinates.lng}
+                                latitude={selectedLocation.coordinates.lat}
+                                anchor="bottom"
+                                onClose={() => setSelectedLocation(null)}
+                                closeButton={true}
+                                className="custom-popup"
+                              >
+                                <div className="bg-white border-2 border-black p-4 min-w-[250px]">
+                                  <h3 className="font-dirty-stains text-2xl mb-2 text-black">{selectedLocation.name}</h3>
+                                  <p className="font-sometype-mono text-sm text-black/80 mb-3">{selectedLocation.description}</p>
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <span className="bg-blue-100 text-blue-800 px-2 py-1 border border-blue-300 text-xs font-sometype-mono">
+                                      {selectedLocation.itemCount} itens
+                                    </span>
+                                    {selectedLocation.has_real_coordinates && (
+                                      <span className="bg-green-100 text-green-800 px-2 py-1 border border-green-300 text-xs font-sometype-mono">
+                                        GPS
+                                      </span>
+                                    )}
+                                  </div>
+                                  {selectedLocation.items && selectedLocation.items.length > 0 && (
+                                    <div className="border-t border-black/20 pt-3">
+                                      <h4 className="font-sometype-mono text-sm font-bold mb-2">Item em destaque:</h4>
+                                      <div className="flex gap-3">
+                                        {selectedLocation.items[0].thumbnail && (
+                                          <img 
+                                            src={selectedLocation.items[0].thumbnail} 
+                                            alt={selectedLocation.items[0].title}
+                                            className="w-12 h-12 object-cover border border-black"
+                                          />
+                                        )}
+                                        <div>
+                                          <p className="font-sometype-mono text-xs font-semibold text-black">{selectedLocation.items[0].title}</p>
+                                          <p className="font-sometype-mono text-xs text-black/60">{selectedLocation.items[0].date}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </Popup>
+                            )}
+                          </MapRenderer>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </motion.section>
 
               {/* Lista de Locais */}
-              <div className="container mx-auto px-4 py-8">
-                <motion.div
-                  id="regions-section"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                >
-                  <div className="text-center mb-8">
-                    <h3 className="font-dirty-stains text-4xl text-black mb-4">REGIÕES MAPEADAS</h3>
-                    <p className="font-sometype-mono text-lg text-black/80">
+              <motion.section
+                className="mb-12 px-6"
+                id="regions-section"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <div className="bg-theme-background">
+                  <div className="mb-8">
+                    <h3 className="text-4xl font-dirty-stains text-theme-primary mb-4 text-left">REGIÕES MAPEADAS</h3>
+                    <p className="font-sometype-mono text-lg text-gray-600 text-left">
                       {locations.length} {locations.length === 1 ? 'região mapeada' : 'regiões mapeadas'}
                       {totalPages > 1 && ` - Página ${currentPage} de ${totalPages}`}
                     </p>
@@ -627,9 +791,9 @@ const MapaContent = () => {
                   
                   {mapError && (
                     <div className="text-center py-8 mb-8">
-                      <div className="bg-red-100 border-2 border-red-500 rounded-lg p-6 max-w-md mx-auto">
-                        <p className="font-dirty-stains text-xl text-red-600 mb-2">Erro ao carregar mapa</p>
-                        <p className="font-sometype-mono text-red-500">{mapError}</p>
+                      <div className="bg-theme-background border-2 border-black p-6">
+                        <p className="font-dirty-stains text-xl mb-2">Erro ao carregar mapa</p>
+                        <p className="font-sometype-mono">{mapError}</p>
                       </div>
                     </div>
                   )}
@@ -637,13 +801,13 @@ const MapaContent = () => {
                   {/* Loading específico para regiões */}
                   {isRegionsLoading ? (
                     <div className="text-center py-12">
-                      <div className="bg-white/90 border-2 border-black rounded-lg p-8 max-w-md mx-auto">
+                      <div className="bg-white border-2 border-black p-8">
                         <div className="flex justify-center mb-4 h-8">
                           <div className="flex gap-1 items-end">
                             {[0, 1, 2].map((index) => (
                               <motion.div
                                 key={index}
-                                className="w-3 bg-[#fae523] rounded-sm border border-black"
+                                className="w-3 bg-theme-primary border border-black"
                                 style={{ height: '8px' }}
                                 animate={{ 
                                   scaleY: [1, 3, 1],
@@ -675,7 +839,7 @@ const MapaContent = () => {
                         transition={{ delay: 0.7 + index * 0.1 }}
                         whileHover={{ scale: 1.02, y: -5 }}
                         onClick={() => handleMarkerClick(location)}
-                        className="bg-white/90 backdrop-blur-sm border-3 border-black rounded-lg p-6 cursor-pointer shadow-lg"
+                        className="bg-white border-2 border-black p-6 cursor-pointer hover:bg-zinc-100 transition-all duration-300"
                       >
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-6 h-6 bg-[#fae523] border-2 border-black rounded-full flex items-center justify-center">
@@ -758,7 +922,7 @@ const MapaContent = () => {
                               className={`cursor-pointer border-2 border-black ${
                                 currentPage === 1 
                                   ? 'opacity-50 cursor-not-allowed pointer-events-none' 
-                                  : 'hover:bg-[#fae523] transition-colors'
+                                  : 'hover:bg-gray-100 transition-colors'
                               }`}
                             />
                           </PaginationItem>
@@ -771,7 +935,7 @@ const MapaContent = () => {
                                 className={`cursor-pointer border-2 border-black font-dirty-stains ${
                                   page === currentPage
                                     ? 'bg-blue-500 text-white hover:bg-blue-600'
-                                    : 'bg-white hover:bg-[#fae523] transition-colors'
+                                    : 'bg-white hover:bg-gray-100 transition-colors'
                                 }`}
                               >
                                 {page}
@@ -785,7 +949,7 @@ const MapaContent = () => {
                               className={`cursor-pointer border-2 border-black ${
                                 currentPage === totalPages 
                                   ? 'opacity-50 cursor-not-allowed pointer-events-none' 
-                                  : 'hover:bg-[#fae523] transition-colors'
+                                  : 'hover:bg-gray-100 transition-colors'
                               }`}
                             />
                           </PaginationItem>
@@ -793,8 +957,8 @@ const MapaContent = () => {
                       </Pagination>
                     </motion.div>
                   )}
-                </motion.div>
-              </div>
+                </div>
+              </motion.section>
 
               {/* Modal de detalhes do local */}
               {selectedLocation && (
@@ -868,9 +1032,9 @@ const MapaContent = () => {
                   </motion.div>
                 </motion.div>
               )}
-            </div>
           </motion.div>
         </AnimatePresence>
+        </div>
       </div>
     </>
   );
