@@ -29,28 +29,28 @@ export default function Home() {
       description: "O arquivo é trincheira. Aqui lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios e invisibilidade.",
       src: "/fundo_base.jpg",
       link: "/acervo",
-      color: "#FFF"
+      color: "#FFF",
     },
     {
       title: "ACERVO DIGITAL",
       description: "Documentos únicos que contam a trajetória do Hip Hop no DF.",
       src: "/fundo_base_preto.jpg",
       link: "/acervo",
-      color: "#8A2BE2"
+      color: "#FFF",
     },
     {
       title: "MAPA DAS BATALHAS",
       description: "Território cultural mapeado com precisão geográfica.",
       src: "/fundo_base.jpg",
       link: "/mapa",
-      color: "#DC143C"
+      color: "#FFF",
     },
     {
       title: "REVISTA DIGITAL",
       description: "Curadoria colaborativa conectando ruas, estudos e produção artística.",
       src: "/fundo_base_preto.jpg",
       link: "/revista",
-      color: "#32CD32"
+      color: "#FFF",
     }
   ]);
   
@@ -125,69 +125,99 @@ export default function Home() {
   // Função para carregar conteúdo apresentativo para os cards parallax
   const loadFeaturedContent = async () => {
     try {
-      // Buscar itens recentes com imagens para apresentar o acervo
-      const recentResponse = await fetch('/api/acervo?limit=8&sort=creation_dates_desc');
-      const recentData = await recentResponse.json();
-      
-      // Buscar alguns destaques por categoria/tipo
-      const photoResponse = await fetch('/api/acervo?sq0=fotografia&sf0=scope_and_content&limit=3');
-      const photoData = await photoResponse.json();
-      
-      const musicResponse = await fetch('/api/acervo?sq0=música&sf0=scope_and_content&limit=3');
-      const musicData = await musicResponse.json();
-
-      // Selecionar itens com imagens para os cards
-      const featuredItems = [
-        ...(recentData.results || []).filter(item => item.thumbnail_url).slice(0, 2),
-        ...(photoData.results || []).filter(item => item.thumbnail_url).slice(0, 1),
-        ...(musicData.results || []).filter(item => item.thumbnail_url).slice(0, 1)
+      // Buscar itens específicos pelos slugs definidos para cada card
+      const specificSlugs = [
+        'lancamento-do-grupo-viela-17',
+        'vera-ver-onika-e-parceiros-do-jardim-ing-a-na-candangol-andia-foto-de-dino-black',
+        'dino-black-vera-ver-onika-e-parceiros-do-hip-hop-df-na-candangol-andia',
+        'revista-bizz-primeiro-encontro-de-rap-nacional-no-gin-asio-do-palmeiras'
       ];
-
-      // Atualizar os cards com dados reais
-      if (featuredItems.length >= 4) {
-        const newProjects = [
-          {
-            title: "",
-            description: "O arquivo é trincheira. Aqui lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios e invisibilidade.",
-            src: "https://base.acervodistritohiphop.com.br/uploads/r/null/8/6/3/8638763c1dac359d5151bccecf0c24ebc2257f8ff09c046c0d36acf5a6f30c7c/3_-_GOG__DINO__JAP__O__MANOMIX_141.jpg",
-            link: "/acervo",
-            color: "#FFF",
-            itemTitle: featuredItems[0]?.title,
-            itemDate: featuredItems[0]?.creation_dates?.[0]
-          },
-          {
-            title: "ACERVO DIGITAL",
-            description: "Documentos únicos que contam a trajetória do Hip Hop no DF.",
-            src: "https://base.acervodistritohiphop.com.br/uploads/r/null/8/c/0/8c0f67ab84ea16350b110aee026fc63c08a8219da50828242d808ed0162cc133/4_-_GALERA_RAP_ING___E____DISPARO_FATAL__141.jpg",
-            link: "/acervo",
-            color: "#8A2BE2",
-            itemTitle: featuredItems[1]?.title,
-            itemDate: featuredItems[1]?.creation_dates?.[0]
-          },
-          {
-            title: "MAPA DAS BATALHAS",
-            description: "Território cultural mapeado com precisão geográfica",
-            src: featuredItems[2]?.thumbnail_url?.replace('https://acervodistrito', 'https://base.acervodistrito') || "/fundo_base.jpg",
-            link: "/mapa",
-            color: "#DC143C",
-            itemTitle: featuredItems[2]?.title,
-            itemDate: featuredItems[2]?.creation_dates?.[0]
-          },
-          {
-            title: "REVISTA DIGITAL",
-            description: "Ruas, estudos e produção artística conectados",
-            src: featuredItems[3]?.thumbnail_url?.replace('https://acervodistrito', 'https://base.acervodistrito') || "/fundo_base_preto.jpg",
-            link: "/revista",
-            color: "#32CD32",
-            itemTitle: featuredItems[3]?.title,
-            itemDate: featuredItems[3]?.creation_dates?.[0]
+      
+      const specificItems = [];
+      
+      // Buscar cada item específico via nossa API interna
+      for (const slug of specificSlugs) {
+        try {
+          const response = await fetch(`/api/acervo/${slug}`);
+          
+          if (response.ok) {
+            const item = await response.json();
+            if (item && item.digital_object?.thumbnail_url) {
+              specificItems.push({
+                slug: slug,
+                title: item.title || '',
+                thumbnail_url: item.digital_object.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito'),
+                creation_dates: item.dates?.map(d => d.date) || [],
+                place_access_points: item.place_access_points || [],
+                description: item.scope_and_content || '',
+                reference_code: item.reference_code || ''
+              });
+            }
           }
-        ];
-        
-        setProjects(newProjects);
+        } catch (error) {
+          // Item não encontrado, continuar
+        }
       }
+      
+
+      // Atualizar os cards com dados reais da API para cada slug específico
+      const vielaItem = specificItems.find(item => item.slug === 'lancamento-do-grupo-viela-17');
+      const veraItem = specificItems.find(item => item.slug === 'vera-ver-onika-e-parceiros-do-jardim-ing-a-na-candangol-andia-foto-de-dino-black');
+      const dinoBlackItem = specificItems.find(item => item.slug === 'dino-black-vera-ver-onika-e-parceiros-do-hip-hop-df-na-candangol-andia');
+      const revistaBizzItem = specificItems.find(item => item.slug === 'revista-bizz-primeiro-encontro-de-rap-nacional-no-gin-asio-do-palmeiras');
+      
+      console.log('Cards data:', { vielaItem, veraItem, dinoBlackItem, revistaBizzItem });
+      
+      const newProjects = [
+        {
+          title: "",
+          description: vielaItem?.archival_history || "O arquivo é trincheira. Memória viva do Hip Hop do DF.",
+          src: vielaItem?.thumbnail_url || "/fundo_base.jpg",
+          link: "/acervo",
+          color: "#FFF",
+          itemTitle: vielaItem?.title || "",
+          itemDate: vielaItem?.creation_dates?.[0] || "",
+          place_access_points: vielaItem?.place_access_points || [],
+          reference_code: vielaItem?.reference_code || ""
+        },
+        {
+          title: "ACERVO DIGITAL",
+          description: veraItem?.archival_history || "Documentos únicos preservados digitalmente.",
+          src: veraItem?.thumbnail_url || "/fundo_base.jpg",
+          link: "/acervo",
+          color: "#FFF",
+          itemTitle: veraItem?.title || "",
+          itemDate: veraItem?.creation_dates?.[0] || "",
+          place_access_points: veraItem?.place_access_points || [],
+          reference_code: veraItem?.reference_code || ""
+        },
+        {
+          title: "MAPA DAS BATALHAS",
+          description: dinoBlackItem?.archival_history || "Geografia cultural do Hip Hop no DF",
+          src: dinoBlackItem?.thumbnail_url || "/fundo_base.jpg",
+          link: "/mapa",
+          color: "#FFF",
+          itemTitle: dinoBlackItem?.title || "",
+          itemDate: dinoBlackItem?.creation_dates?.[0] || "",
+          place_access_points: dinoBlackItem?.place_access_points || [],
+          reference_code: dinoBlackItem?.reference_code || ""
+        },
+        {
+          title: "REVISTA DIGITAL",
+          description: revistaBizzItem?.archival_history || "Conteúdo editorial sobre a cultura Hip Hop",
+          src: revistaBizzItem?.thumbnail_url || "/fundo_base_preto.jpg",
+          link: "/revista",
+          color: "#FFF",
+          itemTitle: revistaBizzItem?.title || "",
+          itemDate: revistaBizzItem?.creation_dates?.[0] || "",
+          place_access_points: revistaBizzItem?.place_access_points || [],
+          reference_code: revistaBizzItem?.reference_code || ""
+        }
+      ];
+      
+      setProjects(newProjects);
     } catch (error) {
-      console.error('Erro ao carregar conteúdo destacado:', error);
+      // Erro ao carregar conteúdo destacado
     }
   };
 
@@ -213,7 +243,6 @@ export default function Home() {
               thumbnail: data.results?.[0]?.thumbnail_url?.replace('https://acervodistrito', 'https://base.acervodistrito') || null
             };
           } catch (error) {
-            console.error(`Erro ao carregar dados do artista ${artist.name}:`, error);
             return {
               ...artist,
               totalItems: 0,
@@ -226,7 +255,7 @@ export default function Home() {
 
       setFeaturedArtists(artistsWithData);
     } catch (error) {
-      console.error('Erro ao carregar artistas em destaque:', error);
+      // Erro ao carregar artistas em destaque
     } finally {
       setLoadingFeaturedArtists(false);
     }
@@ -578,7 +607,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="max-w-6xl mx-auto relative z-20">
+        <div className="mx-auto relative z-20">
           {/* Título da seção */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
