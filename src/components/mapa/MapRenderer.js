@@ -9,7 +9,7 @@ const MapRenderer = forwardRef(({
   children, 
   onMove,
   style,
-  mapStyle,
+  mapStyle = "https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z",
   attributionControl = false,
   transitionDuration = 300,
   ...mapProps 
@@ -103,15 +103,21 @@ const MapRenderer = forwardRef(({
     return null;
   };
 
+  // Garantir que temos todas as props necessárias
+  const safeMapProps = {
+    ...mapProps,
+    mapStyle: mapStyle || "https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
+  };
+
   return (
     <Map
       ref={mapRef}
       onMove={onMove}
       style={style}
-      mapStyle={mapStyle}
+      mapStyle={safeMapProps.mapStyle}
       attributionControl={attributionControl}
       transitionDuration={transitionDuration}
-      {...mapProps}
+      {...safeMapProps}
     >
       {/* AIDEV-NOTE: Render any additional children (markers, popups, etc.) */}
       {children}
