@@ -478,8 +478,8 @@ export function AcervoProvider({ children }) {
     }
   }, []);
 
-  // Carregar dados do mapa (creator 3312) com paginação
-  const loadMapData = useCallback(async (creatorId = '8337', forceReload = false) => {
+  // Carregar dados do mapa com carregamento progressivo otimizado
+  const loadMapData = useCallback(async (creatorId = '8337', forceReload = false, fastMode = true) => {
     if (state.mapData.length > 0 && !forceReload) return; // Já carregado
     
     dispatch({ type: ACTIONS.SET_LOADING, section: 'map', value: true });
@@ -488,10 +488,10 @@ export function AcervoProvider({ children }) {
     try {
       console.info('[AcervoContext] 🗺️ Carregando dados do mapa para creator:', creatorId);
       
-      // Buscar todos os itens com paginação
+      // No modo rápido, carrega apenas uma amostra inicial
       let allItems = [];
       let skip = 0;
-      const limit = 50; // Lotes menores para mais controle
+      const limit = fastMode ? 20 : 50; // Menos itens no modo rápido
       
       // Primeira chamada para obter total
       const firstResponse = await fetchCompat(`/api/acervo?creators=${creatorId}&limit=${limit}`);
@@ -505,10 +505,14 @@ export function AcervoProvider({ children }) {
       
       console.info(`[AcervoContext] 📊 Primeira página: ${allItems.length}/${total} itens`);
       
+      // No modo rápido, carrega apenas o suficiente para mostrar algo
+      // No modo completo, carrega tudo
+      const maxItemsToLoad = fastMode ? Math.min(total, 60) : total;
+      
       // Buscar páginas restantes se necessário
-      if (total > allItems.length) {
-        for (skip = limit; skip < total; skip += limit) {
-          console.info(`[AcervoContext] 📄 Buscando página skip=${skip}`);
+      if (total > allItems.length && allItems.length < maxItemsToLoad) {
+        for (skip = limit; skip < maxItemsToLoad; skip += limit) {
+          console.info(`[AcervoContext] 📄 Buscando página skip=${skip} (modo: ${fastMode ? 'rápido' : 'completo'})`);
           
           const response = await fetchCompat(`/api/acervo?creators=${creatorId}&limit=${limit}&skip=${skip}`);
           if (response.ok) {
@@ -531,8 +535,8 @@ export function AcervoProvider({ children }) {
             break;
           }
           
-          // Pausa entre requisições
-          await new Promise(resolve => setTimeout(resolve, 100));
+          // Pausa menor entre requisições no modo rápido
+          await new Promise(resolve => setTimeout(resolve, fastMode ? 50 : 100));
         }
       }
       
