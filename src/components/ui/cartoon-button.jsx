@@ -17,7 +17,7 @@ export function CartoonButton({
       <button
         disabled={disabled}
         onClick={handleClick}
-        className={`z-0 relative h-12 px-6 text-xl font-bold text-theme-primary border-2 border-theme transition-all duration-150 overflow-hidden group
+        className={`relative h-12 px-6 text-xl font-bold text-neutral-800 border-2 border-neutral-800 transition-all duration-150 overflow-hidden group
         ${color} hover:shadow-[0_4px_0_0_#262626]
         ${disabled ? 'opacity-50 pointer-events-none' : 'hover:-translate-y-1 active:translate-y-0 active:shadow-none'}`}
       >

@@ -1,409 +1,702 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import Link from 'next/link';
-import Image from 'next/image';
+import HeaderApp from '@/components/html/HeaderApp';
+import { useAcervo } from '@/contexts/AcervoContext';
+import { motion } from 'motion/react';
+import { fetchCompat } from '@/utils/httpClient';
 
-import AnimatedButton from '@/components/AnimatedButton';
-
-import { TimelineDemo } from '@/components/acervo/Timeline';
-
-// Componentes do Acervo
-import HeroTimeline from '@/components/acervo/HeroTimeline';
-import FilterBar from '@/components/acervo/FilterBar';
-import StatsOverview from '@/components/acervo/StatsOverview';
-import ItemsGrid from '@/components/acervo/ItemsGrid';
+// Helper para labels dos campos
+const getFieldLabel = (field) => {
+  const labels = {
+    title: 'título',
+    referenceCode: 'código de referência', 
+    genre: 'gênero',
+    subject: 'assunto',
+    name: 'nome'
+  };
+  return labels[field] || field;
+};
 
 const Acervo = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilters, setActiveFilters] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Hook do contexto
+  const { 
+    searchResults, 
+    searchTotal, 
+    performSearch, 
+    loading, 
+    errors,
+    clearSearch 
+  } = useAcervo();
 
-  // AtoM 2.9 Advanced Search state (from api_implementation.md)
-  const [filters, setFilters] = useState({
-    q: '',
-    field: 'title',
-    operator: 'and',
-    startDate: '',
-    endDate: '',
-    sort: 'alphabetic',
-    onlyMedia: false,
-    topLod: false,
-    languages: 'pt',
-    levels: '',
-    creators: '',
-    subjects: '',
-    genres: '',
-    places: ''
-  });
-  const [results, setResults] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [searchError, setSearchError] = useState(null);
+  // Estados para busca básica
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchField, setSearchField] = useState('title');
+  const [searchOperator, setSearchOperator] = useState('and');
+  
+  // Estados para filtros avançados
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [onlyMedia, setOnlyMedia] = useState(false);
+  const [topLod, setTopLod] = useState(false);
+  const [sortBy, setSortBy] = useState('alphabetic');
+  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [selectedLevel, setSelectedLevel] = useState('');
+  const [selectedRepository, setSelectedRepository] = useState('');
+  
+  // Estados locais para paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12); // AtoM retorna 12 por padrão
+  
+  // Estado para busca por creator
+  const [searchByCreator, setSearchByCreator] = useState('');
+  
+  // Estado removido - agora usamos página separada para detalhes
+  
+  // Estado local para resultados de creator (substitui temporariamente o contexto)
+  const [creatorResults, setCreatorResults] = useState(null);
+  
+  // Estado para artistas em destaque
+  const [featuredArtists, setFeaturedArtists] = useState([]);
+  const [loadingArtists, setLoadingArtists] = useState(true);
+  
 
-  const buildApiParams = () => {
-    const params = new URLSearchParams();
-    // Map to AtoM 2.9 parameters
-    if (filters.q) params.append('sq0', filters.q);
-    if (filters.field) params.append('sf0', filters.field);
-    if (filters.operator) params.append('so0', filters.operator);
-    if (filters.startDate) params.append('startDate', filters.startDate);
-    if (filters.endDate) params.append('endDate', filters.endDate);
-    if (filters.sort) params.append('sort', filters.sort);
-    if (filters.onlyMedia) params.append('onlyMedia', '1');
-    if (filters.topLod) params.append('topLod', '1');
-    if (filters.languages) params.append('languages', filters.languages);
-    if (filters.levels) params.append('levels', filters.levels);
-    if (filters.creators) params.append('creators', filters.creators);
-    if (filters.subjects) params.append('subjects', filters.subjects);
-    if (filters.genres) params.append('genres', filters.genres);
-    if (filters.places) params.append('places', filters.places);
-    // basic paging defaults
-    params.append('limit', '20');
-    params.append('offset', '0');
-    return params.toString();
+  // Função para limpar busca local
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setSearchByCreator('');
+    setCreatorResults(null);
+    clearSearch();
   };
 
-  const handleAdvancedSearch = async (e) => {
-    e?.preventDefault?.();
-    setSearchLoading(true);
-    setSearchError(null);
-    setResults(null);
+  // Função para lidar com busca
+  const handleSearch = async (query = searchQuery, field = searchField, page = 1) => {
+    if (page === 1) {
+      setCurrentPage(1); // Reset pagination when searching
+      setCreatorResults(null); // Clear creator results
+      setSearchByCreator(''); // Clear creator search
+    }
+    setSearchQuery(query);
+    setSearchField(field);
+    
+    // Calcular skip baseado na página
+    const skip = (page - 1) * itemsPerPage;
+    
+    try {
+      let url;
+      if (!query?.trim()) {
+        // Se não há query, carrega itens padrão com limit e skip
+        if (page === 1) {
+          url = `/api/acervo?limit=${itemsPerPage}`;
+        } else {
+          url = `/api/acervo?limit=${itemsPerPage}&skip=${skip}`;
+        }
+      } else {
+        // Busca com sq0 e sf0 - usar paginação real sempre com limit e skip
+        if (page === 1) {
+          url = `/api/acervo?sq0=${encodeURIComponent(query.trim())}&sf0=${field}&limit=${itemsPerPage}`;
+        } else {
+          url = `/api/acervo?sq0=${encodeURIComponent(query.trim())}&sf0=${field}&limit=${itemsPerPage}&skip=${skip}`;
+        }
+      }
+      
+      console.log(`[Acervo] Buscando página ${page}:`, url);
+      const response = await fetchCompat(url);
+      const data = await response.json();
+      
+      // Usar estado local para controle total da paginação
+      setCreatorResults({
+        results: data.results || [],
+        total: data.total || 0,
+        creatorId: null,
+        currentPage: page,
+        isSearch: !!query?.trim()
+      });
+    } catch (error) {
+      console.error('Erro na busca:', error);
+      // Fallback para o contexto original apenas na primeira página
+      if (page === 1) {
+        performSearch(query, field);
+      }
+    }
+  };
+  
+  // Função para busca por creator
+  const handleCreatorSearch = async (creatorId, page = 1) => {
+    if (!creatorId.trim()) return;
+    
+    if (page === 1) {
+      setCurrentPage(1);
+      setSearchByCreator(creatorId);
+      setSearchQuery(''); // Clear text search
+    }
+    
+    await handleCreatorSearchPage(creatorId, page);
+  };
+  
+  // Função auxiliar para buscar página específica de creator (busca todos os itens)
+  const handleCreatorSearchPage = async (creatorId, page = 1) => {
+    try {
+      // Usar limite alto para garantir que todos os itens do creator sejam carregados
+      const url = `/api/acervo?creators=${creatorId}&limit=100`;
+      
+      console.log(`[Acervo] Buscando todos os itens do creator ${creatorId}:`, url);
+      const response = await fetchCompat(url);
+      
+      if (!response.ok) {
+        throw new Error(`Erro ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log(`[Acervo] Encontrados ${data.total} itens para creator ${creatorId}`);
+      
+      // Store creator results in local state
+      setCreatorResults({
+        results: data.results || [],
+        total: data.total || 0,
+        creatorId: creatorId,
+        currentPage: page
+      });
+      
+      // Clear normal search to show creator results
+      if (page === 1) {
+        clearSearch();
+        setSearchQuery(`Creator: ${creatorId}`);
+      }
+      
+    } catch (error) {
+      console.error('[Acervo] Erro na busca por creator:', error);
+      if (page === 1) {
+        alert(`Erro ao buscar creator ${creatorId}: ${error.message}`);
+      }
+    }
+  };
+  
+  // Função para navegar entre páginas
+  const goToPage = async (page) => {
+    setCurrentPage(page);
+    
+    // Scroll inteligente: vai para a área de resultados ao invés do topo
+    const resultsSection = document.getElementById('results-section');
+    if (resultsSection) {
+      const sectionTop = resultsSection.offsetTop;
+      const currentScroll = window.pageYOffset;
+      const offset = 100; // Deixa um espaço do topo
+      const targetPosition = Math.max(0, sectionTop - offset);
+      
+      // Se o usuário já está próximo da área de resultados, mantém a posição
+      // Senão, faz scroll para a área de resultados
+      if (Math.abs(currentScroll - targetPosition) > 200) {
+        window.scrollTo({ 
+          top: targetPosition, 
+          behavior: 'smooth' 
+        });
+      }
+    }
+    
+    // Recarregar dados com paginação real (exceto creator)
+    if (creatorResults?.creatorId) {
+      // Se é busca por creator, não precisa recarregar (todos os itens já estão carregados)
+      return;
+    } else if (creatorResults?.isSearch || searchQuery) {
+      // Se é busca textual, recarregar com paginação real
+      await handleSearch(searchQuery, searchField, page);
+    } else {
+      // Se é página inicial, recarregar com paginação real
+      await handleSearch('', 'title', page);
+    }
+  };
+  
+  // Determine which results to show (creator results take priority)
+  const activeResults = creatorResults ? creatorResults.results : searchResults;
+  const activeTotal = creatorResults ? creatorResults.total : searchTotal;
+  
+  // Calcular dados de paginação
+  const totalPages = Math.ceil(activeTotal / itemsPerPage);
+  
+  // Lógica para diferentes tipos de visualização:
+  // - Creator: slice local (todos os itens carregados com limit=100)
+  // - Busca textual: paginação real (12 itens da API com skip)
+  // - Página inicial: paginação real (12 itens da API com skip)
+  const currentItems = (() => {
+    if (creatorResults?.creatorId) {
+      // Creator: paginar localmente (carrega todos com limit=100)
+      return activeResults.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    } else {
+      // Busca textual e página inicial: itens já vem paginados da API
+      return activeResults;
+    }
+  })();
+  
+  // Função para abrir detalhes do item
+  const openItemDetails = (slug) => {
+    // Navegar para a página de detalhes do item
+    window.location.href = `/acervo/item/${slug}`;
+  };
 
-    const query = buildApiParams();
-    const url = `/api/acervo?${query}`;
-    console.log('🔎 AtoM 2.9 search →', url);
+  // Função para navegar para página do artista
+  const goToArtistPage = (creatorId) => {
+    // Navegar para a página de detalhes do artista
+    window.location.href = `/acervo/artista/${creatorId}`;
+  };
+
+  // Função para carregar dados dos artistas em destaque
+  const loadFeaturedArtists = async () => {
+    setLoadingArtists(true);
+    const artists = [
+      { id: '675', name: 'Dino Black', description: 'Rapper, compositor e ativista cultural' },
+      { id: '1069', name: 'Vera Veronika', description: 'Artista visual e fotógrafa' }
+    ];
 
     try {
-      const resp = await fetch(url, { cache: 'no-store' });
-      if (!resp.ok) {
-        const text = await resp.text().catch(() => '');
-        throw new Error(`API error ${resp.status} ${resp.statusText} ${text}`);
-      }
-      const data = await resp.json();
-      console.log('📦 results:', data);
-      setResults(data);
-    } catch (err) {
-      console.error('❌ search failed', err);
-      setSearchError(err.message);
+      const artistsWithData = await Promise.all(
+        artists.map(async (artist) => {
+          try {
+            const response = await fetchCompat(`/api/acervo?creators=${artist.id}&limit=100`);
+            const data = await response.json();
+            
+            return {
+              ...artist,
+              totalItems: data.total || 0,
+              recentItems: (data.results || []).slice(0, 5), // Apenas 5 para preview
+              thumbnail: data.results?.[0]?.thumbnail_url?.replace('https://acervodistrito', 'https://base.acervodistrito') || null
+            };
+          } catch (error) {
+            console.error(`Erro ao carregar dados do artista ${artist.name}:`, error);
+            return {
+              ...artist,
+              totalItems: 0,
+              recentItems: [],
+              thumbnail: null
+            };
+          }
+        })
+      );
+
+      setFeaturedArtists(artistsWithData);
+    } catch (error) {
+      console.error('Erro ao carregar artistas em destaque:', error);
     } finally {
-      setSearchLoading(false);
+      setLoadingArtists(false);
     }
   };
 
+  // Carregar artistas em destaque
   useEffect(() => {
-    // Estratégia de carregamento otimizado
-    if (typeof window !== 'undefined') {
-      // Simular carregamento rápido
-      setTimeout(() => setIsLoading(false), 800);
-    }
+    loadFeaturedArtists();
   }, []);
 
+  // Carregar itens iniciais
+  useEffect(() => {
+    const loadInitialItems = async () => {
+      try {
+        // Verificar parâmetros de URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get('search');
+        const artistParam = urlParams.get('artist');
+        const creatorParam = urlParams.get('creator');
+        
+        let initialQuery = '';
+        if (searchParam) {
+          setSearchQuery(searchParam);
+          initialQuery = searchParam;
+        } else if (artistParam) {
+          setSearchQuery(artistParam);
+          initialQuery = artistParam;
+        } else if (creatorParam) {
+          // Se veio da página do artista, buscar diretamente por creator
+          handleCreatorSearch(creatorParam);
+          return;
+        }
+        
+        // Usar nossa função de busca melhorada
+        await handleSearch(initialQuery, 'title');
+        
+      } catch (error) {
+        console.error('[Acervo] Erro ao carregar itens:', error);
+      }
+    };
+
+    loadInitialItems();
+  }, [performSearch]);
+
+
   return (
-    <>
-      {/* Tela de carregamento - mesma da homepage */}
-      {isLoading && (
-        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
-          <div className="flex gap-2">
-            {[0, 1, 2, 3, 4].map((index) => (
-              <motion.div
-                key={index}
-                className="w-4 h-16 bg-white rounded-sm"
-                initial={{ height: 8 }}
-                animate={{
-                  height: [8, 40, 8],
-                  backgroundColor: ["#ffffff", "#f8e71c", "#ffffff"]
-                }}
-                transition={{
-                  duration: 1,
-                  repeat: Infinity,
-                  delay: index * 0.15,
-                  ease: "easeInOut"
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Conteúdo da página */}
-      <div className={`relative z-10 overflow-hidden ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
-        {/* Título ocupando toda a largura da tela - ACIMA DE TUDO */}
-        <div className="w-full bg-transparent">
-          <motion.h1
-            className="font-dirty-stains text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-theme-primary text-center py-4 md:py-6 lg:py-8 w-full"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            style={{
-              letterSpacing: '0.05em',
-              lineHeight: '0.9'
-            }}
-          >
-            ACERVO DIGITAL
-          </motion.h1>
-        </div>
-
-        <motion.div
-          className="relative w-full py-4 md:py-6 border-t-3 border-b-3 border-solid border-black z-20"
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
+    <div>
+      <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
+      
+      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen">
+        {/* Seção de Artistas em Destaque */}
+        <motion.section 
+          className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center justify-between px-4 md:px-8">
-            <div className="flex items-start px-4 absolute top-[-50px] left-[-50px]">
-              <Image src="cursor03.png" alt="Marca de spray com escorrimento" width={150} height={180} />
-            </div>
-            {/* Navegação principal - centralizada */}
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 flex-1">
-
-              <Link href="/">
-                <AnimatedButton textSize="text-3xl" text="INÍCIO" backgroundMode="static" imagePath="marca-texto-vermelho.png" />
-              </Link>
-            </div>
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-dirty-stains text-theme-primary mb-4">
+              ARTISTAS EM DESTAQUE
+            </h2>
+            <p className="text-lg font-sometype-mono text-gray-600">
+              Conheça os artistas que fazem parte do nosso acervo
+            </p>
           </div>
-        </motion.div>
 
-        {/* Page Content with Transition */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -50, opacity: 0 }}
-            transition={{
-              type: 'tween',
-              duration: 0.8,
-              ease: [0.25, 0.1, 0.25, 1]
-            }}
-            className="w-full overflow-hidden"
-          >
-            {/* Hero Timeline */}
-            <HeroTimeline />
-            {/* Advanced Search (AtoM 2.9) – inserted before HeroTimeline */}
-            <section className="max-w-7xl mx-auto px-6 py-8">
-              <form onSubmit={handleAdvancedSearch} className="bg-white/90 border-2 border-black p-6 shadow-lg">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {/* Termo */}
-                  <div className="md:col-span-2">
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Termo</label>
-                    <input
-                      type="text"
-                      value={filters.q}
-                      onChange={(e) => setFilters({ ...filters, q: e.target.value })}
-                      placeholder="Digite um termo..."
-                      className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black placeholder:text-black/50"
-                    />
-                  </div>
-                  {/* Campo */}
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Campo</label>
-                    <select
-                      value={filters.field}
-                      onChange={(e) => setFilters({ ...filters, field: e.target.value })}
-                      className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black bg-white"
-                    >
-                      <option value="title">Título</option>
-                      <option value="identifier">Identificador</option>
-                      <option value="scopeAndContent">Escopo/Conteúdo</option>
-                    </select>
-                  </div>
-                  {/* Operador */}
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Operador</label>
-                    <select
-                      value={filters.operator}
-                      onChange={(e) => setFilters({ ...filters, operator: e.target.value })}
-                      className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black bg-white"
-                    >
-                      <option value="and">AND</option>
-                      <option value="or">OR</option>
-                      <option value="not">NOT</option>
-                    </select>
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-                  {/* Datas */}
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Data Inicial</label>
-                    <input type="date" value={filters.startDate} onChange={(e) => setFilters({ ...filters, startDate: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black bg-white" />
-                  </div>
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Data Final</label>
-                    <input type="date" value={filters.endDate} onChange={(e) => setFilters({ ...filters, endDate: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black bg-white" />
-                  </div>
-                  {/* Ordenação */}
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Ordenação</label>
-                    <select value={filters.sort} onChange={(e) => setFilters({ ...filters, sort: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black bg-white">
-                      <option value="alphabetic">Alfabética</option>
-                      <option value="date">Data</option>
-                      <option value="identifier">Identificador</option>
-                      <option value="lastUpdated">Última atualização</option>
-                    </select>
-                  </div>
-                  {/* Idioma */}
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Idioma</label>
-                    <select value={filters.languages} onChange={(e) => setFilters({ ...filters, languages: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black bg-white">
-                      <option value="pt">Português</option>
-                      <option value="en">Inglês</option>
-                      <option value="es">Espanhol</option>
-                    </select>
-                  </div>
-                </div>
+          {loadingArtists ? (
+            <div className="text-center py-12">
+              <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-lg font-sometype-mono">Carregando artistas...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {featuredArtists.map((artist, index) => (
+                <motion.div
+                  key={artist.id}
+                  className="bg-theme-background border-2 border-black p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.2 }}
+                >
+                  <div className="flex flex-col md:flex-row gap-6">
+                    {/* Thumbnail do artista */}
+                    <div className="md:w-32 md:h-32 w-full h-48 flex-shrink-0">
+                      {artist.thumbnail ? (
+                        <img
+                          src={artist.thumbnail}
+                          alt={artist.name}
+                          className="w-full h-full object-cover border-2 border-black"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 border-2 border-black flex items-center justify-center">
+                          <span className="text-4xl">🎭</span>
+                        </div>
+                      )}
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  {/* Taxonomias */}
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Criador</label>
-                    <input type="text" value={filters.creators} onChange={(e) => setFilters({ ...filters, creators: e.target.value })} placeholder="Ex: Dino Black" className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black placeholder:text-black/50" />
-                  </div>
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Assunto</label>
-                    <input type="text" value={filters.subjects} onChange={(e) => setFilters({ ...filters, subjects: e.target.value })} placeholder="Ex: Rap" className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black placeholder:text-black/50" />
-                  </div>
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Lugar</label>
-                    <input type="text" value={filters.places} onChange={(e) => setFilters({ ...filters, places: e.target.value })} placeholder="Ex: Candangolândia/DF" className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black placeholder:text-black/50" />
-                  </div>
-                </div>
+                    {/* Informações do artista */}
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-2xl font-dirty-stains text-theme-primary mb-2">
+                          {artist.name}
+                        </h3>
+                        <p className="font-sometype-mono text-gray-700 mb-3">
+                          {artist.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          <span className="bg-blue-100 text-blue-800 px-2 py-1 border border-blue-300 font-sometype-mono text-sm">
+                            📊 {artist.totalItems} {artist.totalItems === 1 ? 'item' : 'itens'}
+                          </span>
+                          <span className="bg-green-100 text-green-800 px-2 py-1 border border-green-300 font-sometype-mono text-sm">
+                            🆔 Creator {artist.id}
+                          </span>
+                        </div>
+                      </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Gênero (ID)</label>
-                    <input type="text" value={filters.genres} onChange={(e) => setFilters({ ...filters, genres: e.target.value })} placeholder="Ex: 78" className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black placeholder:text-black/50" />
+                      {/* Botões de ação */}
+                      <div className="flex flex-wrap gap-3">
+                        <button
+                          onClick={() => goToArtistPage(artist.id)}
+                          className="px-4 py-2 bg-blue-500 text-white border-2 border-black font-dirty-stains hover:bg-blue-600 transition-colors"
+                        >
+                          👤 Ver Página do Artista
+                        </button>
+                        <button
+                          onClick={() => handleCreatorSearch(artist.id)}
+                          className="px-4 py-2 bg-green-500 text-white border-2 border-black font-dirty-stains hover:bg-green-600 transition-colors"
+                        >
+                          🔍 Ver Todos os Itens
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block font-sometype-mono text-sm text-black mb-1">Nível (ID)</label>
-                    <input type="text" value={filters.levels} onChange={(e) => setFilters({ ...filters, levels: e.target.value })} placeholder="Ex: 34" className="w-full px-3 py-2 border-2 border-black rounded-md font-sometype-mono text-black placeholder:text-black/50" />
-                  </div>
-                  <div className="flex items-end gap-4">
-                    <label className="inline-flex items-center gap-2 font-sometype-mono text-sm text-black">
-                      <input type="checkbox" checked={filters.onlyMedia} onChange={(e) => setFilters({ ...filters, onlyMedia: e.target.checked })} className="w-4 h-4 border-2 border-black" />
-                      Apenas com imagens
-                    </label>
-                    <label className="inline-flex items-center gap-2 font-sometype-mono text-sm text-black">
-                      <input type="checkbox" checked={filters.topLod} onChange={(e) => setFilters({ ...filters, topLod: e.target.checked })} className="w-4 h-4 border-2 border-black" />
-                      Apenas coleções
-                    </label>
-                  </div>
-                </div>
 
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <button type="submit" disabled={searchLoading} className="bg-[#fae523] text-black font-sometype-mono font-bold px-6 py-3 border-2 border-black shadow hover:shadow-lg transition disabled:opacity-50">
-                    {searchLoading ? 'Buscando...' : 'Buscar'}
-                  </button>
-                  <button type="button" onClick={() => setFilters({ ...filters, creators: 'Dino Black' })} className="px-4 py-2 border-2 border-black font-sometype-mono">Dino Black</button>
-                  <button type="button" onClick={() => setFilters({ ...filters, places: 'Candangolândia/DF' })} className="px-4 py-2 border-2 border-black bg-white font-sometype-mono">Candangolândia/DF</button>
-                </div>
-
-                {searchError && (
-                  <div className="mt-4 p-3 border-2 border-red-600 bg-red-100 rounded-md font-sometype-mono text-red-700">
-                    {searchError}
-                  </div>
-                )}
-
-                {results && (
-                  <div className="mt-8">
-                    <h3 className="font-dirty-stains text-2xl text-black mb-3">Resultados: {results.total || 0}</h3>
-                    {Array.isArray(results.results) && results.results.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {results.results.map((item, idx) => (
-                          <div key={item.slug || idx} className="p-4 border-2 border-black rounded-lg bg-white">
-                            <div className="font-sometype-mono text-sm text-black/60">{item.reference_code || '—'}</div>
-                            <div className="font-sometype-mono font-bold text-black">{item.title || 'Sem título'}</div>
-                            {item.level_of_description && (
-                              <div className="font-sometype-mono text-xs text-black/60 mt-1">Nível: {item.level_of_description}</div>
+                  {/* Preview dos itens recentes */}
+                  {artist.recentItems.length > 0 && (
+                    <div className="mt-6 pt-4 border-t-2 border-black">
+                      <h4 className="font-dirty-stains text-lg mb-3">Itens Recentes:</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {artist.recentItems.slice(0, 3).map((item, itemIndex) => (
+                          <div
+                            key={item.slug || itemIndex}
+                            className="bg-white p-2 border border-gray-300 hover:bg-gray-50 cursor-pointer transition-colors"
+                            onClick={() => openItemDetails(item.slug)}
+                          >
+                            {item.thumbnail_url && (
+                              <img
+                                src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')}
+                                alt={item.title || 'Item'}
+                                className="w-full h-16 object-cover border border-gray-200 mb-1"
+                                onError={(e) => { e.target.style.display = 'none'; }}
+                              />
                             )}
+                            <p className="text-xs font-sometype-mono truncate">
+                              {item.title || 'Sem título'}
+                            </p>
                           </div>
                         ))}
                       </div>
-                    ) : (
-                      <p className="font-sometype-mono text-black/60">Nenhum resultado encontrado.</p>
-                    )}
-                  </div>
-                )}
-              </form>
-            </section>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </motion.section>
 
+        {/* Barra de Busca Melhorada */}
+        <motion.div 
+          className="mb-8 p-6 bg-white/90 border-2 border-black"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="space-y-4">
+            {/* Busca Principal */}
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+              <div className="flex flex-1 gap-2">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  placeholder="Digite sua busca... (ex: vera, dino, 1994)"
+                  className="flex-1 px-4 py-3 bg-theme-background border-2 border-black font-sometype-mono text-base focus:outline-none focus:border-yellow-400"
+                />
+                <select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  className="px-4 py-3 bg-theme-background border-2 border-black font-sometype-mono text-base focus:outline-none focus:border-yellow-400"
+                >
+                  <option value="title">Título</option>
+                  <option value="referenceCode">Código de Referência</option>
+                  <option value="genre">Gênero</option>
+                  <option value="subject">Assunto</option>
+                  <option value="name">Nome</option>
+                </select>
+                <button
+                  onClick={() => handleSearch()}
+                  className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white border-2 border-black font-dirty-stains transition-colors"
+                >
+                  🔍 Buscar
+                </button>
+              </div>
+            </div>
             
+            {/* Busca por Creator */}
+            <div className="flex flex-col md:flex-row gap-4 items-center border-t-2 border-gray-200 pt-4">              
+              {/* Botões de Ação */}
+              <div className="flex flex-wrap gap-3 justify-center">
+                <button
+                  onClick={handleClearSearch}
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 border-2 border-black font-dirty-stains text-sm transition-colors"
+                >
+                  ✕ Limpar
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <p className="mt-3 text-sm text-gray-600 font-sometype-mono text-center">
+            💡 Use a busca textual para termos específicos ou a busca por Creator para ver todos os itens de um criador
+          </p>
+        </motion.div>
 
-            {/* Stats Overview */}
-            {/* <StatsOverview /> */}
-
-            {/* Filter Bar */}
-            {/* <FilterBar
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              activeFilters={activeFilters}
-              onFilterChange={setActiveFilters}
-            /> */}
-
-            {/* Items Grid */}
-            {/* <ItemsGrid
-              searchTerm={searchTerm}
-              activeFilters={activeFilters}
-            /> */}
-
-            {/* Footer do Acervo */}
-            {/* <motion.footer
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.5 }}
-              className="bg-black/60 backdrop-blur-md border-t border-white/20 mt-16 py-12"
-            >
-              <div className="max-w-7xl mx-auto px-6 text-center">
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    🎤 Acervo Hip Hop Distrito Federal
-                  </h3>
-                  <p className="text-white/80 max-w-2xl mx-auto leading-relaxed">
-                    Preservando e compartilhando a rica história da cultura Hip Hop no Distrito Federal,
-                    desde os primeiros movimentos nos anos 80 até os dias atuais.
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-8 mb-8">
-                  <div className="text-center">
-                    <div className="text-3xl mb-2">📚</div>
-                    <h4 className="font-semibold text-white mb-1">Documentação</h4>
-                    <p className="text-white/60 text-sm">
-                      Fotografias, vídeos, documentos e registros históricos
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl mb-2">🗺️</div>
-                    <h4 className="font-semibold text-white mb-1">Territórios</h4>
-                    <p className="text-white/60 text-sm">
-                      Mapeamento da cultura Hip Hop em todas as regiões do DF
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl mb-2">👥</div>
-                    <h4 className="font-semibold text-white mb-1">Comunidade</h4>
-                    <p className="text-white/60 text-sm">
-                      Preservando memórias de artistas, crews e coletivos
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-white/40 text-sm">
-                  <p>
-                    Projeto desenvolvido em parceria com o Arquivo Público do Distrito Federal
-                  </p>
-                  <p className="mt-2">
-                    © 2024 Acervo Hip Hop DF • Preservando nossa cultura
-                  </p>
+        {/* Contador de Resultados e Paginação */}
+        <motion.div 
+          id="results-section"
+          className="mb-6 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-lg font-dirty-stains">
+              {activeTotal} {activeTotal === 1 ? 'item encontrado' : 'itens encontrados'}
+              {searchQuery && (creatorResults ? 
+                ` para Creator ID: ${creatorResults.creatorId}` : 
+                ` para "${searchQuery}" em ${getFieldLabel(searchField)}`
+              )}
+            </p>
+            
+            {totalPages > 1 && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-sometype-mono">Página {currentPage} de {totalPages}</span>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains text-sm transition-colors"
+                  >
+                    ←
+                  </button>
+                  
+                  {/* Números das páginas */}
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => goToPage(pageNum)}
+                        className={`px-3 py-1 border-2 border-black font-dirty-stains text-sm transition-colors ${
+                          pageNum === currentPage 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-white hover:bg-gray-100'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                  
+                  <button
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains text-sm transition-colors"
+                  >
+                    →
+                  </button>
                 </div>
               </div>
-            </motion.footer> */}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+            )}
+          </div>
+        </motion.div>
 
-      <TimelineDemo />
-    </>
+        {/* Grade de Itens */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          {loading.search ? (
+            <div className="text-center py-12">
+              <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-lg font-sometype-mono">Carregando acervo...</p>
+            </div>
+          ) : errors.search ? (
+            <div className="text-center py-12">
+              <div className="bg-theme-background border-2 border-black p-6 bg-white/90">
+                <p className="font-dirty-stains text-xl mb-2">Erro ao carregar</p>
+                <p className="font-sometype-mono">{errors.search}</p>
+              </div>
+            </div>
+          ) : activeResults.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="bg-theme-background border-2 border-black p-6">
+                <p className="font-dirty-stains text-xl mb-2">Nenhum item encontrado</p>
+                <p className="font-sometype-mono">Tente um termo de busca diferente</p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentItems.map((item, index) => (
+                <motion.div 
+                  key={item.slug || index} 
+                  className="bg-theme-background border-2 border-black hover:bg-zinc-100 transition-all duration-300 cursor-pointer hover:shadow-lg hover:scale-105 flex flex-col h-full"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  onClick={() => openItemDetails(item.slug)}
+                >
+                  {/* Thumbnail se disponível */}
+                  {item.thumbnail_url && (
+                    <div className="mb-3 overflow-hidden">
+                      <img 
+                        src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')} 
+                        alt={item.title || 'Sem título'}
+                        className="w-full h-40 object-cover border-b-2 border-black transition-transform duration-300 hover:scale-110"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    </div>
+                  )}
+                  
+                  <div className="p-4 flex-1 flex flex-col">
+                    <h3 className="text-lg font-dirty-stains mb-3 leading-tight line-clamp-2">
+                      {item.title || 'Sem título'}
+                    </h3>
+                    
+                    <div className="space-y-1 flex-1">
+                      {item.physical_characteristics && (
+                        <p className="text-sm font-sometype-mono text-gray-700">
+                          📁 {item.physical_characteristics}
+                        </p>
+                      )}
+                      
+                      {item.creation_dates && item.creation_dates.length > 0 && (
+                        <p className="text-sm font-sometype-mono text-gray-700">
+                          📅 {item.creation_dates[0]}
+                        </p>
+                      )}
+                      
+                      {item.reference_code && (
+                        <p className="text-xs font-sometype-mono text-gray-500">
+                          🔗 {item.reference_code}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div className="mt-4 pt-3 border-t-2 border-black flex justify-between items-center">
+                      <p className="text-xs font-sometype-mono opacity-60 truncate mr-2">
+                        {item.slug || 'N/A'}
+                      </p>
+                      <button className="text-xs bg-blue-500 text-white px-3 py-1 border border-black font-dirty-stains hover:bg-blue-600 transition-colors whitespace-nowrap">
+                        Ver Detalhes
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+        
+        {/* Paginação */}
+        {totalPages > 1 && (
+          <motion.div 
+            className="flex justify-center mt-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains transition-colors"
+              >
+                ← Anterior
+              </button>
+              
+              <span className="px-4 py-2 font-sometype-mono">
+                Página {currentPage} de {totalPages}
+              </span>
+              
+              <button
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains transition-colors"
+              >
+                Próxima →
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+
+      </div>
+    </div>
   );
 };
 

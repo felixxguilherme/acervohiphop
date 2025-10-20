@@ -7,7 +7,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: sticky;
   top: 0px;
 }
 
@@ -18,7 +17,7 @@
   top: -25%;
   height: 500px;
   width: 1000px;
-  border-radius: 25px;
+  border-radius: 0px;
   padding: 50px;
   transform-origin: top;
 }
@@ -67,7 +66,7 @@
   position: relative;
   width: 60%;
   height: 100%;
-  border-radius: 25px;
+  border-radius: 0px;
   overflow: visible;
   display: flex;
   align-items: center;
@@ -85,3 +84,20 @@
 .cardContainer .card .body .imageContainer img {
   object-fit: cover;
 }
+
+/* Responsive adjustments for hero */
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 4rem !important;
+  }
+  
+  .hero-section h2 {
+    font-size: 3rem !important;
+  }
+  
+  .hero-section .decorative-elements > div {
+    opacity: 0.15 !important;
+  }
+}
+
+/* Decorative elements - static (animations removed) */

@@ -66,7 +66,7 @@ export default function HeroTimeline() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 30 }}
                   transition={{ duration: 0.5 }}
-                  className="text-white p-4 border-4 border-black shadow-[[6px_6px_0px_0px_rgba(0,0,0,1)]]"
+                  className="text-white p-4 border-4 border-black shadow-[[6px_6px_0px_0px_rgba(0,0,0,1)]] bg-[#e08e6e]/70"
                 >
                   <div className="font-scratchy text-black text-xl font-black px-2 py-1 inline-block mb-2 border border-black">
                     {new Date(currentEvent.date).getFullYear()}
@@ -89,8 +89,8 @@ export default function HeroTimeline() {
                   onClick={() => setActiveEvent(index)}
                   className={`w-4 h-4 transition-all duration-200 border-2 border-black ${
                     index === activeEvent 
-                      ? 'bg-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
-                      : 'bg-white hover:bg-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]'
+                      ? 'bg-[#e08e6e] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
+                      : 'bg-white hover:bg-[#e08e6e] shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]'
                   }`}
                 />
               ))}
@@ -132,7 +132,7 @@ export default function HeroTimeline() {
                     transition={{ delay: 0.3, duration: 0.6 }}
                     className="text-white"
                   >
-                    <div className="font-scratchy bg-white text-black text-2xl font-black px-4 py-2 border-2 border-black inline-block mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] tracking-wider">
+                    <div className="font-scratchy bg-[#e08e6e] text-black text-2xl font-black px-4 py-2 border-2 border-black inline-block mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] tracking-wider">
                       {new Date(currentEvent.date).getFullYear()}
                     </div>
                     
@@ -142,7 +142,7 @@ export default function HeroTimeline() {
                     
                     {currentEvent.items && currentEvent.items.length > 0 && (
                       <div className="flex items-center gap-2">
-                        <div className="font-scratchy bg-white text-black px-3 py-1 text-xs font-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        <div className="font-scratchy bg-[#e08e6e] text-black px-3 py-1 text-xs font-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                           {currentEvent.items.length} ITENS NO ACERVO
                         </div>
                         <div className="text-white/80 text-sm font-sometype-mono">

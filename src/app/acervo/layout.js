@@ -1,9 +1,14 @@
 import HeaderApp from "@/components/html/HeaderApp"
-
 export default function AcervoLayout({ children }) {
-    return (
+
+
+  return (
+    <>
+
       <section>
         {children}
       </section>
-    )
-  }
+    </>
+
+  )
+}

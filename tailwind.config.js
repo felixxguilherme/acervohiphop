@@ -13,6 +13,11 @@ module.exports = {
           'scratchy': ['var(--font-scratchy)'],
           'sometype-mono': ['var(--font-sometype-mono-italic)'],
         },
+        colors: {
+          'dark-theme': '#312F2C',
+          'dark-theme-card': '#3a3632',
+          'dark-theme-accent': '#3e3936',
+        },
       },
     },
     plugins: [],

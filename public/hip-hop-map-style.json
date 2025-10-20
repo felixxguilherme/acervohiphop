@@ -1,0 +1,335 @@
+{
+  "version": 8,
+  "name": "Hip Hop Culture - Distrito Federal",
+  "metadata": {
+    "mapbox:autocomposite": true,
+    "mapbox:type": "template",
+    "description": "Estilo de mapa inspirado na cultura Hip Hop com elementos visuais urbanos e cores características do movimento"
+  },
+  "sources": {
+    "mapbox-streets": {
+      "type": "vector",
+      "url": "mapbox://mapbox.mapbox-streets-v8"
+    }
+  },
+  "sprite": "mapbox://sprites/mapbox/streets-v11",
+  "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#1a1a1a"
+      }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "mapbox-streets",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": "#2c2c2c",
+        "fill-outline-color": "#fae523"
+      }
+    },
+    {
+      "id": "landuse-park",
+      "type": "fill",
+      "source": "mapbox-streets",
+      "source-layer": "landuse",
+      "filter": ["==", "class", "park"],
+      "paint": {
+        "fill-color": "#333333",
+        "fill-opacity": 0.6
+      }
+    },
+    {
+      "id": "landuse-residential",
+      "type": "fill",
+      "source": "mapbox-streets",
+      "source-layer": "landuse",
+      "filter": ["==", "class", "residential"],
+      "paint": {
+        "fill-color": "#242424",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "building",
+      "type": "fill",
+      "source": "mapbox-streets",
+      "source-layer": "building",
+      "paint": {
+        "fill-color": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10, "#2a2a2a",
+          16, "#3a3a3a"
+        ],
+        "fill-outline-color": "#555555",
+        "fill-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          12, 0.7,
+          16, 0.9
+        ]
+      }
+    },
+    {
+      "id": "building-3d",
+      "type": "fill-extrusion",
+      "source": "mapbox-streets",
+      "source-layer": "building",
+      "minzoom": 15,
+      "paint": {
+        "fill-extrusion-color": "#2a2a2a",
+        "fill-extrusion-height": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          15, 0,
+          16, ["*", ["get", "height"], 1]
+        ],
+        "fill-extrusion-base": 0,
+        "fill-extrusion-opacity": 0.8
+      }
+    },
+    {
+      "id": "road-motorway",
+      "type": "line",
+      "source": "mapbox-streets",
+      "source-layer": "road",
+      "filter": ["==", "class", "motorway"],
+      "paint": {
+        "line-color": "#888888",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, 2,
+          16, 12
+        ],
+        "line-opacity": 0.9
+      }
+    },
+    {
+      "id": "road-trunk",
+      "type": "line",
+      "source": "mapbox-streets",
+      "source-layer": "road",
+      "filter": ["==", "class", "trunk"],
+      "paint": {
+        "line-color": "#777777",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, 1.5,
+          16, 10
+        ]
+      }
+    },
+    {
+      "id": "road-primary",
+      "type": "line",
+      "source": "mapbox-streets",
+      "source-layer": "road",
+      "filter": ["==", "class", "primary"],
+      "paint": {
+        "line-color": "#666666",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, 1,
+          16, 8
+        ]
+      }
+    },
+    {
+      "id": "road-secondary",
+      "type": "line",
+      "source": "mapbox-streets",
+      "source-layer": "road",
+      "filter": ["==", "class", "secondary"],
+      "paint": {
+        "line-color": "#555555",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, 0.8,
+          16, 6
+        ]
+      }
+    },
+    {
+      "id": "road-street",
+      "type": "line",
+      "source": "mapbox-streets",
+      "source-layer": "road",
+      "filter": ["in", "class", "street", "street_limited"],
+      "paint": {
+        "line-color": "#444444",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10, 0.5,
+          18, 4
+        ]
+      }
+    },
+    {
+      "id": "road-rail",
+      "type": "line",
+      "source": "mapbox-streets",
+      "source-layer": "road",
+      "filter": ["==", "class", "rail"],
+      "paint": {
+        "line-color": "#fae523",
+        "line-width": 2,
+        "line-dasharray": [3, 3],
+        "line-opacity": 0.8
+      }
+    },
+    {
+      "id": "place-country",
+      "type": "symbol",
+      "source": "mapbox-streets",
+      "source-layer": "place",
+      "filter": ["==", "type", "country"],
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+        "text-size": 18,
+        "text-transform": "uppercase",
+        "text-letter-spacing": 0.2
+      },
+      "paint": {
+        "text-color": "#fae523",
+        "text-halo-color": "#000000",
+        "text-halo-width": 3
+      }
+    },
+    {
+      "id": "place-state",
+      "type": "symbol",
+      "source": "mapbox-streets",
+      "source-layer": "place",
+      "filter": ["==", "type", "state"],
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-size": 16,
+        "text-transform": "uppercase"
+      },
+      "paint": {
+        "text-color": "#ffffff",
+        "text-halo-color": "#000000",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "place-city",
+      "type": "symbol",
+      "source": "mapbox-streets",
+      "source-layer": "place",
+      "filter": ["==", "type", "city"],
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+        "text-size": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, 12,
+          16, 20
+        ],
+        "text-transform": "uppercase",
+        "text-letter-spacing": 0.1
+      },
+      "paint": {
+        "text-color": "#fae523",
+        "text-halo-color": "#000000",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "place-town",
+      "type": "symbol",
+      "source": "mapbox-streets",
+      "source-layer": "place",
+      "filter": ["==", "type", "town"],
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
+        "text-size": 14
+      },
+      "paint": {
+        "text-color": "#cccccc",
+        "text-halo-color": "#000000",
+        "text-halo-width": 1
+      }
+    },
+    {
+      "id": "place-neighbourhood",
+      "type": "symbol",
+      "source": "mapbox-streets",
+      "source-layer": "place",
+      "filter": ["==", "type", "neighbourhood"],
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
+        "text-size": 12,
+        "text-transform": "uppercase"
+      },
+      "paint": {
+        "text-color": "#aaaaaa",
+        "text-halo-color": "#000000",
+        "text-halo-width": 1
+      }
+    },
+    {
+      "id": "road-label-motorway",
+      "type": "symbol",
+      "source": "mapbox-streets",
+      "source-layer": "road",
+      "filter": ["==", "class", "motorway"],
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+        "text-size": 14,
+        "symbol-placement": "line",
+        "text-rotation-alignment": "map",
+        "text-pitch-alignment": "viewport"
+      },
+      "paint": {
+        "text-color": "#ffffff",
+        "text-halo-color": "#000000",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "road-label",
+      "type": "symbol",
+      "source": "mapbox-streets",
+      "source-layer": "road",
+      "filter": ["has", "name"],
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
+        "text-size": 12,
+        "symbol-placement": "line",
+        "text-rotation-alignment": "map"
+      },
+      "paint": {
+        "text-color": "#bbbbbb",
+        "text-halo-color": "#000000",
+        "text-halo-width": 1
+      }
+    }
+  ]
+}

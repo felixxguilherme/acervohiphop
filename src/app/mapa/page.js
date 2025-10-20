@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -10,7 +10,6 @@ import { Marker, Popup } from 'react-map-gl/maplibre';
 import { MapProvider } from '@/contexts/MapContext';
 import MapRenderer from '@/components/mapa/MapRenderer';
 import { useMapLayers } from '@/hooks/useMapLayers';
-import atomMapResponse from '@/data/mapa';
 import MapSearchComponent from '@/components/mapa/MapSearchComponent';
 import TourMenu from '@/components/mapa/TourMenu';
 import MapboxStorytellingOverlay from '@/components/mapa/MapboxStorytellingOverlay';
@@ -18,15 +17,35 @@ import LayerControl from '@/components/mapa/LayerControl';
 import MapLockIndicatorSimple from '@/components/mapa/MapLockIndicatorSimple';
 import storiesMapboxFormat from '@/data/storiesMapboxFormat';
 import { iconTypes } from '@/components/mapa/MapIcons';
+import { useAcervo } from '@/contexts/AcervoContext';
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from '@/components/ui/pagination';
 
 // AIDEV-NOTE: Internal component that uses map context
 const MapaContent = () => {
+  // Context hook for real data from development branch
+  const { 
+    mapData, 
+    geoJson, 
+    mapStatistics, 
+    loadMapData, 
+    isLoading, 
+    getError 
+  } = useAcervo();
+
   const mapLayers = useMapLayers();
 
   // AIDEV-NOTE: Initialize map layers when component mounts
   useEffect(() => {
     mapLayers.initializeDefaultLayers();
   }, []);
+
   // AIDEV-NOTE: Helper function to get icon component for random points
   const getIconComponent = (location) => {
     if (!location.isRandomPoint || !location.iconType) return null;
@@ -51,29 +70,96 @@ const MapaContent = () => {
     return distance < 0.001; // Approximately 100m
   };
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isMapLoading, setIsMapLoading] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [filteredLocations, setFilteredLocations] = useState(atomMapResponse.locations);
   const [selectedTour, setSelectedTour] = useState(null);
   const [currentChapter, setCurrentChapter] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const flyToTimeoutRef = useRef(null);
+  
+  // Estados para paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6); // 6 regiões por página
+  
+  // Estado local para controlar carregamento das regiões separadamente
+  const [regionsLoading, setRegionsLoading] = useState(false);
+
+  // Load map data de forma assíncrona (não bloqueia a página) - COM CACHE
+  useEffect(() => {
+    // Verificar se já temos dados carregados
+    if (geoJson?.features?.length > 0) {
+      console.info('[Mapa] 🎯 Dados do mapa já carregados, pulando requisição');
+      return;
+    }
+
+    const loadMapDataAsync = async () => {
+      setRegionsLoading(true);
+      try {
+        console.info('[Mapa] 🗺️ Iniciando carregamento dos dados do mapa');
+        await loadMapData('8337', false, true); // Modo rápido por padrão
+      } catch (error) {
+        console.error('[Mapa] ❌ Erro ao carregar dados do mapa:', error);
+      } finally {
+        setRegionsLoading(false);
+      }
+    };
+
+    // Delay para permitir que a página renderize primeiro
+    const timeoutId = setTimeout(loadMapDataAsync, 100);
+    
+    // Cleanup do timeout se o componente for desmontado
+    return () => clearTimeout(timeoutId);
+  }, []); // Dependências vazias para executar apenas uma vez
+
+  // Convert GeoJSON features to locations format for the map (memoized)
+  const locations = useMemo(() => {
+    if (!geoJson?.features) return [];
+    
+    return geoJson.features.map(feature => ({
+      id: feature.properties.id,
+      name: feature.properties.title,
+      description: feature.properties.archival_history || 'Sem descrição disponível',
+      coordinates: {
+        lng: feature.geometry.coordinates[0],
+        lat: feature.geometry.coordinates[1]
+      },
+      itemCount: 1,
+      items: [{
+        thumbnail: feature.properties.thumbnail_url,
+        title: feature.properties.title,
+        date: feature.properties.creation_dates?.[0] || 'Data não informada'
+      }],
+      slug: feature.properties.id,
+      reference_code: feature.properties.reference_code,
+      place_access_points: feature.properties.place_access_points,
+      has_real_coordinates: feature.properties.has_real_coordinates,
+      isRandomPoint: !feature.properties.has_real_coordinates
+    }));
+  }, [geoJson]);
+
+  // Set filtered locations state for search functionality
+  const [filteredLocations, setFilteredLocations] = useState([]);
+  
+  // Update filtered locations when locations change
+  useEffect(() => {
+    setFilteredLocations(locations);
+  }, [locations]);
+
+  // Set viewState for map with default center
   const [viewState, setViewState] = useState({
-    longitude: atomMapResponse.center.lng,
-    latitude: atomMapResponse.center.lat,
+    longitude: -47.9292, // Brasília center
+    latitude: -15.7801,
     zoom: 10,
     bearing: 0,
     pitch: 0
   });
 
   useEffect(() => {
-    // Estratégia de carregamento otimizado
     if (typeof window !== 'undefined') {
-      // Simular carregamento rápido
-      setTimeout(() => setIsLoading(false), 800);
+      setTimeout(() => setIsMapLoading(false), 800);
     }
   }, []);
 
@@ -111,7 +197,6 @@ const MapaContent = () => {
     }
   };
 
-
   // AIDEV-NOTE: Handler for map movement with smooth transitions
   const handleMapMove = (newViewState) => {
     setIsAnimating(true);
@@ -126,7 +211,7 @@ const MapaContent = () => {
     }, 1500);
   };
 
-  // AIDEV-NOTE: Handler for flyTo using MapLibre GL JS native method (back to working version)
+  // AIDEV-NOTE: Handler for flyTo using MapLibre GL JS native method
   const handleMapFlyTo = (flyToOptions) => {
     if (!mapRef.current) return;
     
@@ -165,7 +250,6 @@ const MapaContent = () => {
   const handleChapterChange = (chapterIndex) => {
     setCurrentChapter(chapterIndex);
   };
-
 
   const toggleFullscreen = async () => {
     if (!mapContainerRef.current) return;
@@ -230,10 +314,39 @@ const MapaContent = () => {
     };
   }, []);
 
+  // Separar loading da página geral do loading das regiões
+  const isPageLoading = isMapLoading; // Apenas loading inicial da página
+  const isRegionsLoading = regionsLoading || isLoading('map');
+  const mapError = getError('map');
+
+  // Cálculos de paginação
+  const totalPages = Math.ceil(locations.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentLocations = locations.slice(startIndex, endIndex);
+
+  // Função para navegar entre páginas
+  const goToPage = (page) => {
+    setCurrentPage(page);
+    
+    // Scroll para a seção de regiões
+    const regionsSection = document.getElementById('regions-section');
+    if (regionsSection) {
+      const sectionTop = regionsSection.offsetTop;
+      const offset = 100;
+      const targetPosition = Math.max(0, sectionTop - offset);
+      
+      window.scrollTo({ 
+        top: targetPosition, 
+        behavior: 'smooth' 
+      });
+    }
+  };
+
   return (
     <>
-      {/* Tela de carregamento - mesma da homepage */}
-      {isLoading && (
+      {/* Tela de carregamento apenas para página inicial */}
+      {isPageLoading && (
         <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
           <div className="flex gap-2">
             {[0, 1, 2, 3, 4].map((index) => (
@@ -258,10 +371,9 @@ const MapaContent = () => {
       )}
 
       {/* Conteúdo da página */}
-      <div className={`relative z-10 overflow-hidden ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
+      <div className={`relative z-10 overflow-hidden ${isPageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
         <HeaderApp title="MAPA DO HIP HOP" showTitle={true} />
 
-        {/* Page Content with Transition */}
         <AnimatePresence mode="wait">
           <motion.div
             initial={{ y: 50, opacity: 0 }}
@@ -289,10 +401,20 @@ const MapaContent = () => {
                   <p className="font-sometype-mono text-lg text-black/80 max-w-2xl mx-auto">
                     Descubra locais históricos, eventos marcantes e a geografia do movimento Hip Hop brasiliense
                   </p>
+                  {mapStatistics && (
+                    <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm font-sometype-mono">
+                      <span className="bg-[#fae523] text-black px-3 py-1 rounded border border-black">
+                        {mapStatistics.totalItems} locais mapeados
+                      </span>
+                      <span className="bg-white/90 text-black px-3 py-1 rounded border border-black">
+                        {mapStatistics.extractionSuccessRate} precisão
+                      </span>
+                    </div>
+                  )}
                 </motion.div>
               </div>
 
-              {/* Container do Mapa */}
+              {/* Container do Mapa Placeholder */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -302,7 +424,7 @@ const MapaContent = () => {
                 <div className="mx-4 md:mx-8 mb-8">
                   <div 
                     ref={mapContainerRef}
-                    className={`border-4 border-black rounded-lg overflow-hidden shadow-2xl bg-black/10 backdrop-blur-sm relative ${
+                    className={`border-4 border-black rounded-lg overflow-hidden shadow-2xl bg-gray-200 relative ${
                       isFullscreen ? 'fullscreen-map' : ''
                     }`}
                   >
@@ -454,16 +576,23 @@ const MapaContent = () => {
                                 <span className="bg-[#fae523] text-black px-2 py-1 rounded text-xs font-sometype-mono border border-black">
                                   {selectedLocation.itemCount} itens
                                 </span>
+                                {selectedLocation.has_real_coordinates && (
+                                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-sometype-mono border border-green-300">
+                                    GPS
+                                  </span>
+                                )}
                               </div>
                               {selectedLocation.items && selectedLocation.items.length > 0 && (
                                 <div className="border-t border-black/20 pt-3">
                                   <h4 className="font-sometype-mono text-sm font-bold mb-2">Item em destaque:</h4>
                                   <div className="flex gap-3">
-                                    <img 
-                                      src={selectedLocation.items[0].thumbnail} 
-                                      alt={selectedLocation.items[0].title}
-                                      className="w-12 h-12 object-cover rounded border border-black"
-                                    />
+                                    {selectedLocation.items[0].thumbnail && (
+                                      <img 
+                                        src={selectedLocation.items[0].thumbnail} 
+                                        alt={selectedLocation.items[0].title}
+                                        className="w-12 h-12 object-cover rounded border border-black"
+                                      />
+                                    )}
                                     <div>
                                       <p className="font-sometype-mono text-xs font-semibold text-black">{selectedLocation.items[0].title}</p>
                                       <p className="font-sometype-mono text-xs text-black/60">{selectedLocation.items[0].date}</p>
@@ -483,14 +612,62 @@ const MapaContent = () => {
               {/* Lista de Locais */}
               <div className="container mx-auto px-4 py-8">
                 <motion.div
+                  id="regions-section"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
                 >
-                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-black">REGIÕES MAPEADAS</h3>
+                  <div className="text-center mb-8">
+                    <h3 className="font-dirty-stains text-4xl text-black mb-4">REGIÕES MAPEADAS</h3>
+                    <p className="font-sometype-mono text-lg text-black/80">
+                      {locations.length} {locations.length === 1 ? 'região mapeada' : 'regiões mapeadas'}
+                      {totalPages > 1 && ` - Página ${currentPage} de ${totalPages}`}
+                    </p>
+                  </div>
                   
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {atomMapResponse.locations.map((location, index) => (
+                  {mapError && (
+                    <div className="text-center py-8 mb-8">
+                      <div className="bg-red-100 border-2 border-red-500 rounded-lg p-6 max-w-md mx-auto">
+                        <p className="font-dirty-stains text-xl text-red-600 mb-2">Erro ao carregar mapa</p>
+                        <p className="font-sometype-mono text-red-500">{mapError}</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Loading específico para regiões */}
+                  {isRegionsLoading ? (
+                    <div className="text-center py-12">
+                      <div className="bg-white/90 border-2 border-black rounded-lg p-8 max-w-md mx-auto">
+                        <div className="flex justify-center mb-4 h-8">
+                          <div className="flex gap-1 items-end">
+                            {[0, 1, 2].map((index) => (
+                              <motion.div
+                                key={index}
+                                className="w-3 bg-[#fae523] rounded-sm border border-black"
+                                style={{ height: '8px' }}
+                                animate={{ 
+                                  scaleY: [1, 3, 1],
+                                  transformOrigin: 'bottom'
+                                }}
+                                transition={{
+                                  duration: 0.8,
+                                  repeat: Infinity,
+                                  delay: index * 0.2,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="font-dirty-stains text-xl mb-2">Carregando regiões mapeadas...</p>
+                        <p className="font-sometype-mono text-sm text-gray-600">
+                          🗺️ Processando dados do acervo para gerar coordenadas geográficas automaticamente
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {currentLocations.map((location, index) => (
                       <motion.div
                         key={location.id}
                         initial={{ scale: 0.9, opacity: 0 }}
@@ -522,18 +699,175 @@ const MapaContent = () => {
                         <p className="font-sometype-mono text-sm text-black/80 mb-4">{location.description}</p>
                         
                         <div className="flex items-center justify-between">
-                          <span className="bg-[#fae523] text-black px-3 py-1 rounded-full text-sm font-sometype-mono border border-black">
-                            {location.itemCount} itens
-                          </span>
-                          <button className="font-sometype-mono text-sm text-black hover:text-black/70 underline">
+                          <div className="flex gap-2">
+                            <span className="bg-[#fae523] text-black px-3 py-1 rounded-full text-sm font-sometype-mono border border-black">
+                              {location.itemCount} item
+                            </span>
+                            {location.has_real_coordinates && (
+                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-sometype-mono border border-green-300">
+                                GPS
+                              </span>
+                            )}
+                          </div>
+                          <button 
+                            onClick={() => handleMarkerClick(location)}
+                            className="font-sometype-mono text-sm text-black hover:text-black/70 underline"
+                          >
                             Ver no mapa →
                           </button>
                         </div>
+                        
+                        {/* Coordenadas para debug */}
+                        <div className="mt-3 pt-3 border-t border-black/20">
+                          <p className="text-xs font-sometype-mono text-gray-500">
+                            📍 {location.coordinates.lat.toFixed(4)}, {location.coordinates.lng.toFixed(4)}
+                          </p>
+                          {location.reference_code && (
+                            <p className="text-xs font-sometype-mono text-gray-500">
+                              🏷️ {location.reference_code}
+                            </p>
+                          )}
+                        </div>
                       </motion.div>
                     ))}
-                  </div>
+                    </div>
+                  )}
+                  
+                  {locations.length === 0 && !mapError && !isRegionsLoading && (
+                    <div className="text-center py-12">
+                      <div className="bg-white/90 border-2 border-black rounded-lg p-6 max-w-md mx-auto">
+                        <p className="font-dirty-stains text-xl mb-2">Nenhuma região encontrada</p>
+                        <p className="font-sometype-mono text-sm">Não foram encontrados dados de localização no acervo</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Paginação - só mostra se não está carregando */}
+                  {totalPages > 1 && !isRegionsLoading && (
+                    <motion.div 
+                      className="flex justify-center mt-8"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.8 }}
+                    >
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious 
+                              onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
+                              className={`cursor-pointer border-2 border-black ${
+                                currentPage === 1 
+                                  ? 'opacity-50 cursor-not-allowed pointer-events-none' 
+                                  : 'hover:bg-[#fae523] transition-colors'
+                              }`}
+                            />
+                          </PaginationItem>
+                          
+                          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => goToPage(page)}
+                                isActive={page === currentPage}
+                                className={`cursor-pointer border-2 border-black font-dirty-stains ${
+                                  page === currentPage
+                                    ? 'bg-blue-500 text-white hover:bg-blue-600'
+                                    : 'bg-white hover:bg-[#fae523] transition-colors'
+                                }`}
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+                          
+                          <PaginationItem>
+                            <PaginationNext 
+                              onClick={() => currentPage < totalPages && goToPage(currentPage + 1)}
+                              className={`cursor-pointer border-2 border-black ${
+                                currentPage === totalPages 
+                                  ? 'opacity-50 cursor-not-allowed pointer-events-none' 
+                                  : 'hover:bg-[#fae523] transition-colors'
+                              }`}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </motion.div>
+                  )}
                 </motion.div>
               </div>
+
+              {/* Modal de detalhes do local */}
+              {selectedLocation && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+                  onClick={() => setSelectedLocation(null)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className="bg-white border-4 border-black rounded-lg p-6 max-w-md w-full"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="font-dirty-stains text-2xl text-black">{selectedLocation.name}</h3>
+                      <button
+                        onClick={() => setSelectedLocation(null)}
+                        className="text-black hover:text-gray-600 text-2xl font-bold"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    
+                    <p className="font-sometype-mono text-sm text-black/80 mb-4">{selectedLocation.description}</p>
+                    
+                    <div className="space-y-2 mb-4">
+                      <div className="flex gap-2">
+                        <span className="bg-[#fae523] text-black px-2 py-1 rounded text-xs font-sometype-mono border border-black">
+                          {selectedLocation.itemCount} item
+                        </span>
+                        {selectedLocation.has_real_coordinates && (
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-sometype-mono border border-green-300">
+                            GPS
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="text-xs font-sometype-mono text-gray-600">
+                        <p>📍 {selectedLocation.coordinates.lat.toFixed(6)}, {selectedLocation.coordinates.lng.toFixed(6)}</p>
+                        {selectedLocation.reference_code && (
+                          <p>🏷️ {selectedLocation.reference_code}</p>
+                        )}
+                        {selectedLocation.place_access_points && selectedLocation.place_access_points.length > 0 && (
+                          <p>📍 {selectedLocation.place_access_points.join(', ')}</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {selectedLocation.items && selectedLocation.items.length > 0 && (
+                      <div className="border-t border-black/20 pt-4">
+                        <h4 className="font-sometype-mono text-sm font-bold mb-2">Item em destaque:</h4>
+                        <div className="flex gap-3">
+                          {selectedLocation.items[0].thumbnail && (
+                            <img 
+                              src={selectedLocation.items[0].thumbnail} 
+                              alt={selectedLocation.items[0].title}
+                              className="w-16 h-16 object-cover rounded border border-black"
+                            />
+                          )}
+                          <div>
+                            <p className="font-sometype-mono text-sm font-semibold text-black">{selectedLocation.items[0].title}</p>
+                            <p className="font-sometype-mono text-xs text-black/60">{selectedLocation.items[0].date}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         </AnimatePresence>

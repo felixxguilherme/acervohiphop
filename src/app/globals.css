@@ -113,19 +113,19 @@
 }
 
 .dark {
-  --background: oklch(0.13 0.028 261.692);
+  --background: #312F2C;
   --foreground: oklch(0.985 0.002 247.839);
-  --card: oklch(0.21 0.034 264.665);
+  --card: #3a3632;
   --card-foreground: oklch(0.985 0.002 247.839);
-  --popover: oklch(0.21 0.034 264.665);
+  --popover: #3a3632;
   --popover-foreground: oklch(0.985 0.002 247.839);
   --primary: oklch(0.928 0.006 264.531);
-  --primary-foreground: oklch(0.21 0.034 264.665);
-  --secondary: oklch(0.278 0.033 256.848);
+  --primary-foreground: #312F2C;
+  --secondary: #3e3936;
   --secondary-foreground: oklch(0.985 0.002 247.839);
-  --muted: oklch(0.278 0.033 256.848);
+  --muted: #3e3936;
   --muted-foreground: oklch(0.707 0.022 261.325);
-  --accent: oklch(0.278 0.033 256.848);
+  --accent: #3e3936;
   --accent-foreground: oklch(0.985 0.002 247.839);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
@@ -136,11 +136,11 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.034 264.665);
+  --sidebar: #312F2C;
   --sidebar-foreground: oklch(0.985 0.002 247.839);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-accent: oklch(0.278 0.033 256.848);
+  --sidebar-accent: #3e3936;
   --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
@@ -260,13 +260,88 @@ body.theme-dark .text-theme-muted {
   color: #9ca3af;
 }
 
+/* Estilos globais para textos */
+body.theme-light {
+  color: #000000;
+  font-family: var(--font-sometype-mono-italic);
+}
+
+body.theme-dark {
+  color: #ffffff;
+  font-family: var(--font-sometype-mono-italic);
+}
+
+/* Títulos principais com Dirty Stains */
+body.theme-light h1 {
+  color: #000000;
+  font-family: var(--font-dirty-stains);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+body.theme-light h2 {
+  color: #000000;
+  font-family: var(--font-sometype-mono-italic);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: bold;
+}
+
+body.theme-dark h1,
+body.theme-dark h2 {
+  color: #ffffff;
+  font-family: var(--font-dirty-stains);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Subtítulos com Scratchy */
+body.theme-light h3,
+body.theme-light h4,
+body.theme-light h5,
+body.theme-light h6 {
+  color: #000000;
+  font-family: var(--font-scratchy);
+}
+
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark h5,
+body.theme-dark h6 {
+  color: #ffffff;
+  font-family: var(--font-scratchy);
+}
+
+/* Textos de código com Sometype Mono */
+body.theme-light code,
+body.theme-light pre {
+  font-family: var(--font-sometype-mono-italic);
+}
+
+body.theme-dark code,
+body.theme-dark pre {
+  font-family: var(--font-sometype-mono-italic);
+}
+
+body.theme-light p,
+body.theme-light span,
+body.theme-light div {
+  color: inherit;
+}
+
+body.theme-dark p,
+body.theme-dark span,
+body.theme-dark div {
+  color: inherit;
+}
+
 /* Classes dinâmicas para backgrounds baseadas no tema */
 body.theme-light .bg-theme-card {
   background-color: rgba(255, 255, 255, 0.9);
 }
 
 body.theme-dark .bg-theme-card {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(49, 47, 44, 0.8);
 }
 
 body.theme-light .bg-theme-overlay {
@@ -274,7 +349,15 @@ body.theme-light .bg-theme-overlay {
 }
 
 body.theme-dark .bg-theme-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(49, 47, 44, 0.5);
+}
+
+body.theme-light .bg-theme-background {
+  background-color: #FFFCF2;
+}
+
+body.theme-dark .bg-theme-background {
+  background-color: #252422;
 }
 
 /* Classes dinâmicas para bordas baseadas no tema */
@@ -322,7 +405,6 @@ body.theme-dark .border-theme-soft {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply text-foreground;
+    @apply bg-background text-foreground;
   }
 }
-

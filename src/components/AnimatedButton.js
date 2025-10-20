@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'motion/react';
 
 const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const isStaticBackground = backgroundMode === 'static';
+  const isStaticBackground = useMemo(() => backgroundMode === 'static', [backgroundMode]);
+  
+  const handleHoverStart = useCallback(() => setIsHovered(true), []);
+  const handleHoverEnd = useCallback(() => setIsHovered(false), []);
   
   return (
     <>
@@ -25,8 +28,8 @@ const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' })
         textAlign: 'center',
         zIndex: 2
       }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
+      onHoverStart={handleHoverStart}
+      onHoverEnd={handleHoverEnd}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
     >
@@ -54,7 +57,7 @@ const AnimatedButton = ({ text, imagePath, textSize, backgroundMode = 'hover' })
           backgroundPosition: 'center',
           overflow: 'hidden'
         }}
-        initial={{ scaleX: isStaticBackground ? 1 : 0, originX: 0 }}
+        initial={{ scaleX: 0, originX: 0 }}
         animate={{ 
           scaleX: isStaticBackground ? 1 : (isHovered ? 1 : 0) 
         }}
