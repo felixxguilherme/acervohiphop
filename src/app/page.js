@@ -120,20 +120,53 @@ export default function Home() {
   useEffect(() => {
     loadStatistics();
     loadAllItems(24); // Carrega primeiros 24 itens para destaques
+    loadFeaturedArtists(); // Carregar artistas em destaque
   }, [loadStatistics, loadAllItems]);
 
-  // Selecionar itens em destaque dos dados reais
-  const featuredItems = allItems.slice(0, 3).map((item, index) => ({
-    ...item,
-    category: index === 0 ? 'Marco Histórico' : index === 1 ? 'Duelos Épicos' : 'Revolução Visual',
-    description: index === 0 
-      ? 'Documentos históricos que marcaram momentos importantes da cultura Hip Hop no DF'
-      : index === 1 
-      ? 'Registros únicos das batalhas de freestyle e apresentações que definiram a cena'
-      : 'Arquivo fotográfico que documenta a evolução visual e artística do movimento',
-    tapeColor: index === 0 ? 'yellow' : index === 1 ? 'blue' : 'green',
-    rotation: index === 0 ? -2 : index === 1 ? 3 : -1
-  }));
+  // Estados para artistas em destaque (mesmos do acervo)
+  const [featuredArtists, setFeaturedArtists] = useState([]);
+  const [loadingFeaturedArtists, setLoadingFeaturedArtists] = useState(true);
+
+  // Função para carregar dados dos artistas em destaque
+  const loadFeaturedArtists = async () => {
+    setLoadingFeaturedArtists(true);
+    const artists = [
+      { id: '675', name: 'Dino Black', description: 'Rapper, compositor e ativista cultural' },
+      { id: '1069', name: 'Vera Veronika', description: 'Artista visual e fotógrafa' }
+    ];
+
+    try {
+      const artistsWithData = await Promise.all(
+        artists.map(async (artist) => {
+          try {
+            const response = await fetch(`/api/acervo?creators=${artist.id}&limit=10`);
+            const data = await response.json();
+            
+            return {
+              ...artist,
+              totalItems: data.total || 0,
+              recentItems: (data.results || []).slice(0, 3),
+              thumbnail: data.results?.[0]?.thumbnail_url?.replace('https://acervodistrito', 'https://base.acervodistrito') || null
+            };
+          } catch (error) {
+            console.error(`Erro ao carregar dados do artista ${artist.name}:`, error);
+            return {
+              ...artist,
+              totalItems: 0,
+              recentItems: [],
+              thumbnail: null
+            };
+          }
+        })
+      );
+
+      setFeaturedArtists(artistsWithData);
+    } catch (error) {
+      console.error('Erro ao carregar artistas em destaque:', error);
+    } finally {
+      setLoadingFeaturedArtists(false);
+    }
+  };
 
 
   return (
@@ -344,70 +377,101 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-left mb-16 border-black border-b-3 w-full pb-6 px-6"
           >
-            <h2 className="text-4xl md:text-5xl font-dirty-stains text-theme-primary mb-6">
+            <h2 className="marca-texto-vermelho text-4xl md:text-5xl font-dirty-stains text-theme-primary mb-6">
               DESTAQUES
             </h2>
-            <p className="text-xl md:text-2xl font-sometype-mono text-theme-secondary max-w-4xl leading-relaxed">
+            <p className="pl-6 text-xl md:text-2xl font-sometype-mono text-theme-secondary max-w-4xl leading-relaxed">
               Mergulhe na história viva do Hip Hop do DF através de documentos únicos que contam nossa trajetória
             </p>
           </motion.div>
 
-          {/* Grid de itens em destaque - DADOS REAIS */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-            {featuredItems.length > 0 ? featuredItems.map((item, index) => (
+          {/* Grid de artistas em destaque - DADOS REAIS */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 px-8">
+            {!loadingFeaturedArtists && featuredArtists.length > 0 ? featuredArtists.map((artist, index) => (
               <motion.div
-                key={item.slug || index}
+                key={artist.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
                 viewport={{ once: true }}
-                className="group cursor-pointer"
+                className="group cursor-pointer bg-theme-background border-2 border-black p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg"
+                onClick={() => window.location.href = `/acervo/artista/${artist.id}`}
               >
-                <div className="relative">
-                  <PolaroidCard
-                    src={item.thumbnail_url || `https://images.unsplash.com/photo-${index === 0 ? '1571019613454-1cb2f99b2d8b' : index === 1 ? '1493225457124-a3eb161ffa5f' : '1514525253161-7a46d19cd819'}?w=400&h=400&fit=crop&crop=center`}
-                    alt={item.title || 'Item do Acervo'}
-                    caption={item.title ? item.title.toUpperCase().substring(0, 20) : item.category.toUpperCase()}
-                    subtitle={item.creation_dates?.[0] || `Acervo Hip Hop DF`}
-                    tapeColor={item.tapeColor}
-                    rotation={item.rotation}
-                    className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-0"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 rounded-lg" />
-                </div>
-                <div className="mt-6 text-center">
-                  <h3 className="font-dirty-stains text-2xl text-theme-primary mb-3">
-                    {item.category}
-                  </h3>
-                  <p className="font-sometype-mono text-sm text-theme-secondary mb-4">
-                    {item.scope_and_content || item.description}
-                  </p>
-                  <CartoonButton
-                    label="VER MAIS"
-                    color={`bg-${item.tapeColor}-400`}
-                    onClick={() => window.location.href = `/acervo/item/${item.slug}`}
-                  />
+                <div className="flex flex-col gap-6">
+                  {/* Imagem do artista */}
+                  <div className="w-full h-48 flex-shrink-0">
+                    {artist.thumbnail ? (
+                      <img
+                        src={artist.thumbnail}
+                        alt={artist.name}
+                        className="w-full h-full object-cover border-2 border-black"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 border-2 border-black flex items-center justify-center">
+                        <span className="text-6xl">🎭</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Informações do artista */}
+                  <div className="flex flex-col">
+                    <h3 className="font-dirty-stains text-3xl text-theme-primary mb-3">
+                      {artist.name}
+                    </h3>
+                    <p className="font-sometype-mono text-gray-700 mb-4 text-lg">
+                      {artist.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <span className="bg-blue-100 text-blue-800 px-3 py-1 border border-blue-300 font-sometype-mono text-sm">
+                        📊 {artist.totalItems} {artist.totalItems === 1 ? 'item' : 'itens'}
+                      </span>
+                    </div>
+                    
+                    {/* Preview dos itens recentes */}
+                    {artist.recentItems.length > 0 && (
+                      <div className="mt-4 pt-4 border-t-2 border-black">
+                        <h4 className="font-dirty-stains text-lg mb-3">Itens Recentes:</h4>
+                        <div className="grid grid-cols-3 gap-2">
+                          {artist.recentItems.map((item, itemIndex) => (
+                            <div
+                              key={item.slug || itemIndex}
+                              className="bg-white p-2 border border-gray-300 hover:bg-gray-50 transition-colors"
+                            >
+                              {item.thumbnail_url && (
+                                <img
+                                  src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')}
+                                  alt={item.title || 'Item'}
+                                  className="w-full h-16 object-cover border border-gray-200 mb-1"
+                                  onError={(e) => { e.target.style.display = 'none'; }}
+                                />
+                              )}
+                              <p className="text-xs font-sometype-mono truncate">
+                                {item.title || 'Sem título'}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )) : (
-              // Fallback loading state
-              [0, 1, 2].map((index) => (
+              // Loading state
+              [0, 1].map((index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
                   viewport={{ once: true }}
-                  className="group cursor-pointer"
+                  className="bg-theme-background border-2 border-black p-6"
                 >
-                  <div className="relative">
-                    <div className="w-full h-96 bg-gray-200 rounded-lg animate-pulse"></div>
-                  </div>
-                  <div className="mt-6 text-center">
-                    <div className="h-8 bg-gray-200 rounded animate-pulse mb-3"></div>
-                    <div className="h-20 bg-gray-200 rounded animate-pulse mb-4"></div>
-                    <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-                  </div>
+                  <div className="w-full h-48 bg-gray-200 animate-pulse mb-6"></div>
+                  <div className="h-8 bg-gray-200 rounded animate-pulse mb-3"></div>
+                  <div className="h-20 bg-gray-200 rounded animate-pulse mb-4"></div>
+                  <div className="h-6 bg-gray-200 rounded animate-pulse"></div>
                 </motion.div>
               ))
             )}
@@ -437,7 +501,7 @@ export default function Home() {
         {/* Elementos decorativos */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           <div
-            className="absolute -top-10 left-2 w-48 h-48 bg-contain bg-no-repeat"
+            className="absolute -top-10 left-8 w-48 h-48 bg-contain bg-no-repeat"
             style={{
               backgroundImage: "url('/spray_preto-1.png')"
             }}
@@ -457,9 +521,9 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-left mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-dirty-stains text-white mb-6">
+            <h2 className="marca-texto-amarelo text-4xl md:text-5xl font-dirty-stains text-white mb-6 px-6">
               4 DÉCADAS DE HISTÓRIA
             </h2>
             {/* <p className="text-xl md:text-2xl font-sometype-mono text-gray-300 max-w-4xl mx-auto leading-relaxed">
