@@ -4,8 +4,9 @@ import '../app/parallaxstyle.css'
 import { useTransform, motion, useScroll, useMotionValue } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import PolaroidCard from './PolaroidPhoto';
+import PreloadedBackground from './PreloadedBackground';
 
-const CardParallax = ({i, title, description, src, url, link, color, progress, range, targetScale, reference_code, creation_dates, place_access_points}) => {
+const CardParallax = ({i, title, description, src, url, link, color, progress, range, targetScale, reference_code, creation_dates, place_access_points, itemTitle, itemDate}) => {
 
   const container = useRef(null);
   const [position, setPosition] = useState('sticky');
@@ -40,9 +41,11 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
         position: position
       }}
     >
-      <motion.div 
-        style={{backgroundColor: color, scale, top:`calc(-5vh + ${i * 25}px)`}} 
-        className="card fundo-base border-black border-3"
+      <PreloadedBackground
+        backgroundClass="fundo-base"
+        placeholderColor={color}
+        className="card border-black border-3"
+        style={{backgroundColor: color, scale, top:`calc(-5vh + ${i * 25}px)`}}
       >
         <h2 className="font-dirty-stains">{title}</h2>
         <div className="body">
@@ -50,8 +53,18 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
             <p className="font-sometype-mono">{description}</p>
             
             {/* Metadados específicos da API */}
-            {(reference_code || creation_dates || place_access_points) && (
+            {(reference_code || creation_dates || place_access_points || itemTitle || itemDate) && (
               <div className="mt-3 space-y-1 text-sm">
+                {itemTitle && (
+                  <p className="font-sometype-mono opacity-90 text-sm">
+                    <strong>📸 Destaque:</strong> {itemTitle.length > 60 ? `${itemTitle.substring(0, 60)}...` : itemTitle}
+                  </p>
+                )}
+                {itemDate && (
+                  <p className="font-sometype-mono opacity-80">
+                    <strong>📅 Ano:</strong> {itemDate}
+                  </p>
+                )}
                 {reference_code && (
                   <p className="font-sometype-mono opacity-80">
                     <strong>Código:</strong> {reference_code}
@@ -84,8 +97,8 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
               style={{scale: imageScale}}
             >
               <PolaroidCard 
-                imageSrc={src.startsWith('http') ? src : `/images/${src}`}
-                caption={title}
+                imageSrc={src.startsWith('http') ? src : (src.startsWith('/') ? src : `/images/${src}`)}
+                caption={itemTitle ? (itemTitle.length > 30 ? `${itemTitle.substring(0, 30)}...` : itemTitle) : title}
                 tape={{ position: 'top-right', angle: 15 }}
                 secondTape={{ position: 'bottom-left', angle: -10 }}
               />
@@ -93,7 +106,7 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
           </div>
 
         </div>
-      </motion.div>
+      </PreloadedBackground>
     </motion.div>
   )
 }

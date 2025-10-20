@@ -69,7 +69,7 @@ const PolaroidCard = ({
     const pos = positions[position] || positions['top-left'];
     
     return {
-      className: `absolute ${pos.classes} w-36 h-36 md:w-48 md:h-48 z-10`,
+      className: `absolute ${pos.classes} w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 z-10`,
       style: {
         transform: `translate(${pos.x}, ${pos.y}) rotate(${angle}deg)`
       }
@@ -95,7 +95,7 @@ const PolaroidCard = ({
     const pos = positions[position] || positions['top-left'];
     
     return {
-      className: `absolute ${pos.classes} w-18 h-18 md:w-24 md:h-24 z-10`,
+      className: `absolute ${pos.classes} w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 z-10`,
       style: {
         transform: `translate(${pos.x}, ${pos.y}) rotate(${angle}deg)`
       }
@@ -116,7 +116,7 @@ const PolaroidCard = ({
       onHoverEnd={() => setIsHovered(false)}
     >
       <motion.div 
-        className="bg-white shadow-xl rounded-sm p-2 md:p-3 w-full h-full max-w-full max-h-full relative"
+        className="bg-white shadow-xl rounded-sm p-1 sm:p-2 md:p-3 w-full h-full max-w-full max-h-full relative"
         animate={{ 
           rotate: isHovered ? 0 : Math.random() * 6 - 3 
         }}
@@ -160,7 +160,7 @@ const PolaroidCard = ({
         
         {/* Área branca abaixo da foto */}
         <div className="h-1/6 flex items-center justify-center">
-          <p className="text-gray-700 text-2xl font-scratchy px-2 text-center">{caption}</p>
+          <p className="text-gray-700 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-scratchy px-1 sm:px-2 text-center leading-tight">{caption}</p>
         </div>
         
       </motion.div>

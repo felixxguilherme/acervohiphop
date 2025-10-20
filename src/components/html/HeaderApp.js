@@ -104,12 +104,8 @@ export default function HeaderApp({ title, showTitle = false }) {
     >
       <motion.div 
         className="w-full border-theme overflow-hidden"
-        animate={{ 
-          minHeight: isScrolled ? '70px' : '200px'
-        }}
-        transition={{ 
-          duration: 0.5,
-          ease: [0.23, 1, 0.32, 1] // Mesmo easing para consistência
+        style={{
+          minHeight: isScrolled ? '60px' : 'auto'
         }}
       >
         {/* Layout único que transiciona suavemente */}
@@ -155,10 +151,10 @@ export default function HeaderApp({ title, showTitle = false }) {
                     }}
                   >
                     <SpinningText
-                      radius={isScrolled ? 6 : 8}
-                      className={`${isScrolled ? 'h-12 w-12 text-sm' : 'h-20 w-20 text-base md:text-lg'} tracking-[0.3em] font-scratchy transition-all duration-500`}
+                      radius={isScrolled ? 4 : 6}
+                      className={`${isScrolled ? 'h-8 w-8 text-xs' : 'h-16 w-16 text-xs sm:text-sm md:text-base'} tracking-[0.2em] font-scratchy transition-all duration-500`}
                     >
-                      {isScrolled ? 'acervo • hip-hop •' : 'acervo • hip-hop • Distrito Federal •'}
+                      {isScrolled ? 'acervo • hip-hop •' : 'acervo • hip-hop • DF •'}
                     </SpinningText>
                   </motion.div>
                 </Link>
@@ -182,12 +178,12 @@ export default function HeaderApp({ title, showTitle = false }) {
               >
                 {showTitle && title && (
                   <motion.h1
-                    className="font-dirty-stains pt-6 text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-shadow-lg text-theme-primary text-center"
+                    className="font-dirty-stains pt-6 px-2 text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-shadow-lg text-theme-primary text-center"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.3 }}
                     style={{
-                      letterSpacing: '0.05em',
+                      letterSpacing: '0.02em',
                       lineHeight: '0.9',
                       textTransform: 'uppercase',
                     }}
@@ -199,19 +195,11 @@ export default function HeaderApp({ title, showTitle = false }) {
               
               {/* Navegação - adapta tamanho baseado no estado */}
               <motion.nav 
-                className={`flex flex-wrap justify-center gap-2 md:gap-4 lg:gap-6 w-full ${!isScrolled ? 'border-black border-t-3' : ''}`}
-                animate={{
-                  paddingTop: isScrolled ? '12px' : '0px',
-                  paddingBottom: isScrolled ? '12px' : '0px'
-                }}
-                transition={{ 
-                  duration: 0.5,
-                  ease: [0.23, 1, 0.32, 1]
-                }}
+                className={`flex flex-wrap justify-center gap-1 sm:gap-2 md:gap-4 lg:gap-6 w-full px-2 ${!isScrolled ? 'border-black border-t-3 pt-4 pb-6' : 'py-3'}`}
               >
                 <Link href="/">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-lg" : "text-3xl"} 
+                    textSize={isScrolled ? "text-sm" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
                     text="HOME" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-amarelo" 
@@ -219,7 +207,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/acervo">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-lg" : "text-3xl"} 
+                    textSize={isScrolled ? "text-sm" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
                     text="ACERVO" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-vermelho" 
@@ -227,7 +215,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/mapa">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-lg" : "text-3xl"} 
+                    textSize={isScrolled ? "text-sm" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
                     text="MAPA" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-azul" 
@@ -235,7 +223,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/revista">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-lg" : "text-3xl"} 
+                    textSize={isScrolled ? "text-sm" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
                     text="REVISTA" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-verde" 

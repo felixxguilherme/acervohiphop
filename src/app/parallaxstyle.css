@@ -85,8 +85,66 @@
   object-fit: cover;
 }
 
-/* Responsive adjustments for hero */
+/* Responsive adjustments for mobile */
 @media (max-width: 768px) {
+  .cardContainer {
+    padding: 0 10px;
+  }
+  
+  .cardContainer .card {
+    width: 95vw;
+    height: auto;
+    min-height: 500px;
+    padding: 15px;
+    top: -10%;
+    margin: 0 auto;
+  }
+  
+  .cardContainer .card h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  
+  .cardContainer .card .body {
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 15px;
+  }
+  
+  .cardContainer .card .body .description {
+    width: 100%;
+    top: 0;
+    order: 2;
+  }
+  
+  .cardContainer .card .body .description p {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+  
+  .cardContainer .card .body .description span a {
+    font-size: 14px;
+  }
+  
+  .cardContainer .card .body .imageContainer {
+    width: 100%;
+    height: 280px;
+    padding: 10px;
+    order: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .cardContainer .card .body .imageContainer .inner {
+    max-width: 240px;
+    max-height: 240px;
+    width: 100%;
+    height: 100%;
+  }
+  
   .hero-section h1 {
     font-size: 4rem !important;
   }
@@ -97,6 +155,29 @@
   
   .hero-section .decorative-elements > div {
     opacity: 0.15 !important;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .cardContainer .card {
+    width: 90vw;
+    height: 450px;
+    padding: 40px;
+  }
+  
+  .cardContainer .card .body .description {
+    width: 45%;
+  }
+  
+  .cardContainer .card .body .imageContainer {
+    width: 55%;
+    padding: 30px;
+  }
+  
+  .cardContainer .card .body .imageContainer .inner {
+    max-width: 240px;
+    max-height: 240px;
   }
 }
 

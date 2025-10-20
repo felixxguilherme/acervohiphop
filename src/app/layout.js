@@ -7,6 +7,7 @@ import FooterApp from "@/components/html/FooterApp";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AcervoProvider } from "@/contexts/AcervoContext";
 import ThemeBackground from "@/components/ThemeBackground";
+import ImagePreloader from "@/components/ImagePreloader";
 
 export const metadata = {
   title: "Acervo Hip-Hop Distrito Federal",
@@ -16,12 +17,18 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
+      <head>
+        {/* Preload critical background images */}
+        <link rel="preload" as="image" href="/fundo_base.jpg" />
+        <link rel="preload" as="image" href="/fundo_base_preto.jpg" />
+      </head>
       <body
         className={`${scratchyFont.variable} ${sometypeMonoFont.variable} ${dirtyStainsFont.variable} antialiased`}
         suppressHydrationWarning={true}
       >
         <ThemeProvider>
           <AcervoProvider>
+            <ImagePreloader />
             <ThemeBackground />
             <div className="min-h-screen flex flex-col relative z-10">
               

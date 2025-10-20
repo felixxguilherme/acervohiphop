@@ -18,47 +18,41 @@ import atomCollectionsResponse from '@/data/collections';
 import { motion, AnimatePresence } from 'motion/react';
 
 
-const projects = [
-  {
-    title: "",
-    description: "O arquivo é trincheira. Aqui lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios e invisibilidade. Sem filtros, sem medo. Memória não é passado morto — são vidas que ecoam no presente. Se você está na mesma luta, o Acervo te espera.",
-    src: "https://images.unsplash.com/photo-1635796403527-50ae19d7f65d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGhpcGhvcCUyMGNyZXd8ZW58MHx8MHx8fDA%3D",
-    link: "/acervo",
-    color: "#FFF"
-  },
-  {
-    title: "ACERVO DIGITAL",
-    description: "O Hip Hop respira na voz de quem enfrenta transporte apertado, trabalho mal pago, ausência de lazer. Nossa juventude se arma com letras e rimas, não só para expressar, mas para quebrar o silêncio imposto. Cada som, fotografia e história são o Hip Hop.",
-    src: "https://images.unsplash.com/photo-1508973379184-7517410fb0bc?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGhpcGhvcHxlbnwwfHwwfHx8MA%3D%3D",
-    link: "/acervo",
-    color: "#8A2BE2"
-  },
-  {
-    title: "MAPA DAS BATALHAS",
-    description: "Geolocalizações e arquivos se unem criando um panorama da resistência cultural do DF. Veja o território além dos setores e monumentos. Traçamos pontos que conectam a força de uma cultura nascida à margem. Cada batalha é parte dessa construção.",
-    src: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=600&fit=crop",
-    link: "/mapa",
-    color: "#DC143C" // "#00CED1"
-  },
-  {
-    title: "REVISTA DIGITAL",
-    description: "Ponto de encontro entre o que acontece nas ruas, nos estudos e na produção artística. Curadoria colaborativa que conecta canais, coletivos e vozes independentes. De artigos científicos a entrevistas — ferramenta essencial para quem quer entender o movimento.",
-    src: "https://images.unsplash.com/photo-1601643157091-ce5c665179ab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzV8fGhpcGhvcHxlbnwwfHwwfHx8MA%3D%3D",
-    link: "/revista",
-    color: "#32CD32"
-  },
-  // {
-  //   title: "HIP HOP COMO POLÍTICA",
-  //   description: "Uma arte que ultrapassa entretenimento e se torna tecnologia social. O Hip Hop não pede permissão, ele ocupa. É educação não formal que chega onde outros não chegam, ensinando cidadania, identidade e solidariedade que transformam comunidades.",
-  //   src: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&h=600&fit=crop",
-  //   link: "/acervo",
-  //   color: "#DC143C"
-  // }
-]
-
 export default function Home() {
   // Hooks do contexto
   const { loadStatistics, statistics, loadAllItems, allItems } = useAcervo();
+  
+  // Estado para projetos dinâmicos
+  const [projects, setProjects] = useState([
+    {
+      title: "",
+      description: "O arquivo é trincheira. Aqui lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios e invisibilidade.",
+      src: "/fundo_base.jpg",
+      link: "/acervo",
+      color: "#FFF"
+    },
+    {
+      title: "ACERVO DIGITAL",
+      description: "Documentos únicos que contam a trajetória do Hip Hop no DF.",
+      src: "/fundo_base_preto.jpg",
+      link: "/acervo",
+      color: "#8A2BE2"
+    },
+    {
+      title: "MAPA DAS BATALHAS",
+      description: "Território cultural mapeado com precisão geográfica.",
+      src: "/fundo_base.jpg",
+      link: "/mapa",
+      color: "#DC143C"
+    },
+    {
+      title: "REVISTA DIGITAL",
+      description: "Curadoria colaborativa conectando ruas, estudos e produção artística.",
+      src: "/fundo_base_preto.jpg",
+      link: "/revista",
+      color: "#32CD32"
+    }
+  ]);
   
   const container = useRef(null);
   const [lenis, setLenis] = useState(null);
@@ -121,11 +115,81 @@ export default function Home() {
     loadStatistics();
     loadAllItems(24); // Carrega primeiros 24 itens para destaques
     loadFeaturedArtists(); // Carregar artistas em destaque
+    loadFeaturedContent(); // Carregar conteúdo para parallax cards
   }, [loadStatistics, loadAllItems]);
 
   // Estados para artistas em destaque (mesmos do acervo)
   const [featuredArtists, setFeaturedArtists] = useState([]);
   const [loadingFeaturedArtists, setLoadingFeaturedArtists] = useState(true);
+
+  // Função para carregar conteúdo apresentativo para os cards parallax
+  const loadFeaturedContent = async () => {
+    try {
+      // Buscar itens recentes com imagens para apresentar o acervo
+      const recentResponse = await fetch('/api/acervo?limit=8&sort=creation_dates_desc');
+      const recentData = await recentResponse.json();
+      
+      // Buscar alguns destaques por categoria/tipo
+      const photoResponse = await fetch('/api/acervo?sq0=fotografia&sf0=scope_and_content&limit=3');
+      const photoData = await photoResponse.json();
+      
+      const musicResponse = await fetch('/api/acervo?sq0=música&sf0=scope_and_content&limit=3');
+      const musicData = await musicResponse.json();
+
+      // Selecionar itens com imagens para os cards
+      const featuredItems = [
+        ...(recentData.results || []).filter(item => item.thumbnail_url).slice(0, 2),
+        ...(photoData.results || []).filter(item => item.thumbnail_url).slice(0, 1),
+        ...(musicData.results || []).filter(item => item.thumbnail_url).slice(0, 1)
+      ];
+
+      // Atualizar os cards com dados reais
+      if (featuredItems.length >= 4) {
+        const newProjects = [
+          {
+            title: "",
+            description: "O arquivo é trincheira. Aqui lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios e invisibilidade.",
+            src: "https://base.acervodistritohiphop.com.br/uploads/r/null/8/6/3/8638763c1dac359d5151bccecf0c24ebc2257f8ff09c046c0d36acf5a6f30c7c/3_-_GOG__DINO__JAP__O__MANOMIX_141.jpg",
+            link: "/acervo",
+            color: "#FFF",
+            itemTitle: featuredItems[0]?.title,
+            itemDate: featuredItems[0]?.creation_dates?.[0]
+          },
+          {
+            title: "ACERVO DIGITAL",
+            description: "Documentos únicos que contam a trajetória do Hip Hop no DF.",
+            src: "https://base.acervodistritohiphop.com.br/uploads/r/null/8/c/0/8c0f67ab84ea16350b110aee026fc63c08a8219da50828242d808ed0162cc133/4_-_GALERA_RAP_ING___E____DISPARO_FATAL__141.jpg",
+            link: "/acervo",
+            color: "#8A2BE2",
+            itemTitle: featuredItems[1]?.title,
+            itemDate: featuredItems[1]?.creation_dates?.[0]
+          },
+          {
+            title: "MAPA DAS BATALHAS",
+            description: "Território cultural mapeado com precisão geográfica",
+            src: featuredItems[2]?.thumbnail_url?.replace('https://acervodistrito', 'https://base.acervodistrito') || "/fundo_base.jpg",
+            link: "/mapa",
+            color: "#DC143C",
+            itemTitle: featuredItems[2]?.title,
+            itemDate: featuredItems[2]?.creation_dates?.[0]
+          },
+          {
+            title: "REVISTA DIGITAL",
+            description: "Ruas, estudos e produção artística conectados",
+            src: featuredItems[3]?.thumbnail_url?.replace('https://acervodistrito', 'https://base.acervodistrito') || "/fundo_base_preto.jpg",
+            link: "/revista",
+            color: "#32CD32",
+            itemTitle: featuredItems[3]?.title,
+            itemDate: featuredItems[3]?.creation_dates?.[0]
+          }
+        ];
+        
+        setProjects(newProjects);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar conteúdo destacado:', error);
+    }
+  };
 
   // Função para carregar dados dos artistas em destaque
   const loadFeaturedArtists = async () => {
@@ -351,7 +415,7 @@ export default function Home() {
       </section> */}
 
       {/* SEÇÃO DESTAQUES DO ACERVO */}
-      <section className="relative bg-theme-background overflow-hidden pb-20 pt-16 border-black border-r-3 border-l-3 border-t-3">
+      <section className="relative bg-theme-background overflow-hidden pb-20 md:pt-16 pt-8  border-black border-r-3 border-l-3 border-t-3">
         {/* Elementos decorativos */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           <div
@@ -377,7 +441,7 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-left mb-16 border-black border-b-3 w-full pb-6 px-6"
           >
-            <h2 className="marca-texto-vermelho text-4xl md:text-5xl font-dirty-stains text-theme-primary mb-6">
+            <h2 className="marca-texto-vermelho text-4xl md:text-5xl mb-6">
               DESTAQUES
             </h2>
             <p className="pl-6 text-xl md:text-2xl font-sometype-mono text-theme-secondary max-w-4xl leading-relaxed">
@@ -386,7 +450,7 @@ export default function Home() {
           </motion.div>
 
           {/* Grid de artistas em destaque - DADOS REAIS */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-12 px-4 sm:px-6 md:px-8">
             {!loadingFeaturedArtists && featuredArtists.length > 0 ? featuredArtists.map((artist, index) => (
               <motion.div
                 key={artist.id}
@@ -533,8 +597,8 @@ export default function Home() {
 
           {/* Timeline Container */}
           <div className="relative">
-            {/* Linha central vertical */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-black h-full top-0"></div>
+            {/* Linha central vertical - desktop / Linha esquerda - mobile */}
+            <div className="absolute left-8 md:left-1/2 md:transform md:-translate-x-1/2 w-1 bg-black h-full top-0"></div>
             
             {/* Anos da Timeline */}
             <div className="space-y-24">
@@ -547,40 +611,40 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="flex items-center"
               >
-                <div className="w-1/2 pr-8 text-right">
+                <div className="w-full md:w-1/2 pl-16 md:pl-0 md:pr-8 text-left md:text-right">
                   <div
                     style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}}
-                    className="p-10 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="font-scratchy font-black text-black text-2xl mb-2">1980</div>
-                    <h3 className="font-dirty-stains text-3xl text-black mb-3">PRIMEIROS PASSOS</h3>
-                    <p className="font-sometype-mono text-sm text-black font-bold leading-relaxed">
+                    className="p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                    <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">1980</div>
+                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">PRIMEIROS PASSOS</h3>
+                    <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
                       Os primeiros elementos da cultura Hip Hop chegam ao DF. Jovens descobrem essa nova forma de expressão através de discos importados e programas de TV.
                     </p>
                   </div>
                 </div>
-                <div className="relative z-10">
-                  <div className="w-8 h-8 bg-black border-4 border-[#FFFCF2] rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                <div className="absolute left-8 md:relative md:left-auto z-10">
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-[#FFFCF2] rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
-                <div className="w-1/2 pl-8"></div>
+                <div className="hidden md:block md:w-1/2 md:pl-8"></div>
               </motion.div>
 
               {/* 1995 - Lado Direito */}
               <motion.div
-                initial={{ opacity: 0, x: 50 }}
+                initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
                 className="flex items-center"
               >
-                <div className="w-1/2 pr-8"></div>
-                <div className="relative z-10">
-                  <div className="w-8 h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                <div className="hidden md:block md:w-1/2 md:pr-8"></div>
+                <div className="absolute left-8 md:relative md:left-auto z-10">
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
-                <div className="w-1/2 pl-8">
-                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="font-scratchy font-black text-black text-2xl mb-2">1995</div>
-                    <h3 className="font-dirty-stains text-3xl text-black mb-3">PRIMEIRO ENCONTRO</h3>
-                    <p className="font-sometype-mono text-sm text-black font-bold leading-relaxed">
+                <div className="w-full md:w-1/2 pl-16 md:pl-8">
+                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                    <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">1995</div>
+                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">PRIMEIRO ENCONTRO</h3>
+                    <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
                       Realização do 1º Encontro de Hip Hop de Ceilândia. Marco oficial que reuniu os 4 elementos e estabeleceu a cena organizada no DF.
                     </p>
                   </div>
@@ -595,38 +659,38 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="flex items-center"
               >
-                <div className="w-1/2 pr-8 text-right">
-                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="font-scratchy font-black text-black text-2xl mb-2">2001</div>
-                    <h3 className="font-dirty-stains text-3xl text-black mb-3">ERA DIGITAL</h3>
-                    <p className="font-sometype-mono text-sm text-black font-bold leading-relaxed">
+                <div className="w-full md:w-1/2 pl-16 md:pl-0 md:pr-8 text-left md:text-right">
+                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                    <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">2001</div>
+                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">ERA DIGITAL</h3>
+                    <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
                       Início da documentação sistemática com tecnologia digital. Battles e eventos começam a ser registrados, criando memória histórica.
                     </p>
                   </div>
                 </div>
-                <div className="relative z-10">
-                  <div className="w-8 h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                <div className="absolute left-8 md:relative md:left-auto z-10">
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
-                <div className="w-1/2 pl-8"></div>
+                <div className="hidden md:block md:w-1/2 md:pl-8"></div>
               </motion.div>
 
               {/* 2020 - Lado Direito */}
               <motion.div
-                initial={{ opacity: 0, x: 50 }}
+                initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
                 viewport={{ once: true }}
                 className="flex items-center"
               >
-                <div className="w-1/2 pr-8"></div>
-                <div className="relative z-10">
-                  <div className="w-8 h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                <div className="hidden md:block md:w-1/2 md:pr-8"></div>
+                <div className="absolute left-8 md:relative md:left-auto z-10">
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
-                <div className="w-1/2 pl-8">
-                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="font-scratchy font-black text-black text-2xl mb-2">2020</div>
-                    <h3 className="font-dirty-stains text-3xl text-black mb-3">PATRIMÔNIO CULTURAL</h3>
-                    <p className="font-sometype-mono text-sm text-black font-bold leading-relaxed">
+                <div className="w-full md:w-1/2 pl-16 md:pl-8">
+                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                    <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">2020</div>
+                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">PATRIMÔNIO CULTURAL</h3>
+                    <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
                       Hip Hop DF é reconhecido como patrimônio cultural. Nova geração mantém tradições enquanto inova com tecnologias digitais.
                     </p>
                   </div>

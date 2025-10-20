@@ -406,6 +406,8 @@ body.theme-dark .border-theme-soft {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: local; /* Melhora performance em mobile */
+  will-change: background-image; /* Otimização para animações */
 }
 
 .fundo-base-preto {
@@ -413,6 +415,8 @@ body.theme-dark .border-theme-soft {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: local; /* Melhora performance em mobile */
+  will-change: background-image; /* Otimização para animações */
 }
 
 /* Background classes for marca-texto images */
