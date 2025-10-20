@@ -711,6 +711,7 @@ const MapaContent = () => {
                                 </div>
                               </Popup>
                             )}
+
                           </MapRenderer>
                         </>
                       )}
@@ -954,7 +955,7 @@ Veja o Distrito Federal além dos setores e monumentos. Aqui, traçamos pontos q
                     </section>
 
               {/* Modal de detalhes do local */}
-              {selectedLocation && (
+              {/* {selectedLocation && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -1024,7 +1025,7 @@ Veja o Distrito Federal além dos setores e monumentos. Aqui, traçamos pontos q
                     )}
                   </motion.div>
                 </motion.div>
-              )}
+              )} */}
           </motion.div>
         </AnimatePresence>
         </div>

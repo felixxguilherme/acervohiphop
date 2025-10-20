@@ -19,13 +19,13 @@ const LayerControl = ({ isVisible = false }) => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -300 }}
           transition={{ duration: 0.3 }}
-          className="absolute top-20 left-4 z-20 bg-white/95 backdrop-blur-sm border-2 border-black rounded-lg p-4 min-w-[280px] shadow-xl"
+          className="absolute top-20 left-4 z-20 bg-[#fae523] border-3 border-black p-4 min-w-[280px] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-dirty-stains text-2xl text-black">Controle de Camadas</h3>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-black hover:text-black/70"
+              className="text-black hover:text-black/70 bg-white border-2 border-black p-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
             >
               ✕
             </button>
@@ -37,14 +37,14 @@ const LayerControl = ({ isVisible = false }) => {
               <motion.div
                 key={layer.id}
                 layout
-                className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200"
+                className="flex items-center justify-between p-3 bg-white border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
               >
                 <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
                     checked={layer.visible !== false}
                     onChange={() => mapLayers.toggleLayerVisibility(layer.id)}
-                    className="w-4 h-4 text-[#fae523] border-2 border-black rounded focus:ring-[#fae523]"
+                    className="w-4 h-4 text-[#fae523] border-2 border-black focus:ring-[#fae523]"
                   />
                   <span className="font-sometype-mono text-sm text-black">
                     {layer.name || layer.id}
@@ -55,14 +55,14 @@ const LayerControl = ({ isVisible = false }) => {
                   {/* AIDEV-NOTE: Layer reordering controls */}
                   <button
                     onClick={() => mapLayers.moveLayerUp(layer.id)}
-                    className="px-2 py-1 text-xs bg-[#fae523] border border-black rounded hover:bg-[#f8e71c]"
+                    className="px-2 py-1 text-xs bg-[#fae523] border-2 border-black hover:bg-[#f8e71c] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                     title="Mover para cima"
                   >
                     ↑
                   </button>
                   <button
                     onClick={() => mapLayers.moveLayerDown(layer.id)}
-                    className="px-2 py-1 text-xs bg-[#fae523] border border-black rounded hover:bg-[#f8e71c]"
+                    className="px-2 py-1 text-xs bg-[#fae523] border-2 border-black hover:bg-[#f8e71c] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                     title="Mover para baixo"
                   >
                     ↓
@@ -72,13 +72,13 @@ const LayerControl = ({ isVisible = false }) => {
             ))}
 
             {/* AIDEV-NOTE: Layer management actions */}
-            <div className="flex gap-2 pt-3 border-t border-gray-200">
+            <div className="flex gap-2 pt-3 border-t-3 border-black">
               <button
                 onClick={() => mapLayers.toggleMultipleLayers(
                   mapLayers.layers.map(l => l.id), 
                   true
                 )}
-                className="flex-1 px-3 py-2 bg-[#fae523] border border-black rounded font-sometype-mono text-xs hover:bg-[#f8e71c]"
+                className="flex-1 px-3 py-2 bg-[#fae523] border-2 border-black font-sometype-mono text-xs hover:bg-[#f8e71c] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
               >
                 Mostrar Todas
               </button>
@@ -87,7 +87,7 @@ const LayerControl = ({ isVisible = false }) => {
                   mapLayers.layers.map(l => l.id), 
                   false
                 )}
-                className="flex-1 px-3 py-2 bg-gray-200 border border-black rounded font-sometype-mono text-xs hover:bg-gray-300"
+                className="flex-1 px-3 py-2 bg-white border-2 border-black font-sometype-mono text-xs hover:bg-gray-100 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
               >
                 Ocultar Todas
               </button>
@@ -95,7 +95,7 @@ const LayerControl = ({ isVisible = false }) => {
 
             <button
               onClick={mapLayers.resetAllLayers}
-              className="w-full px-3 py-2 bg-red-100 border border-red-300 rounded font-sometype-mono text-xs hover:bg-red-200 text-red-800"
+              className="w-full px-3 py-2 bg-black text-[#fae523] border-2 border-black font-sometype-mono text-xs hover:bg-gray-800 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
             >
               Resetar Camadas
             </button>
@@ -108,7 +108,7 @@ const LayerControl = ({ isVisible = false }) => {
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className={`absolute top-20 ${isOpen ? 'left-[300px]' : 'left-4'} z-30 bg-[#fae523] border-2 border-black rounded-lg p-3 shadow-lg hover:bg-[#f8e71c] transition-all duration-300`}
+        className={`absolute top-20 ${isOpen ? 'left-[300px]' : 'left-4'} z-30 bg-[#fae523] border-3 border-black p-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:bg-[#f8e71c] transition-all duration-300`}
         title="Controle de Camadas"
       >
         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
