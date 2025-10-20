@@ -470,6 +470,15 @@ body.theme-dark .border-theme-soft {
   padding: 0.2em 0.5em;
 }
 
+.pixo-preto-1 {
+  background-image: url('/cursor03.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  padding: 0.2em 0.5em;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

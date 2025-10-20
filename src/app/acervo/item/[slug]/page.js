@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAcervo } from '@/contexts/AcervoContext';
 import HeaderApp from '@/components/html/HeaderApp';
 import { motion } from 'motion/react';
+import { fetchCompat } from '@/utils/httpClient';
 import { 
   Calendar, 
   MapPin, 
@@ -47,9 +48,38 @@ const ItemDetailPage = () => {
           throw new Error('Item não encontrado');
         }
         
+        // Se não tem thumbnail_url, tentar buscar da API de lista
+        if (!item.thumbnail_url) {
+          console.log('🔄 Thumbnail não encontrada, buscando da API de lista...');
+          try {
+            const listResponse = await fetchCompat(`/api/acervo?sq0=${encodeURIComponent(item.title)}&sf0=title&limit=1`);
+            if (listResponse.ok) {
+              const listData = await listResponse.json();
+              const foundItem = listData.results?.find(listItem => listItem.slug === slug);
+              if (foundItem?.thumbnail_url) {
+                item.thumbnail_url = foundItem.thumbnail_url;
+                console.log('✅ Thumbnail encontrada na API de lista:', item.thumbnail_url);
+              }
+            }
+          } catch (error) {
+            console.warn('⚠️ Erro ao buscar thumbnail da API de lista:', error);
+          }
+        }
+
         setItemData(item);
         setHasLoaded(true);
         console.log('✅ Item carregado:', item.title);
+        console.log('🖼️ URL da thumbnail final:', item.thumbnail_url);
+        console.log('📊 Dados completos do item:', item);
+        console.log('🔍 Campos disponíveis:', Object.keys(item));
+        console.log('🖼️ Campos relacionados a imagem:', Object.keys(item).filter(key => 
+          key.toLowerCase().includes('image') || 
+          key.toLowerCase().includes('thumb') || 
+          key.toLowerCase().includes('digital') || 
+          key.toLowerCase().includes('url') ||
+          key.toLowerCase().includes('media') ||
+          key.toLowerCase().includes('file')
+        ));
         
       } catch (err) {
         console.error('❌ Erro ao carregar item:', err);
@@ -75,12 +105,14 @@ const ItemDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
-        <HeaderApp />
-        <div className="flex items-center justify-center h-96 pt-20">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="font-sometype-mono">Carregando detalhes do item...</p>
+      <div>
+        <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
+        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-lg font-sometype-mono">Carregando detalhes do item...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -89,25 +121,30 @@ const ItemDetailPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white">
-        <HeaderApp />
-        <div className="flex items-center justify-center h-96 pt-20">
-          <div className="text-center">
-            <p className="text-red-500 font-sometype-mono mb-4">Erro: {error}</p>
-            <div className="flex gap-4 justify-center">
-              <button 
-                onClick={() => router.back()}
-                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Voltar
-              </button>
-              <button 
-                onClick={() => router.push('/acervo')}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-              >
-                Ir para Acervo
-              </button>
+      <div>
+        <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
+        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <div className="bg-theme-background border-2 border-black p-6">
+                <p className="font-dirty-stains text-xl mb-2">Erro ao carregar</p>
+                <p className="font-sometype-mono mb-4">{error}</p>
+                <div className="flex gap-4 justify-center">
+                  <button 
+                    onClick={() => router.back()}
+                    className="px-4 py-2 bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors flex items-center gap-2 font-dirty-stains"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Voltar
+                  </button>
+                  <button 
+                    onClick={() => router.push('/acervo')}
+                    className="px-4 py-2 bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors font-dirty-stains"
+                  >
+                    Ir para Acervo
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -116,55 +153,73 @@ const ItemDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <HeaderApp />
+    <div>
+      <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
       
-      <main className="pt-20">
+      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
         {/* Breadcrumb e navegação */}
-        <section className="py-6 bg-gray-50 border-b">
-          <div className="container mx-auto px-4">
+        <motion.section 
+          className="mb-8 px-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="bg-theme-background border-2 border-black p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm font-sometype-mono text-gray-600">
                 <button 
                   onClick={() => router.push('/acervo')}
-                  className="hover:text-blue-600 transition-colors"
+                  className="hover:text-theme-primary transition-colors"
                 >
                   Acervo
                 </button>
                 <span>/</span>
                 <span>Item</span>
                 <span>/</span>
-                <span className="text-gray-900">{slug}</span>
+                <span className="text-theme-primary font-dirty-stains">{slug}</span>
               </div>
               
               <button 
                 onClick={() => router.back()}
-                className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-black hover:bg-gray-100 transition-colors font-dirty-stains"
+                className="flex items-center gap-2 px-4 py-2 cursor-pointer border-2 border-black hover:bg-black hover:text-white transition-colors font-dirty-stains"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Voltar
               </button>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Hero Section com imagem principal */}
         <motion.section 
-          className="py-12 bg-white"
+          className="mb-12 px-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="bg-theme-background border-2 border-black p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Imagem principal */}
               <div className="space-y-4">
                 {itemData.thumbnail_url ? (
                   <div className="relative group">
                     <img 
-                      src={itemData.thumbnail_url} 
+                      src={(() => {
+                        let url = itemData.thumbnail_url;
+                        // Aplicar múltiplas correções possíveis
+                        if (url.includes('acervodistrito') && !url.includes('base.acervodistrito')) {
+                          url = url.replace('https://acervodistrito', 'https://base.acervodistrito');
+                          url = url.replace('http://acervodistrito', 'https://base.acervodistrito');
+                        }
+                        console.log('URL da imagem:', url);
+                        return url;
+                      })()} 
                       alt={itemData.title}
-                      className="w-full h-96 object-cover rounded-lg shadow-lg"
+                      className="w-full h-96 object-cover border-2 border-black"
+                      onError={(e) => {
+                        console.error('Erro ao carregar imagem:', e.target.src);
+                        e.target.style.display = 'none';
+                      }}
                     />
                     {itemData.digital_object_url && (
                       <a 
@@ -178,7 +233,7 @@ const ItemDetailPage = () => {
                     )}
                   </div>
                 ) : (
-                  <div className="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <div className="w-full h-96 bg-gray-200 border-2 border-black flex items-center justify-center">
                     <ImageIcon className="w-16 h-16 text-gray-400" />
                   </div>
                 )}
@@ -191,7 +246,7 @@ const ItemDetailPage = () => {
                         href={itemData.digital_object_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors font-dirty-stains"
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors font-dirty-stains"
                       >
                         <Eye className="w-4 h-4" />
                         Ver Original
@@ -201,7 +256,7 @@ const ItemDetailPage = () => {
                       href={`https://base.acervodistritohiphop.com.br/index.php/${itemData.slug}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 transition-colors font-dirty-stains"
+                      className="flex items-center gap-2 px-4 py-2 bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors font-dirty-stains"
                     >
                       <ExternalLink className="w-4 h-4" />
                       Ver no AtoM
@@ -213,7 +268,7 @@ const ItemDetailPage = () => {
               {/* Informações principais */}
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-4xl font-dirty-stains mb-4">
+                  <h1 className="text-4xl font-dirty-stains text-theme-primary mb-4">
                     {itemData.title}
                   </h1>
                   
@@ -284,20 +339,20 @@ const ItemDetailPage = () => {
 
         {/* Descrições detalhadas */}
         <motion.section 
-          className="py-12 bg-gray-50"
+          className="mb-12 px-6"
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="container mx-auto px-4 max-w-4xl">
-            <h2 className="text-3xl font-dirty-stains mb-8 text-center">Descrições</h2>
+          <div>
+            <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">DESCRIÇÕES</h2>
             
-            <div className="space-y-8">
+            <div className="space-y-6">
               {itemData.scope_and_content && (
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                  <h3 className="flex items-center gap-2 text-xl font-dirty-stains mb-4">
-                    <FileText className="w-5 h-5 text-blue-500" />
+                <div className="bg-theme-background border-2 border-black p-6">
+                  <h3 className="flex items-center gap-2 text-xl font-dirty-stains text-theme-primary mb-4">
+                    <FileText className="w-5 h-5" />
                     Âmbito e Conteúdo
                   </h3>
                   <p className="text-gray-700 font-sometype-mono leading-relaxed">
@@ -307,9 +362,9 @@ const ItemDetailPage = () => {
               )}
 
               {itemData.archival_history && (
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                  <h3 className="flex items-center gap-2 text-xl font-dirty-stains mb-4">
-                    <Archive className="w-5 h-5 text-green-500" />
+                <div className="bg-theme-background border-2 border-black p-6">
+                  <h3 className="flex items-center gap-2 text-xl font-dirty-stains text-theme-primary mb-4">
+                    <Archive className="w-5 h-5" />
                     História Arquivística
                   </h3>
                   <p className="text-gray-700 font-sometype-mono leading-relaxed">
@@ -319,9 +374,9 @@ const ItemDetailPage = () => {
               )}
 
               {itemData.notes && itemData.notes.length > 0 && (
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                  <h3 className="flex items-center gap-2 text-xl font-dirty-stains mb-4">
-                    <Info className="w-5 h-5 text-purple-500" />
+                <div className="bg-theme-background border-2 border-black p-6">
+                  <h3 className="flex items-center gap-2 text-xl font-dirty-stains text-theme-primary mb-4">
+                    <Info className="w-5 h-5" />
                     Notas
                   </h3>
                   <div className="space-y-2">
@@ -339,19 +394,19 @@ const ItemDetailPage = () => {
 
         {/* Metadados técnicos */}
         <motion.section 
-          className="py-12 bg-white"
+          className="mb-12 px-6"
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="container mx-auto px-4 max-w-4xl">
-            <h2 className="text-3xl font-dirty-stains mb-8 text-center">Metadados Técnicos</h2>
+          <div>
+            <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">METADADOS TÉCNICOS</h2>
             
-            <div className="bg-gray-50 p-6 rounded-lg">
+            <div className="bg-theme-background border-2 border-black p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-dirty-stains text-lg mb-2">Identificação</h4>
+                  <h4 className="font-dirty-stains text-lg text-theme-primary mb-2">Identificação</h4>
                   <div className="space-y-2 text-sm font-sometype-mono">
                     <div><strong>Slug:</strong> {itemData.slug}</div>
                     {itemData.reference_code && (
@@ -364,7 +419,7 @@ const ItemDetailPage = () => {
                 </div>
                 
                 <div>
-                  <h4 className="font-dirty-stains text-lg mb-2">Acesso</h4>
+                  <h4 className="font-dirty-stains text-lg text-theme-primary mb-2">Acesso</h4>
                   <div className="space-y-2 text-sm font-sometype-mono">
                     {itemData.digital_object_url && (
                       <div><strong>Objeto Digital:</strong> Disponível</div>
@@ -380,17 +435,17 @@ const ItemDetailPage = () => {
 
         {/* Ações finais */}
         <motion.section 
-          className="py-8 bg-black text-white"
+          className="px-6"
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="container mx-auto px-4 text-center">
+          <div className="border-2 border-black p-6 text-center">
             <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
               <button 
                 onClick={() => router.back()}
-                className="px-6 py-3 bg-white text-black font-dirty-stains hover:bg-gray-100 transition-colors flex items-center gap-2"
+                className="px-6 py-3 text-black border-2 border-black font-dirty-stains hover:bg-black hover:text-white cursor-pointer hover:border-white transition-colors flex items-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Voltar à Busca
@@ -398,7 +453,7 @@ const ItemDetailPage = () => {
               
               <button 
                 onClick={() => router.push('/acervo')}
-                className="px-6 py-3 border-2 border-white text-white font-dirty-stains hover:bg-white hover:text-black transition-colors"
+                className="px-6 py-3 border-2 border-black text-black font-dirty-stains hover:bg-black hover:text-white cursor-pointer transition-colors"
               >
                 Explorar Mais Itens
               </button>
@@ -408,7 +463,7 @@ const ItemDetailPage = () => {
                   href={`https://base.acervodistritohiphop.com.br/index.php/${itemData.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3 bg-blue-600 text-white font-dirty-stains hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  className="px-6 py-3 bg-white text-black border-2 border-white font-dirty-stains hover:bg-black hover:text-white transition-colors flex items-center gap-2"
                 >
                   <ExternalLink className="w-4 h-4" />
                   Ver no Sistema Original
@@ -417,7 +472,7 @@ const ItemDetailPage = () => {
             </div>
           </div>
         </motion.section>
-      </main>
+      </div>
     </div>
   );
 };
