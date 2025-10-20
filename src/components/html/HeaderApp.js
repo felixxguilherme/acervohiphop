@@ -203,6 +203,14 @@ export default function HeaderApp({ title, showTitle = false }) {
                   ease: [0.23, 1, 0.32, 1]
                 }}
               >
+                <Link href="/">
+                  <AnimatedButton 
+                    textSize={isScrolled ? "text-lg" : "text-3xl"} 
+                    text="HOME" 
+                    backgroundMode="static" 
+                    imagePath="marca-texto-amarelo.png" 
+                  />
+                </Link>
                 <Link href="/acervo">
                   <AnimatedButton 
                     textSize={isScrolled ? "text-lg" : "text-3xl"} 
