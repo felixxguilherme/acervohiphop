@@ -4,6 +4,14 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import HeaderApp from '@/components/html/HeaderApp';
 import { useAcervo } from '@/contexts/AcervoContext';
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from '@/components/ui/pagination';
 
 export default function Mapa() {
   // Context hook for real data
@@ -20,11 +28,42 @@ export default function Mapa() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const mapContainerRef = useRef(null);
+  
+  // Estados para paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6); // 6 regiões por página
+  
+  // Estado local para controlar carregamento das regiões separadamente
+  const [regionsLoading, setRegionsLoading] = useState(false);
 
-  // Load map data on component mount
+  // Load map data de forma assíncrona (não bloqueia a página)
   useEffect(() => {
-    loadMapData();
+    const loadMapDataAsync = async () => {
+      setRegionsLoading(true);
+      try {
+        await loadMapData();
+      } catch (error) {
+        console.error('Erro ao carregar dados do mapa:', error);
+      } finally {
+        setRegionsLoading(false);
+      }
+    };
+
+    // Delay para permitir que a página renderize primeiro
+    setTimeout(loadMapDataAsync, 100);
   }, [loadMapData]);
+
+  // Função para carregar mais dados se necessário
+  const loadMoreData = async () => {
+    setRegionsLoading(true);
+    try {
+      await loadMapData('8337', true, false); // Modo completo
+    } catch (error) {
+      console.error('Erro ao carregar dados completos:', error);
+    } finally {
+      setRegionsLoading(false);
+    }
+  };
 
   // Convert GeoJSON features to locations format for the map
   const locations = geoJson?.features?.map(feature => ({
@@ -100,13 +139,39 @@ export default function Mapa() {
     };
   }, []);
 
-  const isFullyLoading = isMapLoading || isLoading('map');
+  // Separar loading da página geral do loading das regiões
+  const isPageLoading = isMapLoading; // Apenas loading inicial da página
+  const isRegionsLoading = regionsLoading || isLoading('map');
   const mapError = getError('map');
+
+  // Cálculos de paginação
+  const totalPages = Math.ceil(locations.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentLocations = locations.slice(startIndex, endIndex);
+
+  // Função para navegar entre páginas
+  const goToPage = (page) => {
+    setCurrentPage(page);
+    
+    // Scroll para a seção de regiões
+    const regionsSection = document.getElementById('regions-section');
+    if (regionsSection) {
+      const sectionTop = regionsSection.offsetTop;
+      const offset = 100;
+      const targetPosition = Math.max(0, sectionTop - offset);
+      
+      window.scrollTo({ 
+        top: targetPosition, 
+        behavior: 'smooth' 
+      });
+    }
+  };
 
   return (
     <>
-      {/* Tela de carregamento */}
-      {isFullyLoading && (
+      {/* Tela de carregamento apenas para página inicial */}
+      {isPageLoading && (
         <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
           <div className="flex gap-2">
             {[0, 1, 2, 3, 4].map((index) => (
@@ -131,7 +196,7 @@ export default function Mapa() {
       )}
 
       {/* Conteúdo da página */}
-      <div className={`relative z-10 overflow-hidden ${isFullyLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
+      <div className={`relative z-10 overflow-hidden ${isPageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
         <HeaderApp title="MAPA DO HIP HOP" showTitle={true} />
 
         <AnimatePresence mode="wait">
@@ -242,11 +307,29 @@ export default function Mapa() {
               {/* Lista de Locais */}
               <div className="container mx-auto px-4 py-8">
                 <motion.div
+                  id="regions-section"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
                 >
-                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-black">REGIÕES MAPEADAS</h3>
+                  <div className="text-center mb-8">
+                    <h3 className="font-dirty-stains text-4xl text-black mb-4">REGIÕES MAPEADAS</h3>
+                    <div className="flex flex-col items-center gap-2">
+                      <p className="font-sometype-mono text-lg text-black/80">
+                        {locations.length} {locations.length === 1 ? 'região mapeada' : 'regiões mapeadas'}
+                        {totalPages > 1 && ` - Página ${currentPage} de ${totalPages}`}
+                      </p>
+                      {locations.length > 0 && locations.length < 100 && (
+                        <button
+                          onClick={loadMoreData}
+                          disabled={isRegionsLoading}
+                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white border-2 border-black font-dirty-stains text-sm transition-colors"
+                        >
+                          {isRegionsLoading ? '⏳ Carregando...' : '📈 Carregar Mais Regiões'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
                   
                   {mapError && (
                     <div className="text-center py-8 mb-8">
@@ -257,8 +340,37 @@ export default function Mapa() {
                     </div>
                   )}
                   
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {locations.map((location, index) => (
+                  {/* Loading específico para regiões */}
+                  {isRegionsLoading ? (
+                    <div className="text-center py-12">
+                      <div className="bg-white/90 border-2 border-black rounded-lg p-8 max-w-md mx-auto">
+                        <div className="flex justify-center mb-4">
+                          <div className="flex gap-1">
+                            {[0, 1, 2].map((index) => (
+                              <motion.div
+                                key={index}
+                                className="w-3 h-8 bg-[#fae523] rounded-sm border border-black"
+                                initial={{ height: 8 }}
+                                animate={{ height: [8, 32, 8] }}
+                                transition={{
+                                  duration: 0.8,
+                                  repeat: Infinity,
+                                  delay: index * 0.2,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="font-dirty-stains text-xl mb-2">Carregando regiões mapeadas...</p>
+                        <p className="font-sometype-mono text-sm text-gray-600">
+                          🗺️ Processando dados do acervo para gerar coordenadas geográficas
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {currentLocations.map((location, index) => (
                       <motion.div
                         key={location.id}
                         initial={{ scale: 0.9, opacity: 0 }}
@@ -309,15 +421,68 @@ export default function Mapa() {
                         </div>
                       </motion.div>
                     ))}
-                  </div>
+                    </div>
+                  )}
                   
-                  {locations.length === 0 && !mapError && (
+                  {locations.length === 0 && !mapError && !isRegionsLoading && (
                     <div className="text-center py-12">
                       <div className="bg-white/90 border-2 border-black rounded-lg p-6 max-w-md mx-auto">
-                        <p className="font-dirty-stains text-xl mb-2">Carregando locais...</p>
-                        <p className="font-sometype-mono text-sm">Aguarde enquanto processamos os dados do acervo</p>
+                        <p className="font-dirty-stains text-xl mb-2">Nenhuma região encontrada</p>
+                        <p className="font-sometype-mono text-sm">Não foram encontrados dados de localização no acervo</p>
                       </div>
                     </div>
+                  )}
+                  
+                  {/* Paginação - só mostra se não está carregando */}
+                  {totalPages > 1 && !isRegionsLoading && (
+                    <motion.div 
+                      className="flex justify-center mt-8"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.8 }}
+                    >
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious 
+                              onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
+                              className={`cursor-pointer border-2 border-black ${
+                                currentPage === 1 
+                                  ? 'opacity-50 cursor-not-allowed pointer-events-none' 
+                                  : 'hover:bg-[#fae523] transition-colors'
+                              }`}
+                            />
+                          </PaginationItem>
+                          
+                          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => goToPage(page)}
+                                isActive={page === currentPage}
+                                className={`cursor-pointer border-2 border-black font-dirty-stains ${
+                                  page === currentPage
+                                    ? 'bg-blue-500 text-white hover:bg-blue-600'
+                                    : 'bg-white hover:bg-[#fae523] transition-colors'
+                                }`}
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+                          
+                          <PaginationItem>
+                            <PaginationNext 
+                              onClick={() => currentPage < totalPages && goToPage(currentPage + 1)}
+                              className={`cursor-pointer border-2 border-black ${
+                                currentPage === totalPages 
+                                  ? 'opacity-50 cursor-not-allowed pointer-events-none' 
+                                  : 'hover:bg-[#fae523] transition-colors'
+                              }`}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </motion.div>
                   )}
                 </motion.div>
               </div>
