@@ -76,8 +76,6 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
         genres: filters.genres || undefined,
         places: filters.places || undefined
       };
-      
-      console.log('🎯 AdvancedSearch - Filtros sendo enviados (AtoM 2.9):', apiFilters);
       await onSearch(apiFilters);
     } finally {
       setLoading(false);

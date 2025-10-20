@@ -101,7 +101,6 @@ const Acervo = () => {
         }
       }
       
-      console.log(`[Acervo] Buscando página ${page}:`, url);
       const response = await fetchCompat(url);
       const data = await response.json();
       
@@ -140,8 +139,7 @@ const Acervo = () => {
     try {
       // Usar limite alto para garantir que todos os itens do creator sejam carregados
       const url = `/api/acervo?creators=${creatorId}&limit=100`;
-      
-      console.log(`[Acervo] Buscando todos os itens do creator ${creatorId}:`, url);
+
       const response = await fetchCompat(url);
       
       if (!response.ok) {
@@ -149,7 +147,6 @@ const Acervo = () => {
       }
       
       const data = await response.json();
-      console.log(`[Acervo] Encontrados ${data.total} itens para creator ${creatorId}`);
       
       // Store creator results in local state
       setCreatorResults({
@@ -459,8 +456,8 @@ const Acervo = () => {
         >
           <div className="space-y-4">
             {/* Busca Principal */}
-            <div className="flex flex-col md:flex-row gap-4 items-center">
-              <div className="flex flex-1 gap-2">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
                   value={searchQuery}
@@ -469,37 +466,46 @@ const Acervo = () => {
                   placeholder="Digite sua busca... (ex: vera, dino, 1994)"
                   className="flex-1 px-4 py-3 border-2 border-black font-sometype-mono text-base focus:outline-none focus:border-yellow-400"
                 />
-                <select
-                  value={searchField}
-                  onChange={(e) => setSearchField(e.target.value)}
-                  className="px-4 py-3 border-2 border-black font-sometype-mono text-base focus:outline-none focus:border-yellow-400"
-                >
-                  <option value="title">Título</option>
-                  <option value="referenceCode">Código de Referência</option>
-                  <option value="genre">Gênero</option>
-                  <option value="subject">Assunto</option>
-                  <option value="name">Nome</option>
-                </select>
-                <button
-                  onClick={() => handleSearch()}
-                  className="hover:bg-black hover:text-white px-6 py-3 bg-white text-black cursor-pointer border-2 border-black font-dirty-stains transition-colors"
-                >
-                  Buscar
-                </button>
-                <button
-                  onClick={handleClearSearch}
-                  className="cursor-pointer px-4 py-2 bg-gray-200 hover:bg-gray-300 border-2 border-black font-dirty-stains text-sm transition-colors"
-                >
-                  ✕ Limpar
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleSearch()}
+                    className="hover:bg-black hover:text-white px-4 sm:px-6 py-3 bg-white text-black cursor-pointer border-2 border-black font-dirty-stains transition-colors whitespace-nowrap"
+                  >
+                    Buscar
+                  </button>
+                  <button
+                    onClick={handleClearSearch}
+                    className="cursor-pointer px-3 sm:px-4 py-3 bg-gray-200 hover:bg-gray-300 border-2 border-black font-dirty-stains transition-colors whitespace-nowrap"
+                  >
+                    ✕ Limpar
+                  </button>
+                </div>
               </div>
-            </div>
-            
-            {/* Busca por Creator */}
-            <div className="flex flex-col md:flex-row gap-4 items-center border-t-2 border-gray-200 pt-4">              
-              {/* Botões de Ação */}
-              <div className="flex flex-wrap gap-3 justify-center">
-                
+              
+              {/* Seleção de Campo de Busca */}
+              <div className="space-y-2">
+                <p className="text-sm font-sometype-mono text-gray-700">Buscar por:</p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { value: 'title', label: 'Título' },
+                    { value: 'referenceCode', label: 'Código de Referência' },
+                    { value: 'genre', label: 'Gênero' },
+                    { value: 'subject', label: 'Assunto' },
+                    { value: 'name', label: 'Nome' }
+                  ].map((field) => (
+                    <button
+                      key={field.value}
+                      onClick={() => setSearchField(field.value)}
+                      className={`px-3 py-2 border-2 border-black font-sometype-mono text-sm transition-colors ${
+                        searchField === field.value
+                          ? 'bg-black text-white'
+                          : 'bg-white text-black hover:bg-gray-100'
+                      }`}
+                    >
+                      {field.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
