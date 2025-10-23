@@ -66,7 +66,7 @@ const CollectionCard = ({ collection, onViewDetails, isExpanded, onToggle }) => 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleToggle}
-          className="bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-2 rounded text-sm font-scratchy font-bold transition-colors"
+          className="bg-yellow-400 hover:bg-yellow-300 text-theme px-4 py-2 rounded text-sm font-scratchy font-bold transition-colors"
           disabled={loading}
         >
           {loading ? '⏳ Carregando...' : isExpanded ? '👆 Ocultar' : '👁️ Ver detalhes'}
@@ -108,13 +108,13 @@ const CollectionCard = ({ collection, onViewDetails, isExpanded, onToggle }) => 
               <div>
                 <h4 className="font-bold text-yellow-400 mb-2">INFORMAÇÕES BÁSICAS</h4>
                 <div className="space-y-2 text-sm">
-                  <p><span className="text-gray-400">Nível:</span> <span className="text-white">{details.level_of_description}</span></p>
-                  <p><span className="text-gray-400">Status:</span> <span className="text-white">{details.publication_status}</span></p>
+                  <p><span className="text-gray-400">Nível:</span> <span className="text-theme">{details.level_of_description}</span></p>
+                  <p><span className="text-gray-400">Status:</span> <span className="text-theme">{details.publication_status}</span></p>
                   {details.extent_and_medium && (
-                    <p><span className="text-gray-400">Extensão:</span> <span className="text-white">{details.extent_and_medium}</span></p>
+                    <p><span className="text-gray-400">Extensão:</span> <span className="text-theme">{details.extent_and_medium}</span></p>
                   )}
                   {details.languages_of_material && (
-                    <p><span className="text-gray-400">Idiomas:</span> <span className="text-white">{details.languages_of_material.join(', ')}</span></p>
+                    <p><span className="text-gray-400">Idiomas:</span> <span className="text-theme">{details.languages_of_material.join(', ')}</span></p>
                   )}
                 </div>
               </div>
@@ -125,7 +125,7 @@ const CollectionCard = ({ collection, onViewDetails, isExpanded, onToggle }) => 
                   <h4 className="font-bold text-yellow-400 mb-2">CRIADORES</h4>
                   {details.creators.map((creator, index) => (
                     <div key={index} className="text-sm mb-3">
-                      <p className="text-white font-medium">{creator.authorized_form_of_name}</p>
+                      <p className="text-theme font-medium">{creator.authorized_form_of_name}</p>
                       {creator.dates_of_existence && (
                         <p className="text-gray-400">Período: {creator.dates_of_existence}</p>
                       )}
@@ -329,7 +329,7 @@ export default function CollectionViewer() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white p-8">
+      <div className="min-h-screen bg-black text-theme p-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center">
             <h1 className="text-6xl font-dirty-stains mb-8">COLEÇÕES DO ACERVO</h1>
@@ -342,7 +342,7 @@ export default function CollectionViewer() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-black text-white p-8">
+      <div className="min-h-screen bg-black text-theme p-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center">
             <h1 className="text-6xl font-dirty-stains mb-8">COLEÇÕES DO ACERVO</h1>
@@ -356,7 +356,7 @@ export default function CollectionViewer() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
+    <div className="min-h-screen bg-black text-theme p-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-6xl font-dirty-stains text-center mb-8">
           COLEÇÕES DO ACERVO
@@ -382,18 +382,18 @@ export default function CollectionViewer() {
               placeholder="Buscar por título, código ou descrição..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full sm:w-96 px-4 py-2 bg-gray-800 border border-gray-600 rounded text-white font-sometype-mono"
+              className="w-full sm:w-96 px-4 py-2 bg-gray-800 border border-gray-600 rounded text-theme font-sometype-mono"
             />
             <div className="flex gap-2">
               <button
                 onClick={expandAll}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-sometype-mono"
+                className="bg-green-600 hover:bg-green-700 text-theme px-4 py-2 rounded text-sm font-sometype-mono"
               >
                 Expandir Tudo
               </button>
               <button
                 onClick={collapseAll}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-sometype-mono"
+                className="bg-red-600 hover:bg-red-700 text-theme px-4 py-2 rounded text-sm font-sometype-mono"
               >
                 Recolher Tudo
               </button>

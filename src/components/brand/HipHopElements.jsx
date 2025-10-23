@@ -99,7 +99,7 @@ export function HipHopButton({
   ...props 
 }) {
   const bgClass = `bg-hip-${color}-${variant}`;
-  const textColor = variant === "claro" ? "text-black" : "text-white";
+  const textColor = variant === "claro" ? "text-theme" : "text-theme";
   
   const sizeClasses = {
     sm: "px-2 py-1 text-sm",
@@ -113,7 +113,7 @@ export function HipHopButton({
         ${bgClass} 
         ${textColor} 
         ${sizeClasses[size]}
-        border-2 border-black 
+        border-2 border-theme 
         shadow-hip-hop 
         hover:shadow-hip-hop-lg 
         transition-all duration-200 

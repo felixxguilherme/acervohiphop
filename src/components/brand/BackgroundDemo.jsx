@@ -54,7 +54,7 @@ export default function BackgroundDemo() {
             <h3 className="font-sometype-mono font-bold">Controles</h3>
             <button
               onClick={toggleTheme}
-              className="w-full px-4 py-2 bg-hip-amarelo-escuro text-black border-2 border-black shadow-hip-hop hover:shadow-hip-hop-lg transition-all font-sometype-mono font-bold"
+              className="w-full px-4 py-2 bg-hip-amarelo-escuro text-theme border-2 border-theme shadow-hip-hop hover:shadow-hip-hop-lg transition-all font-sometype-mono font-bold"
             >
               Alternar Tema ({theme === 'light' ? 'Escuro' : 'Claro'})
             </button>
@@ -74,19 +74,19 @@ export default function BackgroundDemo() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Background atual */}
-            <div className={`h-32 border-2 border-black ${backgroundClass} p-4 flex items-center justify-center`}>
-              <span className="bg-white/90 px-3 py-1 text-black font-sometype-mono text-sm">
+            <div className={`h-32 border-2 border-theme ${backgroundClass} p-4 flex items-center justify-center`}>
+              <span className="bg-white/90 px-3 py-1 text-theme font-sometype-mono text-sm">
                 Background Atual
               </span>
             </div>
             
             {/* Fallback colors */}
             <div className="space-y-2">
-              <div className="h-14 bg-hip-fundo-claro border-2 border-black flex items-center justify-center">
-                <span className="text-black font-sometype-mono text-sm">Fallback Claro</span>
+              <div className="h-14 bg-hip-fundo-claro border-2 border-theme flex items-center justify-center">
+                <span className="text-theme font-sometype-mono text-sm">Fallback Claro</span>
               </div>
-              <div className="h-14 bg-hip-fundo-escuro border-2 border-black flex items-center justify-center">
-                <span className="text-white font-sometype-mono text-sm">Fallback Escuro</span>
+              <div className="h-14 bg-hip-fundo-escuro border-2 border-theme flex items-center justify-center">
+                <span className="text-theme font-sometype-mono text-sm">Fallback Escuro</span>
               </div>
             </div>
           </div>

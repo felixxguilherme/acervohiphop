@@ -323,7 +323,7 @@ const Acervo = () => {
     <div>
       <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
       
-      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
         {/* Seção de Artistas em Destaque */}
         <motion.section 
           className="mb-12"
@@ -343,7 +343,7 @@ const Acervo = () => {
 
           {loadingArtists ? (
             <div className="text-center py-12">
-              <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin h-8 w-8 border-2 border-theme border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-lg font-sometype-mono">Carregando artistas...</p>
             </div>
           ) : (
@@ -351,7 +351,7 @@ const Acervo = () => {
               {featuredArtists.map((artist, index) => (
                 <motion.div
                   key={artist.id}
-                  className="bg-theme-background border-2 border-black p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg"
+                  className="bg-theme-background border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.2 }}
@@ -365,11 +365,11 @@ const Acervo = () => {
                           <img
                             src={artist.thumbnail}
                             alt={artist.name}
-                            className="w-full h-full object-cover border-2 border-black"
+                            className="w-full h-full object-cover border-2 border-theme"
                             onError={(e) => { e.target.style.display = 'none'; }}
                           />
                         ) : (
-                          <div className="w-full h-full bg-gray-200 border-2 border-black flex items-center justify-center">
+                          <div className="w-full h-full bg-gray-200 border-2 border-theme flex items-center justify-center">
                             <span className="text-4xl">🎭</span>
                           </div>
                         )}
@@ -395,13 +395,13 @@ const Acervo = () => {
                     <div className="flex gap-3 text-sm pt-4 border-t-2 border-gray-200">
                       <button
                         onClick={() => goToArtistPage(artist.id)}
-                        className="cursor-pointer px-4 py-2 text-black border-2 border-black font-dirty-stains hover:bg-black hover:text-white transition-colors"
+                        className="cursor-pointer px-4 py-2 text-theme border-2 border-theme font-dirty-stains hover:bg-black hover:text-theme transition-colors"
                       >
                         Ver Página do Artista
                       </button>
                       <button
                         onClick={() => handleCreatorSearch(artist.id)}
-                        className="cursor-pointer px-4 py-2 text-black border-2 border-black font-dirty-stains hover:bg-black hover:text-white transition-colors"
+                        className="cursor-pointer px-4 py-2 text-theme border-2 border-theme font-dirty-stains hover:bg-black hover:text-theme transition-colors"
                       >
                         Ver Todos os Itens
                       </button>
@@ -409,7 +409,7 @@ const Acervo = () => {
 
                     {/* Terceira linha: Preview dos itens recentes */}
                     {artist.recentItems.length > 0 && (
-                      <div className="pt-4 border-t-2 border-black">
+                      <div className="pt-4 border-t-2 border-theme">
                         <h4 className="font-dirty-stains text-lg mb-3">Itens Recentes:</h4>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                           {artist.recentItems.slice(0, 3).map((item, itemIndex) => (
@@ -449,7 +449,7 @@ const Acervo = () => {
         >
           {/* Barra de Busca Melhorada */}
         <motion.div 
-          className="mb-8 p-6 bg-white/90 border-2 border-black"
+          className="mb-8 p-6 bg-white/90 border-2 border-theme"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -464,18 +464,18 @@ const Acervo = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   placeholder="Digite sua busca... (ex: vera, dino, 1994)"
-                  className="flex-1 px-4 py-3 border-2 border-black font-sometype-mono text-base focus:outline-none focus:border-yellow-400"
+                  className="flex-1 px-4 py-3 border-2 border-theme font-sometype-mono text-base focus:outline-none focus:border-yellow-400"
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleSearch()}
-                    className="hover:bg-black hover:text-white px-4 sm:px-6 py-3 bg-white text-black cursor-pointer border-2 border-black font-dirty-stains transition-colors whitespace-nowrap"
+                    className="hover:bg-black hover:text-theme px-4 sm:px-6 py-3 bg-white text-theme cursor-pointer border-2 border-theme font-dirty-stains transition-colors whitespace-nowrap"
                   >
                     Buscar
                   </button>
                   <button
                     onClick={handleClearSearch}
-                    className="cursor-pointer px-3 sm:px-4 py-3 bg-gray-200 hover:bg-gray-300 border-2 border-black font-dirty-stains transition-colors whitespace-nowrap"
+                    className="cursor-pointer px-3 sm:px-4 py-3 bg-gray-200 hover:bg-gray-300 border-2 border-theme font-dirty-stains transition-colors whitespace-nowrap"
                   >
                     ✕ Limpar
                   </button>
@@ -496,10 +496,10 @@ const Acervo = () => {
                     <button
                       key={field.value}
                       onClick={() => setSearchField(field.value)}
-                      className={`px-3 py-2 border-2 border-black font-sometype-mono text-sm transition-colors ${
+                      className={`px-3 py-2 border-2 border-theme font-sometype-mono text-sm transition-colors ${
                         searchField === field.value
-                          ? 'bg-black text-white'
-                          : 'bg-white text-black hover:bg-gray-100'
+                          ? 'bg-black text-theme'
+                          : 'bg-white text-theme hover:bg-gray-100'
                       }`}
                     >
                       {field.label}
@@ -539,7 +539,7 @@ const Acervo = () => {
                   <button
                     onClick={() => goToPage(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains text-sm transition-colors"
+                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains text-sm transition-colors"
                   >
                     ←
                   </button>
@@ -561,9 +561,9 @@ const Acervo = () => {
                       <button
                         key={pageNum}
                         onClick={() => goToPage(pageNum)}
-                        className={`px-3 py-1 border-2 border-black font-dirty-stains text-sm transition-colors ${
+                        className={`px-3 py-1 border-2 border-theme font-dirty-stains text-sm transition-colors ${
                           pageNum === currentPage 
-                            ? 'bg-blue-500 text-white' 
+                            ? 'bg-blue-500 text-theme' 
                             : 'bg-white hover:bg-gray-100'
                         }`}
                       >
@@ -575,7 +575,7 @@ const Acervo = () => {
                   <button
                     onClick={() => goToPage(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains text-sm transition-colors"
+                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains text-sm transition-colors"
                   >
                     →
                   </button>
@@ -593,19 +593,19 @@ const Acervo = () => {
         >
           {loading.search ? (
             <div className="text-center py-12">
-              <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin h-8 w-8 border-2 border-theme border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-lg font-sometype-mono">Carregando acervo...</p>
             </div>
           ) : errors.search ? (
             <div className="text-center py-12">
-              <div className="bg-theme-background border-2 border-black p-6 bg-white/90">
+              <div className="bg-theme-background border-2 border-theme p-6 bg-white/90">
                 <p className="font-dirty-stains text-xl mb-2">Erro ao carregar</p>
                 <p className="font-sometype-mono">{errors.search}</p>
               </div>
             </div>
           ) : activeResults.length === 0 ? (
             <div className="text-center py-12">
-              <div className="bg-theme-background border-2 border-black p-6">
+              <div className="bg-theme-background border-2 border-theme p-6">
                 <p className="font-dirty-stains text-xl mb-2">Nenhum item encontrado</p>
                 <p className="font-sometype-mono">Tente um termo de busca diferente</p>
               </div>
@@ -615,7 +615,7 @@ const Acervo = () => {
               {currentItems.map((item, index) => (
                 <motion.div 
                   key={item.slug || index} 
-                  className="bg-theme-background border-2 border-black hover:bg-zinc-100 transition-all duration-300 cursor-pointer hover:shadow-lg hover:scale-105 flex flex-col h-full"
+                  className="bg-theme-background border-2 border-theme hover:bg-zinc-100 transition-all duration-300 cursor-pointer hover:shadow-lg hover:scale-105 flex flex-col h-full"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.05 }}
@@ -627,7 +627,7 @@ const Acervo = () => {
                       <img 
                         src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')} 
                         alt={item.title || 'Sem título'}
-                        className="w-full h-40 object-cover border-b-2 border-black transition-transform duration-300 hover:scale-110"
+                        className="w-full h-40 object-cover border-b-2 border-theme transition-transform duration-300 hover:scale-110"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
                     </div>
@@ -658,11 +658,11 @@ const Acervo = () => {
                       )}
                     </div>
                     
-                    <div className="mt-4 pt-3 border-t-2 border-black flex justify-between items-center">
+                    <div className="mt-4 pt-3 border-t-2 border-theme flex justify-between items-center">
                       <p className="text-xs font-sometype-mono opacity-60 truncate mr-2">
                         {item.slug || 'N/A'}
                       </p>
-                      <button className="text-xs bg-white text-black cursor-pointer px-3 py-1 border border-black font-dirty-stains hover:bg-black hover:text-white transition-colors whitespace-nowrap">
+                      <button className="text-xs bg-white text-theme cursor-pointer px-3 py-1 border border-theme font-dirty-stains hover:bg-black hover:text-theme transition-colors whitespace-nowrap">
                         Ver Detalhes
                       </button>
                     </div>
@@ -685,7 +685,7 @@ const Acervo = () => {
               <button
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains transition-colors"
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains transition-colors"
               >
                 ← Anterior
               </button>
@@ -697,7 +697,7 @@ const Acervo = () => {
               <button
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains transition-colors"
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains transition-colors"
               >
                 Próxima →
               </button>

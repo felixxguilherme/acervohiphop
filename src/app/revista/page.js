@@ -92,7 +92,7 @@ const Revista = () => {
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
-                  className="text-center text-black mb-12"
+                  className="text-center text-theme mb-12"
                 >
                   <h2 className="font-sometype-mono text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 max-w-4xl mx-auto">
                     Revista Digital do Hip Hop Brasiliense - Preservando memórias, contando histórias
@@ -106,25 +106,25 @@ const Revista = () => {
                   transition={{ delay: 0.2 }}
                   className="mb-16"
                 >
-                  <div className="bg-black/20 backdrop-blur-sm border-3 border-black rounded-lg p-8">
+                  <div className="bg-black/20 backdrop-blur-sm border-3 border-theme rounded-lg p-8">
                     <div className="grid md:grid-cols-2 gap-8 items-center">
                       <div>
                         <img 
                           src="https://images.unsplash.com/photo-1635796403527-50ae19d7f65d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGhpcGhvcCUyMGNyZXd8ZW58MHx8MHx8fDA%3D" 
                           alt="Revista Zulu Nation DF - Edição #03"
-                          className="w-full rounded-lg shadow-lg border-2 border-black"
+                          className="w-full rounded-lg shadow-lg border-2 border-theme"
                         />
                       </div>
                       <div>
-                        <h3 className="font-dirty-stains text-4xl mb-4 text-black">REVISTA ZULU NATION DF</h3>
-                        <h4 className="font-sometype-mono text-xl mb-4 text-black">Edição #03 - Abril 2005</h4>
-                        <p className="font-sometype-mono text-black mb-6">
+                        <h3 className="font-dirty-stains text-4xl mb-4 text-theme">REVISTA ZULU NATION DF</h3>
+                        <h4 className="font-sometype-mono text-xl mb-4 text-theme">Edição #03 - Abril 2005</h4>
+                        <p className="font-sometype-mono text-theme mb-6">
                           Terceira edição da revista independente da Zulu Nation DF, contendo entrevistas com artistas locais, 
                           agenda cultural, letras de rap e artigos sobre a cultura Hip Hop no Distrito Federal.
                         </p>
                         <div className="flex flex-wrap gap-2 mb-4">
                           {["24 páginas", "Zulu Nation", "Cultura urbana", "Rap nacional"].map((tag) => (
-                            <span key={tag} className="bg-[#fae523] text-black px-3 py-1 rounded-full text-sm font-sometype-mono border border-black">
+                            <span key={tag} className="bg-[#fae523] text-theme px-3 py-1 rounded-full text-sm font-sometype-mono border border-theme">
                               {tag}
                             </span>
                           ))}
@@ -141,7 +141,7 @@ const Revista = () => {
                   transition={{ delay: 0.4 }}
                   className="mb-16"
                 >
-                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-black">REPORTAGENS EM DESTAQUE</h3>
+                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-theme">REPORTAGENS EM DESTAQUE</h3>
                   
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[
@@ -194,7 +194,7 @@ const Revista = () => {
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.5 + index * 0.1 }}
                         whileHover={{ scale: 1.02, y: -5 }}
-                        className="bg-white/90 backdrop-blur-sm border-3 border-black rounded-lg overflow-hidden cursor-pointer shadow-lg"
+                        className="bg-white/90 backdrop-blur-sm border-3 border-theme rounded-lg overflow-hidden cursor-pointer shadow-lg"
                       >
                         <img 
                           src={story.image} 
@@ -202,12 +202,12 @@ const Revista = () => {
                           className="w-full h-48 object-cover"
                         />
                         <div className="p-6">
-                          <div className="text-sm font-sometype-mono text-black/70 mb-2">{story.date}</div>
-                          <h4 className="font-dirty-stains text-xl mb-3 text-black leading-tight">{story.title}</h4>
-                          <p className="font-sometype-mono text-sm text-black/80 mb-4 leading-relaxed">{story.description}</p>
+                          <div className="text-sm font-sometype-mono text-theme/70 mb-2">{story.date}</div>
+                          <h4 className="font-dirty-stains text-xl mb-3 text-theme leading-tight">{story.title}</h4>
+                          <p className="font-sometype-mono text-sm text-theme/80 mb-4 leading-relaxed">{story.description}</p>
                           <div className="flex flex-wrap gap-1">
                             {story.tags.map((tag) => (
-                              <span key={tag} className="bg-[#fae523] text-black px-2 py-1 rounded text-xs font-sometype-mono border border-black">
+                              <span key={tag} className="bg-[#fae523] text-theme px-2 py-1 rounded text-xs font-sometype-mono border border-theme">
                                 {tag}
                               </span>
                             ))}
@@ -223,9 +223,9 @@ const Revista = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8 }}
-                  className="bg-black/20 backdrop-blur-sm border-3 border-black rounded-lg p-8 mb-16"
+                  className="bg-black/20 backdrop-blur-sm border-3 border-theme rounded-lg p-8 mb-16"
                 >
-                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-black">NOSSO ACERVO</h3>
+                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-theme">NOSSO ACERVO</h3>
                   <div className="grid md:grid-cols-4 gap-6 text-center">
                     {[
                       { number: "2.500+", label: "Itens Documentais", icon: "📚" },
@@ -238,7 +238,7 @@ const Revista = () => {
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.9 + index * 0.1 }}
-                        className="text-black"
+                        className="text-theme"
                       >
                         <div className="text-4xl mb-2">{stat.icon}</div>
                         <div className="font-dirty-stains text-3xl mb-2">{stat.number}</div>

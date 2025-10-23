@@ -117,7 +117,7 @@
 //       {/* Primeira página sempre visível */}
 //       <div className="relative w-full min-h-screen flex items-center justify-center py-16">
 //         <motion.div
-//           className={`w-[90vw] max-w-6xl h-[80vh] md:h-[70vh] shadow-2xl border-4 border-black ${pagesData[0].bgColor || 'bg-white/90'} backdrop-blur-sm`}
+//           className={`w-[90vw] max-w-6xl h-[80vh] md:h-[70vh] shadow-2xl border-4 border-theme ${pagesData[0].bgColor || 'bg-white/90'} backdrop-blur-sm`}
 //           style={{
 //             transform: `rotate(-2deg)`,
 //             zIndex: pagesData.length,
@@ -160,7 +160,7 @@
 
 //             {/* Coluna da direita - Conteúdo textual */}
 //             <motion.div 
-//               className="w-full md:w-1/2 flex flex-col justify-center text-black p-4"
+//               className="w-full md:w-1/2 flex flex-col justify-center text-theme p-4"
 //               initial={{ opacity: 0, x: 50 }}
 //               animate={{ opacity: 1, x: 0 }}
 //               transition={{ delay: 0.8 }}
@@ -199,10 +199,10 @@
 //                 animate={{ opacity: 1 }}
 //                 transition={{ delay: 1.6 }}
 //               >
-//                 <div className="bg-black text-white px-3 py-2 text-sm font-black border-2 border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+//                 <div className="bg-black text-theme px-3 py-2 text-sm font-black border-2 border-theme shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
 //                   1 / {pagesData.length}
 //                 </div>
-//                 <div className="bg-white border-2 border-black px-3 py-2 font-black text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+//                 <div className="bg-white border-2 border-theme px-3 py-2 font-black text-theme shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
 //                   HIP HOP DF
 //                 </div>
 //               </motion.div>
@@ -233,7 +233,7 @@
 //             return (
 //               <motion.div
 //                 key={index}
-//                 className={`absolute w-[90vw] max-w-6xl h-[80vh] md:h-[70vh] shadow-2xl border-4 border-black ${page.bgColor || 'bg-white/90'} backdrop-blur-sm`}
+//                 className={`absolute w-[90vw] max-w-6xl h-[80vh] md:h-[70vh] shadow-2xl border-4 border-theme ${page.bgColor || 'bg-white/90'} backdrop-blur-sm`}
 //                 style={{
 //                   transform: `translateY(${Math.max(0, (1 - progress) * 100)}px) rotate(${[1, -1, 2, -3, 1][idx % 5]}deg)`,
 //                   zIndex: index + 1, // Z-index crescente para empilhamento
@@ -269,7 +269,7 @@
 //                   </div>
 
 //                   {/* Coluna da direita - Conteúdo textual */}
-//                   <div className="w-full md:w-1/2 flex flex-col justify-center text-black p-4">
+//                   <div className="w-full md:w-1/2 flex flex-col justify-center text-theme p-4">
 //                     <h2 className="font-black text-2xl md:text-3xl lg:text-4xl mb-4 leading-tight">
 //                       {page.title}
 //                     </h2>
@@ -284,10 +284,10 @@
 
 //                     {/* Indicador de página */}
 //                     <div className="mt-6 flex items-center justify-between">
-//                       <div className="bg-black text-white px-3 py-2 text-sm font-black border-2 border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+//                       <div className="bg-black text-theme px-3 py-2 text-sm font-black border-2 border-theme shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
 //                         {index + 1} / {pagesData.length}
 //                       </div>
-//                       <div className="bg-white border-2 border-black px-3 py-2 font-black text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+//                       <div className="bg-white border-2 border-theme px-3 py-2 font-black text-theme shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
 //                         HIP HOP DF
 //                       </div>
 //                     </div>
@@ -388,7 +388,7 @@ const StackedPagesScroll = () => {
             <div className="relative w-full max-w-2xl h-96">              
               {isLastPageComplete && (
                 <div className="absolute -top-16 left-0 right-0 z-50 flex justify-center">
-                  <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                  <div className="bg-green-500 text-theme px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
                     ✓ Continue rolando para ver mais conteúdo!
                   </div>
                 </div>

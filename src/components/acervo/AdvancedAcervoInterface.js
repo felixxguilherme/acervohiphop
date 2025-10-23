@@ -176,17 +176,17 @@ const AdvancedAcervoInterface = () => {
   ];
 
   const ModeSelector = () => (
-    <div className="bg-white border-[3px] border-black p-6 mb-8">
+    <div className="bg-white border-[3px] border-theme p-6 mb-8">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {modes.map((mode) => (
           <button
             key={mode.key}
             onClick={() => setActiveMode(mode.key)}
             className={`
-              p-6 border-[3px] border-black transition-all text-center font-sometype-mono
+              p-6 border-[3px] border-theme transition-all text-center font-sometype-mono
               ${activeMode === mode.key
-                ? 'bg-black text-white'
-                : 'bg-white text-black hover:bg-gray-100'
+                ? 'bg-black text-theme'
+                : 'bg-white text-theme hover:bg-gray-100'
               }
             `}
           >
@@ -199,23 +199,23 @@ const AdvancedAcervoInterface = () => {
   );
 
   const StatsBar = () => (
-    <div className="bg-white border-[3px] border-black p-6 mb-8">
+    <div className="bg-white border-[3px] border-theme p-6 mb-8">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-        <div className="border-[3px] border-black p-4 bg-white">
-          <div className="text-3xl font-black font-sometype-mono text-black">{stats.total}</div>
-          <div className="text-black text-xs font-bold uppercase tracking-wider mt-2">Total de Itens</div>
+        <div className="border-[3px] border-theme p-4 bg-white">
+          <div className="text-3xl font-black font-sometype-mono text-theme">{stats.total}</div>
+          <div className="text-theme text-xs font-bold uppercase tracking-wider mt-2">Total de Itens</div>
         </div>
-        <div className="border-[3px] border-black p-4 bg-black">
-          <div className="text-3xl font-black font-sometype-mono text-white">{stats.collections}</div>
-          <div className="text-white text-xs font-bold uppercase tracking-wider mt-2">Coleções</div>
+        <div className="border-[3px] border-theme p-4 bg-black">
+          <div className="text-3xl font-black font-sometype-mono text-theme">{stats.collections}</div>
+          <div className="text-theme text-xs font-bold uppercase tracking-wider mt-2">Coleções</div>
         </div>
-        <div className="border-[3px] border-black p-4 bg-white">
-          <div className="text-3xl font-black font-sometype-mono text-black">{stats.mediaItems}</div>
-          <div className="text-black text-xs font-bold uppercase tracking-wider mt-2">Imagens</div>
+        <div className="border-[3px] border-theme p-4 bg-white">
+          <div className="text-3xl font-black font-sometype-mono text-theme">{stats.mediaItems}</div>
+          <div className="text-theme text-xs font-bold uppercase tracking-wider mt-2">Imagens</div>
         </div>
-        <div className="border-[3px] border-black p-4 bg-black">
-          <div className="text-3xl font-black font-sometype-mono text-white">{stats.timeRange}</div>
-          <div className="text-white text-xs font-bold uppercase tracking-wider mt-2">Período</div>
+        <div className="border-[3px] border-theme p-4 bg-black">
+          <div className="text-3xl font-black font-sometype-mono text-theme">{stats.timeRange}</div>
+          <div className="text-theme text-xs font-bold uppercase tracking-wider mt-2">Período</div>
         </div>
       </div>
     </div>
@@ -228,19 +228,19 @@ const AdvancedAcervoInterface = () => {
 
     return (
       <div className="mt-8">
-        <div className="bg-white border-[3px] border-black p-6">
-          <h3 className="text-xl font-bold font-sometype-mono text-black mb-6 uppercase">
+        <div className="bg-white border-[3px] border-theme p-6">
+          <h3 className="text-xl font-bold font-sometype-mono text-theme mb-6 uppercase">
             Resultados da Busca ({searchResults.length})
           </h3>
           
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="text-black font-sometype-mono">
+              <div className="text-theme font-sometype-mono">
                 Buscando...
               </div>
             </div>
           ) : searchResults.length === 0 ? (
-            <div className="text-center py-12 text-black">
+            <div className="text-center py-12 text-theme">
               <div className="text-lg font-bold mb-2">Nenhum resultado encontrado</div>
               <div className="text-sm">Tente ajustar os filtros de busca</div>
             </div>
@@ -249,18 +249,18 @@ const AdvancedAcervoInterface = () => {
               {searchResults.map((item, index) => (
                 <div
                   key={item.slug || index}
-                  className="bg-white border-[3px] border-black p-4 hover:bg-gray-50 transition-colors"
+                  className="bg-white border-[3px] border-theme p-4 hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <div className="font-bold text-black font-sometype-mono text-sm uppercase">
+                      <div className="font-bold text-theme font-sometype-mono text-sm uppercase">
                         {item.title || 'Sem título'}
                       </div>
-                      <div className="text-xs text-black font-sometype-mono mt-1">
+                      <div className="text-xs text-theme font-sometype-mono mt-1">
                         ID: {item.reference_code || item.slug || 'N/A'}
                       </div>
                     </div>
-                    <div className="text-xs text-black font-sometype-mono opacity-50">
+                    <div className="text-xs text-theme font-sometype-mono opacity-50">
                       #{index + 1}
                     </div>
                   </div>
@@ -277,37 +277,37 @@ const AdvancedAcervoInterface = () => {
     <div className="min-h-screen bg-white p-8">
       {/* Header */}
       <div className="text-center mb-12">
-        <div className="bg-black border-[3px] border-black p-8 mb-6">
-          <h1 className="text-4xl font-black font-sometype-mono text-white uppercase tracking-wider">
+        <div className="bg-black border-[3px] border-theme p-8 mb-6">
+          <h1 className="text-4xl font-black font-sometype-mono text-theme uppercase tracking-wider">
             ACERVO HIP HOP DF
           </h1>
         </div>
-        <p className="text-black font-sometype-mono text-sm max-w-2xl mx-auto uppercase">
+        <p className="text-theme font-sometype-mono text-sm max-w-2xl mx-auto uppercase">
           Sistema de busca e navegação do acervo
         </p>
         
         {/* API Error indicator */}
         {apiError && (
-          <div className="bg-white border-[3px] border-black p-6 mt-6 mx-auto max-w-4xl">
+          <div className="bg-white border-[3px] border-theme p-6 mt-6 mx-auto max-w-4xl">
             <div className="text-center">
-              <h3 className="text-lg font-bold font-sometype-mono text-black uppercase mb-3">
+              <h3 className="text-lg font-bold font-sometype-mono text-theme uppercase mb-3">
                 {apiError.title}
               </h3>
-              <p className="text-black font-sometype-mono text-sm mb-3">
+              <p className="text-theme font-sometype-mono text-sm mb-3">
                 {apiError.message}
               </p>
-              <p className="text-black font-sometype-mono text-xs opacity-70 mb-2">
+              <p className="text-theme font-sometype-mono text-xs opacity-70 mb-2">
                 {apiError.details}
               </p>
               {apiError.troubleshooting && (
-                <p className="text-black font-sometype-mono text-xs opacity-50">
+                <p className="text-theme font-sometype-mono text-xs opacity-50">
                   💡 {apiError.troubleshooting}
                 </p>
               )}
               <div className="mt-4">
                 <button
                   onClick={loadInitialStats}
-                  className="px-6 py-2 bg-black text-white font-bold font-sometype-mono border-[3px] border-black hover:bg-gray-800 transition-colors uppercase text-xs"
+                  className="px-6 py-2 bg-black text-theme font-bold font-sometype-mono border-[3px] border-theme hover:bg-gray-800 transition-colors uppercase text-xs"
                 >
                   Tentar Novamente
                 </button>
@@ -366,11 +366,11 @@ const AdvancedAcervoInterface = () => {
               />
               
               {Object.keys(taxonomyFilters).length > 0 && (
-                <div className="bg-white border-[3px] border-black p-6">
-                  <div className="text-black font-bold font-sometype-mono mb-4 uppercase">Aplicar Filtros:</div>
+                <div className="bg-white border-[3px] border-theme p-6">
+                  <div className="text-theme font-bold font-sometype-mono mb-4 uppercase">Aplicar Filtros:</div>
                   <button
                     onClick={() => handleSearch(taxonomyFilters)}
-                    className="px-6 py-3 bg-black text-white font-bold font-sometype-mono border-[3px] border-black hover:bg-gray-800 transition-colors uppercase"
+                    className="px-6 py-3 bg-black text-theme font-bold font-sometype-mono border-[3px] border-theme hover:bg-gray-800 transition-colors uppercase"
                   >
                     Buscar com Filtros Selecionados
                   </button>
@@ -381,8 +381,8 @@ const AdvancedAcervoInterface = () => {
         </div>
 
       {/* Footer */}
-      <div className="text-center py-8 border-t-[3px] border-black mt-12">
-        <div className="text-black text-xs font-sometype-mono uppercase">
+      <div className="text-center py-8 border-t-[3px] border-theme mt-12">
+        <div className="text-theme text-xs font-sometype-mono uppercase">
           Interface de busca do acervo • Sistema AtoM 2.7
         </div>
       </div>

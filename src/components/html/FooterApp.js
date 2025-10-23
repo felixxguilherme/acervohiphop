@@ -34,7 +34,7 @@ export default function FooterApp() {
       }}
     >
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
-        <p className="italic text-sm md:text-base text-black/80 dark:text-white/80">
+        <p className="italic text-sm md:text-base text-theme/80 dark:text-theme/80">
           Este projeto é realizado com recursos do Fundo de Apoio à Cultura do Distrito Federal
         </p>
 
@@ -61,7 +61,7 @@ export default function FooterApp() {
           </div>
         </div>
 
-        <p className="text-black mt-4 mb-4 dark:text-white">
+        <p className="text-theme mt-4 mb-4 dark:text-theme">
           © {currentYear} Distrito HipHop. Todos os direitos reservados. <span>📧 contato@distritohiphop.com</span>
         </p>
       </div>

@@ -89,7 +89,7 @@ const Audiovisual = () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="text-center text-black"
+                className="text-center text-theme"
               >
                 <h2 className="font-sometype-mono text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 max-w-4xl mx-auto">
                   Documentário, videoclipes, registros de eventos e performances que capturam a essência do Hip Hop brasiliense
@@ -115,10 +115,10 @@ const Audiovisual = () => {
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: 0.4 + index * 0.1 }}
                       whileHover={{ scale: 1.05, y: -5 }}
-                      className="bg-black/20 backdrop-blur-sm p-6 rounded-lg border-2 border-black cursor-pointer"
+                      className="bg-black/20 backdrop-blur-sm p-6 rounded-lg border-2 border-theme cursor-pointer"
                     >
-                      <h3 className="font-dirty-stains text-2xl font-semibold mb-3 text-black">{item.title}</h3>
-                      <p className="font-sometype-mono text-sm text-black/80">{item.description}</p>
+                      <h3 className="font-dirty-stains text-2xl font-semibold mb-3 text-theme">{item.title}</h3>
+                      <p className="font-sometype-mono text-sm text-theme/80">{item.description}</p>
                     </motion.div>
                   ))}
                 </motion.div>

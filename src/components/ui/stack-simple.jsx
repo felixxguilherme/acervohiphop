@@ -12,10 +12,10 @@ const StackedPagesScrollSimple = () => {
         transition={{ duration: 0.8 }}
         className="text-center mb-8"
       >
-        <h2 className="font-dirty-stains text-4xl md:text-6xl text-black mb-4">
+        <h2 className="font-dirty-stains text-4xl md:text-6xl text-theme mb-4">
           HISTÓRIA DO HIP HOP DF
         </h2>
-        <p className="font-sometype-mono text-lg text-black/80">
+        <p className="font-sometype-mono text-lg text-theme/80">
           Uma jornada através de 40 anos de cultura urbana no Distrito Federal
         </p>
       </motion.div>
@@ -25,16 +25,16 @@ const StackedPagesScrollSimple = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="bg-white/90 border-4 border-black p-8 shadow-lg"
+          className="bg-white/90 border-4 border-theme p-8 shadow-lg"
         >
-          <h3 className="font-dirty-stains text-2xl mb-4 text-black">
+          <h3 className="font-dirty-stains text-2xl mb-4 text-theme">
             ORIGENS DO HIP HOP NO DF
           </h3>
-          <p className="font-sometype-mono text-black mb-4">
+          <p className="font-sometype-mono text-theme mb-4">
             O Hip Hop chegou ao Distrito Federal nos anos 80, trazido por jovens das periferias 
             que se identificaram com a cultura urbana americana. Ceilândia se tornou o berço do movimento.
           </p>
-          <div className="bg-[#fae523] text-black px-4 py-2 inline-block border-2 border-black font-bold">
+          <div className="bg-[#fae523] text-theme px-4 py-2 inline-block border-2 border-theme font-bold">
             Década de 1980
           </div>
         </motion.div>

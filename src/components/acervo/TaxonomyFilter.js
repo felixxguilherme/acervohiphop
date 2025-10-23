@@ -289,7 +289,7 @@ const TaxonomyFilter = ({ onFilterChange, selectedFilters = {} }) => {
             </span>
             <button
               onClick={clearAllFilters}
-              className="px-3 py-1 bg-red-600/80 text-white text-sm rounded hover:bg-red-600 transition-colors"
+              className="px-3 py-1 bg-red-600/80 text-theme text-sm rounded hover:bg-red-600 transition-colors"
             >
               Limpar Todos
             </button>

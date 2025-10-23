@@ -188,7 +188,7 @@ export default function Home() {
           description: vielaItem?.archival_history || "O arquivo é trincheira. Memória viva do Hip Hop do DF.",
           src: vielaItem?.thumbnail_url || "/fundo_base.webp",
           link: "/acervo",
-          color: "#FFF",
+          color: "",
           itemTitle: vielaItem?.title || "",
           itemDate: vielaItem?.creation_dates?.[0] || "",
           place_access_points: vielaItem?.place_access_points || [],
@@ -199,7 +199,7 @@ export default function Home() {
           description: veraItem?.archival_history || "Documentos únicos preservados digitalmente.",
           src: veraItem?.thumbnail_url || "/fundo_base.webp",
           link: "/acervo",
-          color: "#FFF",
+          color: "",
           itemTitle: veraItem?.title || "",
           itemDate: veraItem?.creation_dates?.[0] || "",
           place_access_points: veraItem?.place_access_points || [],
@@ -210,7 +210,7 @@ export default function Home() {
           description: dinoBlackItem?.archival_history || "Geografia cultural do Hip Hop no DF",
           src: dinoBlackItem?.thumbnail_url || "/fundo_base.webp",
           link: "/mapa",
-          color: "#FFF",
+          color: "",
           itemTitle: dinoBlackItem?.title || "",
           itemDate: dinoBlackItem?.creation_dates?.[0] || "",
           place_access_points: dinoBlackItem?.place_access_points || [],
@@ -221,7 +221,7 @@ export default function Home() {
           description: revistaBizzItem?.archival_history || "Conteúdo editorial sobre a cultura Hip Hop",
           src: revistaBizzItem?.thumbnail_url || "/fundo_base_preto.webp",
           link: "/revista",
-          color: "#FFF",
+          color: "",
           itemTitle: revistaBizzItem?.title || "",
           itemDate: revistaBizzItem?.creation_dates?.[0] || "",
           place_access_points: revistaBizzItem?.place_access_points || [],
@@ -439,7 +439,7 @@ export default function Home() {
               { year: "2020", event: "Hip Hop DF se torna patrimônio cultural" }
             ].map((item, index) => (
               <div key={index} className="flex items-center space-x-6 bg-white p-6 rounded-lg shadow-md">
-                <div className="bg-theme-primary text-white px-4 py-2 rounded-full font-sometype-mono text-xl font-bold">
+                <div className="bg-theme-primary text-theme px-4 py-2 rounded-full font-sometype-mono text-xl font-bold">
                   {item.year}
                 </div>
                 <div className="text-xl font-sometype-mono">
@@ -457,14 +457,14 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-escuro'} relative overflow-hidden pb-20 border-black border-r-3 border-l-3 border-t-3`}>
+        className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-escuro'} relative overflow-hidden pb-20 border-theme border-r-3 border-l-3 border-t-3`}>
         
         {/* Elementos decorativos */}
         <div className="absolute inset-0 z-25 pointer-events-none">
           <div
             className="absolute top-20 -right-10 w-40 h-40 bg-contain bg-no-repeat"
             style={{
-              backgroundImage: "url('/spray_preto-1.webp')"
+              backgroundImage: "url('/spray_azul-1.webp')"
             }}
           />
         </div>
@@ -472,7 +472,7 @@ export default function Home() {
         <div className="relative z-20 w-full">
           {/* Título da seção */}
           <div
-            className={`bg-hip-azul-claro text-left mb-16 border-black border-b-3 w-full pb-6 pt-6 px-6`}
+            className={`bg-hip-azul-claro text-left mb-16 border-theme border-b-3 w-full pb-6 pt-6 px-6`}
           >
             <h2 className="marca-texto-vermelho text-8xl pl-6 md:text-5xl mb-6">
               DESTAQUES
@@ -491,7 +491,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
                 viewport={{ once: true }}
-                className="group cursor-pointer bg-theme-background border-2 border-black p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg"
+                className="group cursor-pointer bg-theme-background border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg"
                 onClick={() => window.location.href = `/acervo/artista/${artist.id}`}
               >
                 <div className="flex flex-col gap-6">
@@ -501,11 +501,11 @@ export default function Home() {
                       <img
                         src={artist.thumbnail}
                         alt={artist.name}
-                        className="w-full h-full object-cover border-2 border-black"
+                        className="w-full h-full object-cover border-2 border-theme"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
                     ) : (
-                      <div className="w-full h-full bg-gray-200 border-2 border-black flex items-center justify-center">
+                      <div className="w-full h-full bg-gray-200 border-2 border-theme flex items-center justify-center">
                         <span className="text-6xl">🎭</span>
                       </div>
                     )}
@@ -527,7 +527,7 @@ export default function Home() {
                     
                     {/* Preview dos itens recentes */}
                     {artist.recentItems.length > 0 && (
-                      <div className="mt-4 pt-4 border-t-2 border-black">
+                      <div className="mt-4 pt-4 border-t-2 border-theme">
                         <h4 className="font-dirty-stains text-lg mb-3">Itens Recentes:</h4>
                         <div className="grid grid-cols-3 gap-2">
                           {artist.recentItems.map((item, itemIndex) => (
@@ -563,7 +563,7 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
                   viewport={{ once: true }}
-                  className="bg-theme-background border-2 border-black p-6"
+                  className="bg-theme-background border-2 border-theme p-6"
                 >
                   <div className="w-full h-48 bg-gray-200 animate-pulse mb-6"></div>
                   <div className="h-8 bg-gray-200 rounded animate-pulse mb-3"></div>
@@ -584,7 +584,7 @@ export default function Home() {
           >
             <CartoonButton
               label="EXPLORAR TODO O ACERVO"
-              color="bg-theme-primary text-black"
+              color="bg-theme-primary text-theme"
               onClick={() => window.location.href = '/acervo'}
               className="text-xl px-8 py-4"
             />            <p className="font-sometype-mono text-sm text-theme-secondary mt-4">
@@ -594,7 +594,7 @@ export default function Home() {
       </motion.section>
 
       {/* SEÇÃO TIMELINE HISTÓRICA SIMPLES */}
-      {/* <section className="relative py-20 overflow-hidden border-black border-t-3 border-l-3 border-r-3">
+      {/* <section className="relative py-20 overflow-hidden border-theme border-t-3 border-l-3 border-r-3">
        
         <div className="absolute inset-0 z-10 pointer-events-none">
           <div
@@ -618,9 +618,9 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-left mb-16 border-black border-b-3 w-full px-6"
+            className="text-left mb-16 border-theme border-b-3 w-full px-6"
           >
-            <h2 className="marca-texto-amarelo text-4xl md:text-5xl font-dirty-stains text-white mb-6 px-6">
+            <h2 className="marca-texto-amarelo text-4xl md:text-5xl font-dirty-stains text-theme mb-6 px-6">
               4 DÉCADAS DE HISTÓRIA
             </h2>
             
@@ -646,9 +646,9 @@ export default function Home() {
                   <div
                     style={{backgroundImage: "url('/folha-pauta-1.webp')", backgroundSize: 'cover'}}
                     className="p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">1980</div>
-                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">PRIMEIROS PASSOS</h3>
-                    <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
+                    <div className="font-scratchy font-black text-theme text-xl md:text-2xl mb-2">1980</div>
+                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-theme mb-3">PRIMEIROS PASSOS</h3>
+                    <p className="font-sometype-mono text-xs md:text-sm text-theme font-bold leading-relaxed">
                       Os primeiros elementos da cultura Hip Hop chegam ao DF. Jovens descobrem essa nova forma de expressão através de discos importados e programas de TV.
                     </p>
                   </div>
@@ -669,13 +669,13 @@ export default function Home() {
               >
                 <div className="hidden md:block md:w-1/2 md:pr-8"></div>
                 <div className="absolute left-8 md:relative md:left-auto z-10">
-                  <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-theme rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
                 <div className="w-full md:w-1/2 pl-16 md:pl-8">
                   <div style={{backgroundImage: "url('/folha-pauta-1.webp')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">1995</div>
-                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">PRIMEIRO ENCONTRO</h3>
-                    <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
+                    <div className="font-scratchy font-black text-theme text-xl md:text-2xl mb-2">1995</div>
+                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-theme mb-3">PRIMEIRO ENCONTRO</h3>
+                    <p className="font-sometype-mono text-xs md:text-sm text-theme font-bold leading-relaxed">
                       Realização do 1º Encontro de Hip Hop de Ceilândia. Marco oficial que reuniu os 4 elementos e estabeleceu a cena organizada no DF.
                     </p>
                   </div>
@@ -692,15 +692,15 @@ export default function Home() {
               >
                 <div className="w-full md:w-1/2 pl-16 md:pl-0 md:pr-8 text-left md:text-right">
                   <div style={{backgroundImage: "url('/folha-pauta-1.webp')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">2001</div>
-                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">ERA DIGITAL</h3>
-                    <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
+                    <div className="font-scratchy font-black text-theme text-xl md:text-2xl mb-2">2001</div>
+                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-theme mb-3">ERA DIGITAL</h3>
+                    <p className="font-sometype-mono text-xs md:text-sm text-theme font-bold leading-relaxed">
                       Início da documentação sistemática com tecnologia digital. Battles e eventos começam a ser registrados, criando memória histórica.
                     </p>
                   </div>
                 </div>
                 <div className="absolute left-8 md:relative md:left-auto z-10">
-                  <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-theme rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
                 <div className="hidden md:block md:w-1/2 md:pl-8"></div>
               </motion.div>
@@ -715,13 +715,13 @@ export default function Home() {
               >
                 <div className="hidden md:block md:w-1/2 md:pr-8"></div>
                 <div className="absolute left-8 md:relative md:left-auto z-10">
-                  <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-theme rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
                 <div className="w-full md:w-1/2 pl-16 md:pl-8">
                   <div style={{backgroundImage: "url('/folha-pauta-1.webp')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">2020</div>
-                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">PATRIMÔNIO CULTURAL</h3>
-                    <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
+                    <div className="font-scratchy font-black text-theme text-xl md:text-2xl mb-2">2020</div>
+                    <h3 className="font-dirty-stains text-2xl md:text-3xl text-theme mb-3">PATRIMÔNIO CULTURAL</h3>
+                    <p className="font-sometype-mono text-xs md:text-sm text-theme font-bold leading-relaxed">
                       Hip Hop DF é reconhecido como patrimônio cultural. Nova geração mantém tradições enquanto inova com tecnologias digitais.
                     </p>
                   </div>
@@ -733,7 +733,7 @@ export default function Home() {
         </div>
       </section> */}
 
-      <section className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'} relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-black p-8`}>
+      <section className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'} relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-theme p-8`}>
 
 
         {/* Decorative elements */}
@@ -750,14 +750,14 @@ export default function Home() {
           <div
             className="absolute top-0 -right-15 w-32 h-32 bg-contain bg-no-repeat"
             style={{
-              backgroundImage: "url('/spray_preto-1.webp')"
+              backgroundImage: "url('/spray_azul-1.webp')"
             }}
           />
 
           <div
             className="absolute top-5 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
             style={{
-              backgroundImage: "url('/spray_preto-2.webp')"
+              backgroundImage: "url('/spray_azul-2.webp')"
             }}
           />
         </div>
@@ -786,7 +786,7 @@ Se você está na mesma luta, o Acervo te espera.
           >
             <CartoonButton
               label="EXPLORAR ACERVO COMPLETO"
-              color="bg-black text-white"
+              color="bg-black text-theme"
               onClick={() => window.location.href = '/acervo'}
               className="text-xl px-8 py-4 mx-auto"
             />

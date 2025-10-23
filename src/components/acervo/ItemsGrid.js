@@ -105,14 +105,14 @@ export default function ItemsGrid({ searchTerm, activeFilters }) {
   return (
     <div className="max-w-7xl mx-auto px-6 pb-12">
       {/* Header com controles - Brutalista */}
-      <div className="bg-white/30 backdrop-blur-sm border-4 border-black p-6 mb-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <div className="bg-white/30 backdrop-blur-sm border-4 border-theme p-6 mb-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="bg-yellow-400 border-4 border-black px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-              <span className="text-3xl font-black text-black">
+            <div className="bg-yellow-400 border-4 border-theme px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <span className="text-3xl font-black text-theme">
                 {filteredItems.length.toLocaleString()}
               </span>
-              <span className="text-black font-bold ml-2 uppercase">
+              <span className="text-theme font-bold ml-2 uppercase">
                 {useSearchMode ? 'RESULTADOS' : 'ITENS'}
                 {searchTerm && (
                   <span className="ml-1">PARA "{searchTerm.toUpperCase()}"</span>
@@ -121,7 +121,7 @@ export default function ItemsGrid({ searchTerm, activeFilters }) {
             </div>
 
             {activeFilters.length > 0 && (
-              <div className="bg-black text-white px-3 py-2 border-2 border-white font-black text-sm">
+              <div className="bg-black text-theme px-3 py-2 border-2 border-theme font-black text-sm">
                 • {activeFilters.length} FILTRO{activeFilters.length > 1 ? 'S' : ''} ATIVO{activeFilters.length > 1 ? 'S' : ''}
               </div>
             )}
@@ -132,7 +132,7 @@ export default function ItemsGrid({ searchTerm, activeFilters }) {
             <select
               value={sortOption}
               onChange={(e) => handleSortChange(e.target.value)}
-              className="bg-white border-4 border-black px-4 py-3 text-black font-bold focus:outline-none focus:bg-yellow-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="bg-white border-4 border-theme px-4 py-3 text-theme font-bold focus:outline-none focus:bg-yellow-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
               {SORT_OPTIONS.map(option => (
                 <option key={option.id} value={option.id} className="bg-white font-bold">
@@ -142,15 +142,15 @@ export default function ItemsGrid({ searchTerm, activeFilters }) {
             </select>
 
             {/* Layout switcher - Brutalista */}
-            <div className="flex border-4 border-black bg-white">
+            <div className="flex border-4 border-theme bg-white">
               {LAYOUT_OPTIONS.map(option => (
                 <button
                   key={option.id}
                   onClick={() => setLayout(option.id)}
                   className={`px-4 py-3 text-lg transition-all font-black ${
                     layout === option.id
-                      ? 'bg-yellow-400 text-black shadow-[inset_2px_2px_0px_0px_rgba(0,0,0,1)]'
-                      : 'text-black hover:bg-yellow-200'
+                      ? 'bg-yellow-400 text-theme shadow-[inset_2px_2px_0px_0px_rgba(0,0,0,1)]'
+                      : 'text-theme hover:bg-yellow-200'
                   }`}
                   title={option.name}
                 >
@@ -190,20 +190,20 @@ export default function ItemsGrid({ searchTerm, activeFilters }) {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center py-16"
         >
-          <div className="bg-white/30 backdrop-blur-sm border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="bg-white/30 backdrop-blur-sm border-4 border-theme p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="text-8xl mb-6">🔍</div>
-            <h3 className="text-4xl font-black text-black mb-4 bg-yellow-400 inline-block px-6 py-3 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-4xl font-black text-theme mb-4 bg-yellow-400 inline-block px-6 py-3 border-2 border-theme shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               NENHUM ITEM ENCONTRADO
             </h3>
-            <p className="text-black font-bold text-lg mb-8 bg-white/50 p-4 border-2 border-black">
+            <p className="text-theme font-bold text-lg mb-8 bg-white/50 p-4 border-2 border-theme">
               {searchTerm 
                 ? `NÃO ENCONTRAMOS ITENS PARA "${searchTerm.toUpperCase()}"`
                 : 'TENTE AJUSTAR OS FILTROS OU BUSCAR POR OUTROS TERMOS'
               }
             </p>
-            <div className="bg-black text-white p-6 border-4 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <div className="bg-black text-theme p-6 border-4 border-theme shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
               <p className="font-black text-yellow-400 mb-4">💡 DICAS DE BUSCA:</p>
-              <div className="space-y-2 text-white font-bold">
+              <div className="space-y-2 text-theme font-bold">
                 <p>• TENTE TERMOS COMO "BREAKING", "GRAFITE", "CEILÂNDIA"</p>
                 <p>• USE NOMES DE ARTISTAS, LOCAIS OU ANOS</p>
                 <p>• REMOVA ALGUNS FILTROS PARA EXPANDIR OS RESULTADOS</p>
@@ -233,8 +233,8 @@ export default function ItemsGrid({ searchTerm, activeFilters }) {
           animate={{ opacity: 1 }}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
         >
-          <div className="bg-white/10 rounded-xl p-6 backdrop-blur-md border border-white/20">
-            <div className="flex items-center gap-3 text-white">
+          <div className="bg-white/10 rounded-xl p-6 backdrop-blur-md border border-theme/20">
+            <div className="flex items-center gap-3 text-theme">
               <div className="animate-spin w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full"></div>
               <span>Carregando itens...</span>
             </div>
@@ -299,20 +299,20 @@ function Pagination({ currentPage, totalPages, onPageChange, hasNext, hasPrev, o
       <button
         onClick={onPrev}
         disabled={!hasPrev}
-        className="px-6 py-3 bg-white border-4 border-black hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+        className="px-6 py-3 bg-white border-4 border-theme hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed text-theme font-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
       >
         ← ANTERIOR
       </button>
 
-      <div className="flex gap-2 border-4 border-black bg-white">
+      <div className="flex gap-2 border-4 border-theme bg-white">
         {getPageNumbers().map(page => (
           <button
             key={page}
             onClick={() => onPageChange(page)}
             className={`w-12 h-12 transition-colors font-black ${
               page === currentPage
-                ? 'bg-yellow-400 text-black shadow-[inset_2px_2px_0px_0px_rgba(0,0,0,1)]'
-                : 'bg-white text-black hover:bg-yellow-200'
+                ? 'bg-yellow-400 text-theme shadow-[inset_2px_2px_0px_0px_rgba(0,0,0,1)]'
+                : 'bg-white text-theme hover:bg-yellow-200'
             }`}
           >
             {page}
@@ -323,7 +323,7 @@ function Pagination({ currentPage, totalPages, onPageChange, hasNext, hasPrev, o
       <button
         onClick={onNext}
         disabled={!hasNext}
-        className="px-6 py-3 bg-white border-4 border-black hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+        className="px-6 py-3 bg-white border-4 border-theme hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed text-theme font-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
       >
         PRÓXIMA →
       </button>

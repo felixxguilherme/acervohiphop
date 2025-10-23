@@ -76,7 +76,7 @@ export default function Home() {
               duration: 0.8,
               ease: [0.25, 0.1, 0.25, 1]
             }}
-            className="w-full overflow-hidden max-w-screen-xl mx-auto px-4 md:px-8 py-8 border-solid border-black"
+            className="w-full overflow-hidden max-w-screen-xl mx-auto px-4 md:px-8 py-8 border-solid border-theme"
           >
             {/* Grid de conteúdo original */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 min-h-[70vh] mb-12">
@@ -92,7 +92,7 @@ export default function Home() {
 
               {/* Coluna direita (3/4) */}
               <div className="md:col-span-7 flex flex-col justify-center">
-                <h3 className="font-sometype-mono text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-3xl text-black text-center mb-6">Uma plataforma digital dedicada à preservação, documentação e difusão da cultura Hip Hop do Distrito Federal e Entorno. </h3>
+                <h3 className="font-sometype-mono text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-3xl text-theme text-center mb-6">Uma plataforma digital dedicada à preservação, documentação e difusão da cultura Hip Hop do Distrito Federal e Entorno. </h3>
                 <div className="flex justify-center mt-4">
                   <div className="mr-4">
                     <CartoonButton className="mr-2" color="bg-[#fae523]" label="Visitar Acervo!" onClick={() => window.location.href = '/acervo'} />
@@ -155,14 +155,14 @@ export default function Home() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="py-16 mt-12 border-t-4 border-b-4 border-black relative bg-white/95"
+          className="py-16 mt-12 border-t-4 border-b-4 border-theme relative bg-white/95"
         >
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mb-12">
-              <h2 className="font-dirty-stains text-4xl md:text-5xl text-black/80 mb-4">
+              <h2 className="font-dirty-stains text-4xl md:text-5xl text-theme/80 mb-4">
                 PRESERVANDO NOSSA CULTURA
               </h2>
-              <p className="text-black/80 text-lg font-bold max-w-2xl mx-auto">
+              <p className="text-theme/80 text-lg font-bold max-w-2xl mx-auto">
                 Mais de 40 anos de história Hip Hop no Distrito Federal documentados e preservados
               </p>
             </div>

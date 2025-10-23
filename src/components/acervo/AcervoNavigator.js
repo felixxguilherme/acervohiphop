@@ -218,7 +218,7 @@ const AcervoNavigator = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setViewMode('collections')}
-            className="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-3 rounded-lg font-scratchy font-bold transition-colors"
+            className="bg-yellow-400 hover:bg-yellow-300 text-theme px-6 py-3 rounded-lg font-scratchy font-bold transition-colors"
           >
             📁 Ver Todas as Coleções
           </motion.button>
@@ -268,7 +268,7 @@ const AcervoNavigator = () => {
               <div className="text-sm">{error}</div>
               <button
                 onClick={loadInitialData}
-                className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded transition-colors"
+                className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-500 text-theme rounded transition-colors"
               >
                 🔄 Tentar novamente
               </button>
@@ -388,7 +388,7 @@ const AcervoNavigator = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => handleSearch(searchTerm)}
-            className="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-3 rounded-lg font-scratchy font-bold transition-colors"
+            className="bg-yellow-400 hover:bg-yellow-300 text-theme px-6 py-3 rounded-lg font-scratchy font-bold transition-colors"
           >
             Buscar
           </motion.button>
@@ -427,7 +427,7 @@ const AcervoNavigator = () => {
             className={`
               px-4 py-2 rounded-lg font-scratchy font-bold transition-all
               ${viewMode === tab.key
-                ? 'bg-yellow-400 text-black'
+                ? 'bg-yellow-400 text-theme'
                 : 'text-yellow-400 hover:bg-yellow-400/20'
               }
             `}

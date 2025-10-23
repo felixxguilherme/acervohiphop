@@ -74,23 +74,23 @@ const StoryMapScrollama = ({
   if (!story || !isVisible) return null;
 
   return (
-    <div className="scroll-container absolute left-4 top-4 bottom-4 w-96 bg-white/95 backdrop-blur-sm border-3 border-black rounded-lg shadow-xl z-20 overflow-hidden">
+    <div className="scroll-container absolute left-4 top-4 bottom-4 w-96 bg-white/95 backdrop-blur-sm border-3 border-theme rounded-lg shadow-xl z-20 overflow-hidden">
       {/* Story Header - Fixed */}
-      <div className="p-4 border-b-2 border-black bg-[#fae523]">
-        <h2 className="font-dirty-stains text-2xl text-black mb-2">
+      <div className="p-4 border-b-2 border-theme bg-[#fae523]">
+        <h2 className="font-dirty-stains text-2xl text-theme mb-2">
           {story.title}
         </h2>
         {story.subtitle && (
-          <p className="font-sometype-mono text-sm text-black/80">
+          <p className="font-sometype-mono text-sm text-theme/80">
             {story.subtitle}
           </p>
         )}
         <div className="flex items-center justify-between mt-3">
-          <span className="font-sometype-mono text-xs text-black bg-white px-2 py-1 rounded border border-black">
+          <span className="font-sometype-mono text-xs text-theme bg-white px-2 py-1 rounded border border-theme">
             {activeChapter + 1} de {story.chapters.length}
           </span>
           {story.author && (
-            <span className="font-sometype-mono text-xs text-black/60">
+            <span className="font-sometype-mono text-xs text-theme/60">
               por {story.author}
             </span>
           )}
@@ -113,8 +113,8 @@ const StoryMapScrollama = ({
             data-step={index}
           >
             {/* Chapter Number */}
-            <div className="flex items-center mb-4 text-black/40">
-              <div className="chapter-number w-8 h-8 rounded-full border-2 border-black/20 flex items-center justify-center mr-3 font-sometype-mono text-sm font-bold text-black/40">
+            <div className="flex items-center mb-4 text-theme/40">
+              <div className="chapter-number w-8 h-8 rounded-full border-2 border-theme/20 flex items-center justify-center mr-3 font-sometype-mono text-sm font-bold text-theme/40">
                 {index + 1}
               </div>
               <span className="font-sometype-mono text-xs uppercase tracking-wider">
@@ -130,14 +130,14 @@ const StoryMapScrollama = ({
                   alt={chapter.title || `Capítulo ${index + 1}`}
                   width={320}
                   height={200}
-                  className="w-full h-40 object-cover rounded border-2 border-black shadow-md"
+                  className="w-full h-40 object-cover rounded border-2 border-theme shadow-md"
                 />
               </div>
             )}
 
             {/* Chapter Title */}
             {chapter.title && (
-              <h3 className="chapter-title font-dirty-stains text-xl mb-4 text-black/60">
+              <h3 className="chapter-title font-dirty-stains text-xl mb-4 text-theme/60">
                 {chapter.title}
               </h3>
             )}
@@ -145,14 +145,14 @@ const StoryMapScrollama = ({
             {/* Chapter Description */}
             {chapter.description && (
               <div 
-                className="chapter-description font-sometype-mono text-sm leading-relaxed mb-4 text-black/50"
+                className="chapter-description font-sometype-mono text-sm leading-relaxed mb-4 text-theme/50"
                 dangerouslySetInnerHTML={{ __html: chapter.description }}
               />
             )}
 
             {/* Location Info */}
             {chapter.location && chapter.location.name && (
-              <div className="flex items-center gap-2 mt-auto pt-4 border-t border-black/10 text-black/40">
+              <div className="flex items-center gap-2 mt-auto pt-4 border-t border-theme/10 text-theme/40">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -170,12 +170,12 @@ const StoryMapScrollama = ({
       </div>
 
       {/* Progress Indicator - Fixed at Bottom */}
-      <div className="p-3 border-t-2 border-black bg-white">
+      <div className="p-3 border-t-2 border-theme bg-white">
         <div className="flex items-center justify-between mb-2">
-          <span className="font-sometype-mono text-xs text-black/60">
+          <span className="font-sometype-mono text-xs text-theme/60">
             Progresso
           </span>
-          <span className="font-sometype-mono text-xs text-black/60">
+          <span className="font-sometype-mono text-xs text-theme/60">
             {Math.round(((activeChapter + 1) / story.chapters.length) * 100)}%
           </span>
         </div>

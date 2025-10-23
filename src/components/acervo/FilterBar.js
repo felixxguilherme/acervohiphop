@@ -62,7 +62,7 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
   };
 
   return (
-    <div className="bg-black/80 backdrop-blur-md border-b border-white/30 sticky top-0 z-30 shadow-lg">
+    <div className="bg-black/80 backdrop-blur-md border-b border-theme/30 sticky top-0 z-30 shadow-lg">
       <div className="max-w-7xl mx-auto p-6">
         {/* Search Bar */}
         <div className="mb-6">
@@ -72,10 +72,10 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Buscar no acervo... (artista, local, ano, tema)"
-              className="w-full bg-white/10 border border-white/30 rounded-full px-6 py-4 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-[#df8d6d] focus:border-transparent backdrop-blur-sm"
+              className="w-full bg-white/10 border border-theme/30 rounded-full px-6 py-4 text-theme placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-[#df8d6d] focus:border-transparent backdrop-blur-sm"
             />
             <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-              <svg className="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-theme/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
@@ -106,10 +106,10 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
                 
                 <div className="relative z-10 text-center">
                   <div className="text-3xl mb-2">{theme.icon}</div>
-                  <div className="font-bold text-white text-lg">{theme.name}</div>
-                  <div className="text-white/80 text-sm">{theme.description}</div>
+                  <div className="font-bold text-theme text-lg">{theme.name}</div>
+                  <div className="text-theme/80 text-sm">{theme.description}</div>
                   {count > 0 && (
-                    <div className="mt-2 inline-block bg-black/30 rounded-full px-2 py-1 text-xs text-white">
+                    <div className="mt-2 inline-block bg-black/30 rounded-full px-2 py-1 text-xs text-theme">
                       {count} itens
                     </div>
                   )}
@@ -121,7 +121,7 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
                     animate={{ scale: 1 }}
                     className="absolute top-2 right-2 w-6 h-6 bg-[#df8d6d] rounded-full flex items-center justify-center"
                   >
-                    <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-theme" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </motion.div>
@@ -135,7 +135,7 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
         <div className="text-center">
           <button
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="text-white/80 hover:text-white text-sm flex items-center gap-2 mx-auto transition-colors"
+            className="text-theme/80 hover:text-theme text-sm flex items-center gap-2 mx-auto transition-colors"
           >
             <span>Filtros avançados</span>
             <motion.svg
@@ -159,7 +159,7 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
           <div className="pt-6 grid md:grid-cols-2 gap-6">
             {/* Places Filter */}
             <div>
-              <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+              <h3 className="text-theme font-semibold mb-3 flex items-center gap-2">
                 📍 Regiões Administrativas
               </h3>
               <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
@@ -167,10 +167,10 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
                   <button
                     key={place.id}
                     onClick={() => onSearchChange(place.name)}
-                    className="text-left text-sm bg-white/10 hover:bg-white/20 rounded px-3 py-2 text-white transition-colors"
+                    className="text-left text-sm bg-white/10 hover:bg-white/20 rounded px-3 py-2 text-theme transition-colors"
                   >
                     <span className="font-medium">{place.name}</span>
-                    <span className="text-white/60 ml-2">({place.count})</span>
+                    <span className="text-theme/60 ml-2">({place.count})</span>
                   </button>
                 ))}
               </div>
@@ -178,7 +178,7 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
 
             {/* Years Filter */}
             <div>
-              <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+              <h3 className="text-theme font-semibold mb-3 flex items-center gap-2">
                 📅 Períodos
               </h3>
               {statistics?.byYear && (
@@ -187,10 +187,10 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
                     <button
                       key={period.year}
                       onClick={() => onSearchChange(period.year)}
-                      className="text-left text-sm bg-white/10 hover:bg-white/20 rounded px-3 py-2 text-white transition-colors"
+                      className="text-left text-sm bg-white/10 hover:bg-white/20 rounded px-3 py-2 text-theme transition-colors"
                     >
                       <span className="font-medium">{period.year}</span>
-                      <span className="text-white/60 ml-2">({period.count})</span>
+                      <span className="text-theme/60 ml-2">({period.count})</span>
                     </button>
                   ))}
                 </div>
@@ -206,7 +206,7 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
             animate={{ opacity: 1, y: 0 }}
             className="mt-4 flex flex-wrap gap-2"
           >
-            <span className="text-white/80 text-sm">Filtros ativos:</span>
+            <span className="text-theme/80 text-sm">Filtros ativos:</span>
             {activeFilters.map((filter) => {
               const theme = FILTER_THEMES.find(t => t.id === filter);
               return (
@@ -230,7 +230,7 @@ export default function FilterBar({ onFilterChange, activeFilters = [], searchTe
             })}
             <button
               onClick={() => onFilterChange([])}
-              className="text-white/60 hover:text-white text-sm underline"
+              className="text-theme/60 hover:text-theme text-sm underline"
             >
               Limpar todos
             </button>

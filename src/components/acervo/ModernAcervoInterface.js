@@ -193,11 +193,11 @@ const ModernAcervoInterface = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="bg-white border-[3px] border-black p-4 hover:transform hover:rotate-1 transition-all duration-200"
+      className="bg-white border-[3px] border-theme p-4 hover:transform hover:rotate-1 transition-all duration-200"
     >
       {/* Thumbnail */}
       {item.thumbnail_url && (
-        <div className="mb-3 border-[3px] border-black overflow-hidden">
+        <div className="mb-3 border-[3px] border-theme overflow-hidden">
           <img 
             src={item.thumbnail_url} 
             alt={item.title}
@@ -211,34 +211,34 @@ const ModernAcervoInterface = () => {
 
       {/* Content */}
       <div className="space-y-2">
-        <h3 className="font-bold text-black font-sometype-mono text-sm uppercase line-clamp-2">
+        <h3 className="font-bold text-theme font-sometype-mono text-sm uppercase line-clamp-2">
           {item.title}
         </h3>
         
         {item.reference_code && (
-          <div className="text-xs font-sometype-mono text-black">
+          <div className="text-xs font-sometype-mono text-theme">
             <span className="font-bold">CÓDIGO:</span> {item.reference_code}
           </div>
         )}
         
         {item.creation_dates && item.creation_dates.length > 0 && (
-          <div className="text-xs font-sometype-mono text-black">
+          <div className="text-xs font-sometype-mono text-theme">
             <span className="font-bold">DATA:</span> {formatDate(item.creation_dates[0])}
           </div>
         )}
         
         {item.place_access_points && item.place_access_points.length > 0 && (
-          <div className="text-xs font-sometype-mono text-black">
+          <div className="text-xs font-sometype-mono text-theme">
             <span className="font-bold">LOCAL:</span> {item.place_access_points[0]}
           </div>
         )}
         
-        <div className="text-xs font-sometype-mono text-black">
+        <div className="text-xs font-sometype-mono text-theme">
           <span className="font-bold">TIPO:</span> {item.level_of_description || 'Documento'}
         </div>
 
         {item.physical_characteristics && (
-          <div className="text-xs font-sometype-mono text-black/70 line-clamp-2">
+          <div className="text-xs font-sometype-mono text-theme/70 line-clamp-2">
             {item.physical_characteristics}
           </div>
         )}
@@ -251,10 +251,10 @@ const ModernAcervoInterface = () => {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="bg-white border-[3px] border-black p-3 flex items-center space-x-4 hover:bg-gray-50"
+      className="bg-white border-[3px] border-theme p-3 flex items-center space-x-4 hover:bg-gray-50"
     >
       {item.thumbnail_url && (
-        <div className="flex-shrink-0 border-[2px] border-black">
+        <div className="flex-shrink-0 border-[2px] border-theme">
           <img 
             src={item.thumbnail_url} 
             alt={item.title}
@@ -267,17 +267,17 @@ const ModernAcervoInterface = () => {
       )}
       
       <div className="flex-1 min-w-0">
-        <h3 className="font-bold text-black font-sometype-mono text-sm uppercase truncate">
+        <h3 className="font-bold text-theme font-sometype-mono text-sm uppercase truncate">
           {item.title}
         </h3>
-        <div className="flex items-center space-x-4 mt-1 text-xs font-sometype-mono text-black">
+        <div className="flex items-center space-x-4 mt-1 text-xs font-sometype-mono text-theme">
           {item.reference_code && <span>{item.reference_code}</span>}
           {item.creation_dates?.[0] && <span>{formatDate(item.creation_dates[0])}</span>}
           {item.place_access_points?.[0] && <span>{item.place_access_points[0]}</span>}
         </div>
       </div>
       
-      <div className="text-xs font-sometype-mono text-black font-bold">
+      <div className="text-xs font-sometype-mono text-theme font-bold">
         {item.level_of_description || 'DOC'}
       </div>
     </motion.div>
@@ -286,8 +286,8 @@ const ModernAcervoInterface = () => {
   return (
     <div className="space-y-6">
       {/* Busca Principal */}
-      <div className="bg-white border-[3px] border-black p-6">
-        <h2 className="text-2xl font-bold font-sometype-mono text-black uppercase mb-4">
+      <div className="bg-white border-[3px] border-theme p-6">
+        <h2 className="text-2xl font-bold font-sometype-mono text-theme uppercase mb-4">
           🔍 BUSCA NO ACERVO
         </h2>
         
@@ -299,7 +299,7 @@ const ModernAcervoInterface = () => {
               placeholder="DIGITE SUA BUSCA..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 bg-white border-[3px] border-black text-black placeholder-gray-500 focus:outline-none font-sometype-mono uppercase"
+              className="w-full px-4 py-3 bg-white border-[3px] border-theme text-theme placeholder-gray-500 focus:outline-none font-sometype-mono uppercase"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
           </div>
@@ -307,7 +307,7 @@ const ModernAcervoInterface = () => {
             <select
               value={searchField}
               onChange={(e) => setSearchField(e.target.value)}
-              className="w-full px-4 py-3 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono"
+              className="w-full px-4 py-3 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono"
             >
               <option value="title">TÍTULO</option>
               <option value="identifier">IDENTIFICADOR</option>
@@ -318,7 +318,7 @@ const ModernAcervoInterface = () => {
             <select
               value={searchOperator}
               onChange={(e) => setSearchOperator(e.target.value)}
-              className="w-full px-4 py-3 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono"
+              className="w-full px-4 py-3 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono"
             >
               <option value="and">E (AND)</option>
               <option value="or">OU (OR)</option>
@@ -329,7 +329,7 @@ const ModernAcervoInterface = () => {
             <button
               onClick={handleSearch}
               disabled={loading}
-              className="w-full px-4 py-3 bg-black text-white font-bold border-[3px] border-black hover:bg-gray-800 disabled:opacity-50 transition-colors font-sometype-mono uppercase"
+              className="w-full px-4 py-3 bg-black text-theme font-bold border-[3px] border-theme hover:bg-gray-800 disabled:opacity-50 transition-colors font-sometype-mono uppercase"
             >
               {loading ? 'BUSCANDO...' : 'BUSCAR'}
             </button>
@@ -340,19 +340,19 @@ const ModernAcervoInterface = () => {
         <div className="flex flex-wrap gap-2 mb-4">
           <button
             onClick={() => quickFilter('creator', 'Dino Black')}
-            className="px-3 py-2 bg-gray-100 border-[3px] border-black text-black hover:bg-gray-200 transition-colors font-sometype-mono text-xs font-bold"
+            className="px-3 py-2 bg-gray-100 border-[3px] border-theme text-theme hover:bg-gray-200 transition-colors font-sometype-mono text-xs font-bold"
           >
             👤 DINO BLACK
           </button>
           <button
             onClick={() => quickFilter('place', 'Candangolândia/DF')}
-            className="px-3 py-2 bg-gray-100 border-[3px] border-black text-black hover:bg-gray-200 transition-colors font-sometype-mono text-xs font-bold"
+            className="px-3 py-2 bg-gray-100 border-[3px] border-theme text-theme hover:bg-gray-200 transition-colors font-sometype-mono text-xs font-bold"
           >
             📍 CANDANGOLÂNDIA/DF
           </button>
           <button
             onClick={() => quickFilter('subject', 'Rap')}
-            className="px-3 py-2 bg-gray-100 border-[3px] border-black text-black hover:bg-gray-200 transition-colors font-sometype-mono text-xs font-bold"
+            className="px-3 py-2 bg-gray-100 border-[3px] border-theme text-theme hover:bg-gray-200 transition-colors font-sometype-mono text-xs font-bold"
           >
             🎵 RAP
           </button>
@@ -361,8 +361,8 @@ const ModernAcervoInterface = () => {
               setFilters(prev => ({ ...prev, onlyMedia: !prev.onlyMedia }));
               setTimeout(applyFilters, 100);
             }}
-            className={`px-3 py-2 border-[3px] border-black transition-colors font-sometype-mono text-xs font-bold ${
-              filters.onlyMedia ? 'bg-black text-white' : 'bg-gray-100 text-black hover:bg-gray-200'
+            className={`px-3 py-2 border-[3px] border-theme transition-colors font-sometype-mono text-xs font-bold ${
+              filters.onlyMedia ? 'bg-black text-theme' : 'bg-gray-100 text-theme hover:bg-gray-200'
             }`}
           >
             📸 APENAS IMAGENS
@@ -374,7 +374,7 @@ const ModernAcervoInterface = () => {
         <div className="flex items-center justify-between">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="px-4 py-2 bg-gray-100 border-[3px] border-black text-black hover:bg-gray-200 transition-colors font-sometype-mono text-sm font-bold"
+            className="px-4 py-2 bg-gray-100 border-[3px] border-theme text-theme hover:bg-gray-200 transition-colors font-sometype-mono text-sm font-bold"
           >
             {showFilters ? '▼ OCULTAR FILTROS' : '▶ FILTROS AVANÇADOS'}
           </button>
@@ -382,7 +382,7 @@ const ModernAcervoInterface = () => {
           {(searchTerm || Object.values(filters).some(v => v && v !== 'pt')) && (
             <button
               onClick={clearAllFilters}
-              className="px-4 py-2 bg-black text-white border-[3px] border-black hover:bg-gray-800 transition-colors font-sometype-mono text-sm font-bold"
+              className="px-4 py-2 bg-black text-theme border-[3px] border-theme hover:bg-gray-800 transition-colors font-sometype-mono text-sm font-bold"
             >
               LIMPAR FILTROS
             </button>
@@ -396,53 +396,53 @@ const ModernAcervoInterface = () => {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="bg-white border-[3px] border-black p-6"
+          className="bg-white border-[3px] border-theme p-6"
         >
-          <h3 className="text-xl font-bold font-sometype-mono text-black uppercase mb-4">
+          <h3 className="text-xl font-bold font-sometype-mono text-theme uppercase mb-4">
             🎯 FILTROS AVANÇADOS
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div>
-              <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Criador</label>
+              <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Criador</label>
               <input
                 type="text"
                 placeholder="Ex: Dino Black"
                 value={filters.creators}
                 onChange={(e) => handleFilterChange('creators', e.target.value)}
-                className="w-full px-3 py-2 bg-white border-[3px] border-black text-black placeholder-gray-500 focus:outline-none font-sometype-mono"
+                className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme placeholder-gray-500 focus:outline-none font-sometype-mono"
               />
             </div>
             
             <div>
-              <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Assunto</label>
+              <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Assunto</label>
               <input
                 type="text"
                 placeholder="Ex: Rap, Hip Hop"
                 value={filters.subjects}
                 onChange={(e) => handleFilterChange('subjects', e.target.value)}
-                className="w-full px-3 py-2 bg-white border-[3px] border-black text-black placeholder-gray-500 focus:outline-none font-sometype-mono"
+                className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme placeholder-gray-500 focus:outline-none font-sometype-mono"
               />
             </div>
             
             <div>
-              <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Local</label>
+              <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Local</label>
               <input
                 type="text"
                 placeholder="Ex: Candangolândia/DF"
                 value={filters.places}
                 onChange={(e) => handleFilterChange('places', e.target.value)}
-                className="w-full px-3 py-2 bg-white border-[3px] border-black text-black placeholder-gray-500 focus:outline-none font-sometype-mono"
+                className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme placeholder-gray-500 focus:outline-none font-sometype-mono"
               />
             </div>
             
             <div>
-              <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Data Inicial</label>
+              <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Data Inicial</label>
               <input
                 type="date"
                 value={filters.startDate}
                 onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                className="w-full px-3 py-2 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono"
+                className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono"
               />
             </div>
           </div>
@@ -450,7 +450,7 @@ const ModernAcervoInterface = () => {
           <div className="flex justify-center">
             <button
               onClick={applyFilters}
-              className="px-6 py-3 bg-black text-white font-bold border-[3px] border-black hover:bg-gray-800 transition-colors font-sometype-mono uppercase"
+              className="px-6 py-3 bg-black text-theme font-bold border-[3px] border-theme hover:bg-gray-800 transition-colors font-sometype-mono uppercase"
             >
               APLICAR FILTROS
             </button>
@@ -459,9 +459,9 @@ const ModernAcervoInterface = () => {
       )}
 
       {/* Barra de Controles */}
-      <div className="bg-white border-[3px] border-black p-4">
+      <div className="bg-white border-[3px] border-theme p-4">
         <div className="flex items-center justify-between">
-          <div className="font-sometype-mono text-black text-sm">
+          <div className="font-sometype-mono text-theme text-sm">
             <span className="font-bold">RESULTADOS:</span> {totalItems} itens
             {loading && <span className="ml-2">⏳ Carregando...</span>}
           </div>
@@ -470,7 +470,7 @@ const ModernAcervoInterface = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono text-sm"
+              className="px-3 py-2 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono text-sm"
             >
               <option value="alphabetic">A-Z</option>
               <option value="date">DATA</option>
@@ -478,13 +478,13 @@ const ModernAcervoInterface = () => {
               <option value="lastUpdated">ATUALIZAÇÃO</option>
             </select>
             
-            <div className="flex bg-white border-[3px] border-black overflow-hidden">
+            <div className="flex bg-white border-[3px] border-theme overflow-hidden">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`px-3 py-2 text-sm font-sometype-mono transition-colors ${
                   viewMode === 'grid' 
-                    ? 'bg-black text-white' 
-                    : 'text-black hover:bg-gray-100'
+                    ? 'bg-black text-theme' 
+                    : 'text-theme hover:bg-gray-100'
                 }`}
               >
                 ⊞
@@ -493,8 +493,8 @@ const ModernAcervoInterface = () => {
                 onClick={() => setViewMode('list')}
                 className={`px-3 py-2 text-sm font-sometype-mono transition-colors ${
                   viewMode === 'list' 
-                    ? 'bg-black text-white' 
-                    : 'text-black hover:bg-gray-100'
+                    ? 'bg-black text-theme' 
+                    : 'text-theme hover:bg-gray-100'
                 }`}
               >
                 ☰
@@ -506,13 +506,13 @@ const ModernAcervoInterface = () => {
 
       {/* Área de Resultados */}
       {error && (
-        <div className="bg-white border-[3px] border-black p-6 text-center">
-          <div className="text-black font-sometype-mono">
+        <div className="bg-white border-[3px] border-theme p-6 text-center">
+          <div className="text-theme font-sometype-mono">
             <div className="text-2xl mb-2">⚠️</div>
             <div className="font-bold">{error}</div>
             <button
               onClick={loadItems}
-              className="mt-4 px-4 py-2 bg-black text-white border-[3px] border-black hover:bg-gray-800 transition-colors font-sometype-mono text-sm font-bold"
+              className="mt-4 px-4 py-2 bg-black text-theme border-[3px] border-theme hover:bg-gray-800 transition-colors font-sometype-mono text-sm font-bold"
             >
               TENTAR NOVAMENTE
             </button>
@@ -521,9 +521,9 @@ const ModernAcervoInterface = () => {
       )}
 
       {!loading && !error && items.length === 0 && (
-        <div className="bg-white border-[3px] border-black p-12 text-center">
+        <div className="bg-white border-[3px] border-theme p-12 text-center">
           <div className="text-4xl mb-4">🔍</div>
-          <div className="text-black font-sometype-mono">
+          <div className="text-theme font-sometype-mono">
             <div className="text-xl font-bold mb-2 uppercase">NENHUM ITEM ENCONTRADO</div>
             <div className="text-sm">Tente ajustar os filtros ou termos de busca</div>
           </div>
@@ -550,24 +550,24 @@ const ModernAcervoInterface = () => {
 
       {/* Paginação */}
       {totalItems > itemsPerPage && (
-        <div className="bg-white border-[3px] border-black p-4">
+        <div className="bg-white border-[3px] border-theme p-4">
           <div className="flex items-center justify-center space-x-4">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-white border-[3px] border-black text-black hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sometype-mono font-bold"
+              className="px-4 py-2 bg-white border-[3px] border-theme text-theme hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sometype-mono font-bold"
             >
               ◀ ANTERIOR
             </button>
             
-            <div className="font-sometype-mono text-black font-bold">
+            <div className="font-sometype-mono text-theme font-bold">
               PÁGINA {currentPage} DE {Math.ceil(totalItems / itemsPerPage)}
             </div>
             
             <button
               onClick={() => setCurrentPage(prev => prev + 1)}
               disabled={currentPage >= Math.ceil(totalItems / itemsPerPage)}
-              className="px-4 py-2 bg-white border-[3px] border-black text-black hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sometype-mono font-bold"
+              className="px-4 py-2 bg-white border-[3px] border-theme text-theme hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sometype-mono font-bold"
             >
               PRÓXIMA ▶
             </button>

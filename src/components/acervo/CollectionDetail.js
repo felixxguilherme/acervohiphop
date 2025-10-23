@@ -193,41 +193,41 @@ export default function CollectionDetail({ collectionId, collectionName }) {
           className="mb-16"
         >
           <div className="text-center mb-12">
-            <h1 className="text-6xl md:text-8xl font-dirty-stains text-white transform rotate-1 mb-6">
+            <h1 className="text-6xl md:text-8xl font-dirty-stains text-theme transform rotate-1 mb-6">
               {collectionName?.toUpperCase() || 'COLEÇÃO'}
             </h1>
             
             {/* Statistics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-              <div className="bg-white border-2 border-black p-6 transform rotate-1">
-                <div className="text-3xl font-sometype-mono text-black font-black mb-2">
+              <div className="bg-white border-2 border-theme p-6 transform rotate-1">
+                <div className="text-3xl font-sometype-mono text-theme font-black mb-2">
                   {statistics.total}
                 </div>
-                <div className="text-xs text-black font-bold uppercase">TOTAL</div>
+                <div className="text-xs text-theme font-bold uppercase">TOTAL</div>
               </div>
-              <div className="bg-white border-2 border-black p-6 transform -rotate-1">
-                <div className="text-3xl font-sometype-mono text-black font-black mb-2">
+              <div className="bg-white border-2 border-theme p-6 transform -rotate-1">
+                <div className="text-3xl font-sometype-mono text-theme font-black mb-2">
                   {statistics.media}
                 </div>
-                <div className="text-xs text-black font-bold uppercase">IMAGENS</div>
+                <div className="text-xs text-theme font-bold uppercase">IMAGENS</div>
               </div>
-              <div className="bg-white border-2 border-black p-6 transform rotate-2">
-                <div className="text-3xl font-sometype-mono text-black font-black mb-2">
+              <div className="bg-white border-2 border-theme p-6 transform rotate-2">
+                <div className="text-3xl font-sometype-mono text-theme font-black mb-2">
                   {statistics.textual}
                 </div>
-                <div className="text-xs text-black font-bold uppercase">TEXTOS</div>
+                <div className="text-xs text-theme font-bold uppercase">TEXTOS</div>
               </div>
-              <div className="bg-white border-2 border-black p-6 transform -rotate-2">
-                <div className="text-3xl font-sometype-mono text-black font-black mb-2">
+              <div className="bg-white border-2 border-theme p-6 transform -rotate-2">
+                <div className="text-3xl font-sometype-mono text-theme font-black mb-2">
                   {statistics.dated}
                 </div>
-                <div className="text-xs text-black font-bold uppercase">DATADOS</div>
+                <div className="text-xs text-theme font-bold uppercase">DATADOS</div>
               </div>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="bg-white border-2 border-black p-8 transform -rotate-1">
+          <div className="bg-white border-2 border-theme p-8 transform -rotate-1">
             <div className="transform rotate-1">
               
               {/* Search */}
@@ -237,7 +237,7 @@ export default function CollectionDetail({ collectionId, collectionName }) {
                   placeholder="Buscar na coleção..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full p-4 border-2 border-black font-sometype-mono text-lg focus:outline-none"
+                  className="w-full p-4 border-2 border-theme font-sometype-mono text-lg focus:outline-none"
                 />
               </div>
 
@@ -246,13 +246,13 @@ export default function CollectionDetail({ collectionId, collectionName }) {
                 
                 {/* Type Filter */}
                 <div>
-                  <label className="block text-xs font-bold text-black uppercase mb-2">
+                  <label className="block text-xs font-bold text-theme uppercase mb-2">
                     Tipo:
                   </label>
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
-                    className="w-full p-2 border-2 border-black font-sometype-mono text-sm"
+                    className="w-full p-2 border-2 border-theme font-sometype-mono text-sm"
                   >
                     <option value="all">Todos</option>
                     <option value="media">Imagens</option>
@@ -262,13 +262,13 @@ export default function CollectionDetail({ collectionId, collectionName }) {
 
                 {/* Year Filter */}
                 <div>
-                  <label className="block text-xs font-bold text-black uppercase mb-2">
+                  <label className="block text-xs font-bold text-theme uppercase mb-2">
                     Ano:
                   </label>
                   <select
                     value={filterYear}
                     onChange={(e) => setFilterYear(e.target.value)}
-                    className="w-full p-2 border-2 border-black font-sometype-mono text-sm"
+                    className="w-full p-2 border-2 border-theme font-sometype-mono text-sm"
                   >
                     <option value="all">Todos</option>
                     {availableYears.map(year => (
@@ -279,13 +279,13 @@ export default function CollectionDetail({ collectionId, collectionName }) {
 
                 {/* Location Filter */}
                 <div>
-                  <label className="block text-xs font-bold text-black uppercase mb-2">
+                  <label className="block text-xs font-bold text-theme uppercase mb-2">
                     Local:
                   </label>
                   <select
                     value={filterLocation}
                     onChange={(e) => setFilterLocation(e.target.value)}
-                    className="w-full p-2 border-2 border-black font-sometype-mono text-sm"
+                    className="w-full p-2 border-2 border-theme font-sometype-mono text-sm"
                   >
                     <option value="all">Todos</option>
                     {availableLocations.map(location => (
@@ -296,13 +296,13 @@ export default function CollectionDetail({ collectionId, collectionName }) {
 
                 {/* Sort */}
                 <div>
-                  <label className="block text-xs font-bold text-black uppercase mb-2">
+                  <label className="block text-xs font-bold text-theme uppercase mb-2">
                     Ordenar:
                   </label>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full p-2 border-2 border-black font-sometype-mono text-sm"
+                    className="w-full p-2 border-2 border-theme font-sometype-mono text-sm"
                   >
                     <option value="alphabetic">A-Z</option>
                     <option value="date">Data</option>
@@ -313,7 +313,7 @@ export default function CollectionDetail({ collectionId, collectionName }) {
 
               {/* Results Count */}
               <div className="mt-4 text-center">
-                <span className="bg-black text-white px-4 py-2 font-sometype-mono text-sm font-bold">
+                <span className="bg-black text-theme px-4 py-2 font-sometype-mono text-sm font-bold">
                   {filteredItems.length} RESULTADO{filteredItems.length !== 1 ? 'S' : ''}
                 </span>
               </div>
@@ -335,13 +335,13 @@ export default function CollectionDetail({ collectionId, collectionName }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
               className={`
-                bg-white border-2 border-black p-6 transform transition-all duration-300 hover:scale-105
+                bg-white border-2 border-theme p-6 transform transition-all duration-300 hover:scale-105
                 ${index % 2 === 0 ? 'rotate-1' : '-rotate-1'}
               `}
             >
               {/* Item Image */}
               {item.thumbnail_url && (
-                <div className="aspect-square bg-gray-100 border-2 border-black mb-4 overflow-hidden">
+                <div className="aspect-square bg-gray-100 border-2 border-theme mb-4 overflow-hidden">
                   <img 
                     src={item.thumbnail_url}
                     alt={item.title}
@@ -352,12 +352,12 @@ export default function CollectionDetail({ collectionId, collectionName }) {
 
               {/* Item Header */}
               <div className="mb-4">
-                <h3 className="font-sometype-mono font-bold text-sm text-black mb-2 line-clamp-2 uppercase">
+                <h3 className="font-sometype-mono font-bold text-sm text-theme mb-2 line-clamp-2 uppercase">
                   {item.title}
                 </h3>
                 
                 {item.reference_code && (
-                  <div className="bg-black text-white px-2 py-1 font-mono text-xs uppercase inline-block mb-2">
+                  <div className="bg-black text-theme px-2 py-1 font-mono text-xs uppercase inline-block mb-2">
                     {item.reference_code}
                   </div>
                 )}
@@ -366,8 +366,8 @@ export default function CollectionDetail({ collectionId, collectionName }) {
               {/* Item Details */}
               <div className="space-y-2 text-xs">
                 {item.physical_characteristics && (
-                  <div className="border border-black p-2">
-                    <p className="font-sometype-mono text-black line-clamp-3">
+                  <div className="border border-theme p-2">
+                    <p className="font-sometype-mono text-theme line-clamp-3">
                       {item.physical_characteristics}
                     </p>
                   </div>
@@ -375,13 +375,13 @@ export default function CollectionDetail({ collectionId, collectionName }) {
                 
                 <div className="flex flex-wrap gap-1">
                   {item.creation_dates?.map((date, i) => (
-                    <span key={i} className="bg-black text-white px-2 py-1 font-mono text-xs">
+                    <span key={i} className="bg-black text-theme px-2 py-1 font-mono text-xs">
                       {date}
                     </span>
                   ))}
                   
                   {item.place_access_points?.map((place, i) => (
-                    <span key={i} className="bg-gray-800 text-white px-2 py-1 font-mono text-xs">
+                    <span key={i} className="bg-gray-800 text-theme px-2 py-1 font-mono text-xs">
                       {place}
                     </span>
                   ))}
@@ -393,7 +393,7 @@ export default function CollectionDetail({ collectionId, collectionName }) {
                 <div className="font-mono text-gray-600">
                   #{item.slug}
                 </div>
-                <div className="bg-black text-white px-2 py-1 font-mono">
+                <div className="bg-black text-theme px-2 py-1 font-mono">
                   {item.level_of_description}
                 </div>
               </div>
@@ -408,11 +408,11 @@ export default function CollectionDetail({ collectionId, collectionName }) {
             animate={{ opacity: 1 }}
             className="text-center py-16"
           >
-            <div className="bg-white border-2 border-black p-8 mx-auto max-w-lg">
-              <h3 className="text-2xl font-dirty-stains text-black mb-4">
+            <div className="bg-white border-2 border-theme p-8 mx-auto max-w-lg">
+              <h3 className="text-2xl font-dirty-stains text-theme mb-4">
                 NENHUM RESULTADO
               </h3>
-              <p className="font-sometype-mono text-black">
+              <p className="font-sometype-mono text-theme">
                 Tente ajustar os filtros de busca
               </p>
             </div>

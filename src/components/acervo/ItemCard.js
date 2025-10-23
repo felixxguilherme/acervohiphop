@@ -65,7 +65,7 @@ export default function ItemCard({ item, index }) {
       >
         {/* Frente do Card - Estilo Brutalista */}
         <motion.div
-          className="absolute inset-0 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform-gpu"
+          className="absolute inset-0 bg-white border-4 border-theme shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform-gpu"
           style={{ backfaceVisibility: 'hidden' }}
           whileHover={{ 
             scale: 1.02,
@@ -74,7 +74,7 @@ export default function ItemCard({ item, index }) {
           }}
         >
           {/* Imagem principal */}
-          <div className="relative h-64 bg-gray-100 overflow-hidden border-b-4 border-black">
+          <div className="relative h-64 bg-gray-100 overflow-hidden border-b-4 border-theme">
             {mainImage?.thumbnail ? (
               <img
                 src={mainImage.thumbnail}
@@ -83,7 +83,7 @@ export default function ItemCard({ item, index }) {
                 loading="lazy"
               />
             ) : (
-              <div className={`w-full h-full ${MEDIA_TYPE_COLORS[mediaType]} flex items-center justify-center border-4 border-black`}>
+              <div className={`w-full h-full ${MEDIA_TYPE_COLORS[mediaType]} flex items-center justify-center border-4 border-theme`}>
                 <div className="text-6xl">
                   {MEDIA_TYPE_ICONS[mediaType]}
                 </div>
@@ -91,14 +91,14 @@ export default function ItemCard({ item, index }) {
             )}
 
             {/* Badge do tipo de mídia - Brutalista */}
-            <div className={`absolute top-3 right-3 ${MEDIA_TYPE_COLORS[mediaType]} border-2 border-black px-3 py-1 text-black text-xs font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}>
+            <div className={`absolute top-3 right-3 ${MEDIA_TYPE_COLORS[mediaType]} border-2 border-theme px-3 py-1 text-theme text-xs font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}>
               <span className="mr-1">{MEDIA_TYPE_ICONS[mediaType]}</span>
               {mediaType.split('/')[0].toUpperCase()}
             </div>
 
             {/* Indicador de múltiplos objetos - Brutalista */}
             {item.digitalObjects && item.digitalObjects.length > 1 && (
-              <div className="absolute bottom-3 left-3 bg-yellow-400 border-2 border-black px-3 py-1 text-black text-xs font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <div className="absolute bottom-3 left-3 bg-yellow-400 border-2 border-theme px-3 py-1 text-theme text-xs font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 +{item.digitalObjects.length - 1} ARQUIVOS
               </div>
             )}
@@ -116,9 +116,9 @@ export default function ItemCard({ item, index }) {
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     exit={{ scale: 0, rotate: 180 }}
-                    className="bg-yellow-400 border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                    className="bg-yellow-400 border-4 border-theme p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                   >
-                    <svg className="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-8 h-8 text-theme" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                     </svg>
                   </motion.div>
@@ -129,13 +129,13 @@ export default function ItemCard({ item, index }) {
 
           {/* Área do texto - Estilo Brutalista */}
           <div className="p-4 bg-white">
-            <h3 className="font-black text-black text-lg leading-tight mb-3 line-clamp-2">
+            <h3 className="font-black text-theme text-lg leading-tight mb-3 line-clamp-2">
               {item.title.toUpperCase()}
             </h3>
             
             <div className="mb-3">
               <div className="flex items-center gap-2 mb-2">
-                <span className="bg-black text-white px-2 py-1 text-xs font-black border border-white">
+                <span className="bg-black text-theme px-2 py-1 text-xs font-black border border-theme">
                   {item.identifier}
                 </span>
                 <span className="font-black">•</span>
@@ -148,26 +148,26 @@ export default function ItemCard({ item, index }) {
               {subjects.slice(0, 3).map((subject, i) => (
                 <span
                   key={i}
-                  className="inline-block bg-yellow-400 text-black text-xs px-2 py-1 border-2 border-black font-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+                  className="inline-block bg-yellow-400 text-theme text-xs px-2 py-1 border-2 border-theme font-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
                 >
                   {subject.toUpperCase()}
                 </span>
               ))}
               {subjects.length > 3 && (
-                <span className="inline-block bg-black text-white text-xs px-2 py-1 border-2 border-black font-black">
+                <span className="inline-block bg-black text-theme text-xs px-2 py-1 border-2 border-theme font-black">
                   +{subjects.length - 3}
                 </span>
               )}
             </div>
 
             {/* Info footer - Brutalista */}
-            <div className="border-t-2 border-black pt-2">
+            <div className="border-t-2 border-theme pt-2">
               <div className="flex justify-between items-center">
                 <span className="font-black text-xs">
                   📍 {item.places?.[0]?.name || 'DF'}
                 </span>
                 {mainImage && (
-                  <span className="bg-gray-200 border border-black px-2 py-1 text-xs font-black">
+                  <span className="bg-gray-200 border border-theme px-2 py-1 text-xs font-black">
                     {formatFileSize(mainImage.byteSize)}
                   </span>
                 )}
@@ -178,7 +178,7 @@ export default function ItemCard({ item, index }) {
 
         {/* Verso do Card - Detalhes Brutalista */}
         <motion.div
-          className="absolute inset-0 bg-black border-4 border-white p-6 text-white transform-gpu shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]"
+          className="absolute inset-0 bg-black border-4 border-theme p-6 text-theme transform-gpu shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]"
           style={{ 
             backfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)'
@@ -186,8 +186,8 @@ export default function ItemCard({ item, index }) {
         >
           <div className="h-full flex flex-col">
             <div className="mb-4">
-              <h3 className="font-black text-white text-xl mb-2 bg-yellow-400 text-black px-3 py-2 border-2 border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">{item.title.toUpperCase()}</h3>
-              <div className="bg-white text-black text-sm font-black px-3 py-1 border-2 border-white inline-block shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+              <h3 className="font-black text-theme text-xl mb-2 bg-yellow-400 text-theme px-3 py-2 border-2 border-theme shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">{item.title.toUpperCase()}</h3>
+              <div className="bg-white text-theme text-sm font-black px-3 py-1 border-2 border-theme inline-block shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                 {item.identifier}
               </div>
             </div>
@@ -195,31 +195,31 @@ export default function ItemCard({ item, index }) {
             <div className="flex-1 space-y-4 text-sm">
               {/* Criadores */}
               {item.creators && item.creators.length > 0 && (
-                <div className="bg-white/20 border-2 border-white p-3 shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                <div className="bg-white/20 border-2 border-theme p-3 shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                   <div className="text-yellow-400 font-black mb-1">👤 CRIADOR:</div>
-                  <div className="text-white font-bold">{item.creators[0].name}</div>
+                  <div className="text-theme font-bold">{item.creators[0].name}</div>
                 </div>
               )}
 
               {/* Data */}
-              <div className="bg-white/20 border-2 border-white p-3 shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+              <div className="bg-white/20 border-2 border-theme p-3 shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                 <div className="text-yellow-400 font-black mb-1">📅 DATA:</div>
-                <div className="text-white font-bold">{formatDate(item.dates?.[0]?.startDate)}</div>
+                <div className="text-theme font-bold">{formatDate(item.dates?.[0]?.startDate)}</div>
               </div>
 
               {/* Descrição */}
-              <div className="bg-white/20 border-2 border-white p-3 shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+              <div className="bg-white/20 border-2 border-theme p-3 shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                 <div className="text-yellow-400 font-black mb-1">📝 DESCRIÇÃO:</div>
-                <div className="text-white font-bold line-clamp-3 leading-tight">
+                <div className="text-theme font-bold line-clamp-3 leading-tight">
                   {item.scopeAndContent}
                 </div>
               </div>
 
               {/* Características físicas */}
               {item.physicalCharacteristics && (
-                <div className="bg-white/20 border-2 border-white p-3 shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                <div className="bg-white/20 border-2 border-theme p-3 shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                   <div className="text-yellow-400 font-black mb-1">⚙️ CARACTERÍSTICAS:</div>
-                  <div className="text-white font-bold text-xs line-clamp-2">
+                  <div className="text-theme font-bold text-xs line-clamp-2">
                     {item.physicalCharacteristics}
                   </div>
                 </div>
@@ -227,12 +227,12 @@ export default function ItemCard({ item, index }) {
             </div>
 
             {/* Footer com ação */}
-            <div className="mt-4 pt-4 border-t-4 border-white">
+            <div className="mt-4 pt-4 border-t-4 border-theme">
               <div className="flex justify-between items-center">
-                <div className="text-xs text-white/70 font-bold bg-white/10 px-2 py-1 border border-white">
+                <div className="text-xs text-theme/70 font-bold bg-white/10 px-2 py-1 border border-theme">
                   CLIQUE PARA VOLTAR
                 </div>
-                <button className="bg-yellow-400 text-black px-4 py-2 font-black text-sm border-2 border-white hover:bg-yellow-300 transition-colors shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                <button className="bg-yellow-400 text-theme px-4 py-2 font-black text-sm border-2 border-theme hover:bg-yellow-300 transition-colors shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                   VER DETALHES →
                 </button>
               </div>

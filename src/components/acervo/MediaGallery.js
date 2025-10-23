@@ -127,7 +127,7 @@ const MediaGallery = ({ filters = {}, onItemSelect }) => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="absolute bottom-0 left-0 right-0 p-3">
-              <p className="text-white text-sm font-medium line-clamp-2">
+              <p className="text-theme text-sm font-medium line-clamp-2">
                 {item.title}
               </p>
             </div>
@@ -156,7 +156,7 @@ const MediaGallery = ({ filters = {}, onItemSelect }) => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="absolute bottom-0 left-0 right-0 p-4">
-                <p className="text-white text-sm font-medium">
+                <p className="text-theme text-sm font-medium">
                   {item.title}
                 </p>
               </div>
@@ -206,7 +206,7 @@ const MediaGallery = ({ filters = {}, onItemSelect }) => {
                 onClick={() => setViewMode('polaroid')}
                 className={`px-3 py-1 text-sm transition-colors ${
                   viewMode === 'polaroid' 
-                    ? 'bg-yellow-400 text-black' 
+                    ? 'bg-yellow-400 text-theme' 
                     : 'text-yellow-400 hover:bg-yellow-400/20'
                 }`}
                 title="Polaroids"
@@ -217,7 +217,7 @@ const MediaGallery = ({ filters = {}, onItemSelect }) => {
                 onClick={() => setViewMode('grid')}
                 className={`px-3 py-1 text-sm transition-colors ${
                   viewMode === 'grid' 
-                    ? 'bg-yellow-400 text-black' 
+                    ? 'bg-yellow-400 text-theme' 
                     : 'text-yellow-400 hover:bg-yellow-400/20'
                 }`}
                 title="Grade"
@@ -228,7 +228,7 @@ const MediaGallery = ({ filters = {}, onItemSelect }) => {
                 onClick={() => setViewMode('masonry')}
                 className={`px-3 py-1 text-sm transition-colors ${
                   viewMode === 'masonry' 
-                    ? 'bg-yellow-400 text-black' 
+                    ? 'bg-yellow-400 text-theme' 
                     : 'text-yellow-400 hover:bg-yellow-400/20'
                 }`}
                 title="Masonry"
@@ -248,7 +248,7 @@ const MediaGallery = ({ filters = {}, onItemSelect }) => {
             <div>{error}</div>
             <button
               onClick={() => loadMediaItems(true)}
-              className="mt-4 px-4 py-2 bg-red-600/80 text-white rounded hover:bg-red-600 transition-colors"
+              className="mt-4 px-4 py-2 bg-red-600/80 text-theme rounded hover:bg-red-600 transition-colors"
             >
               Tentar Novamente
             </button>

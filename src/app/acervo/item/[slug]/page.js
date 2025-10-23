@@ -91,10 +91,10 @@ const ItemDetailPage = () => {
     return (
       <div>
         <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
-        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
           <div className="flex items-center justify-center h-96">
             <div className="text-center">
-              <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin h-8 w-8 border-2 border-theme border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-lg font-sometype-mono">Carregando detalhes do item...</p>
             </div>
           </div>
@@ -107,23 +107,23 @@ const ItemDetailPage = () => {
     return (
       <div>
         <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
-        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
           <div className="flex items-center justify-center h-96">
             <div className="text-center">
-              <div className="bg-theme-background border-2 border-black p-6">
+              <div className="bg-theme-background border-2 border-theme p-6">
                 <p className="font-dirty-stains text-xl mb-2">Erro ao carregar</p>
                 <p className="font-sometype-mono mb-4">{error}</p>
                 <div className="flex gap-4 justify-center">
                   <button 
                     onClick={() => router.back()}
-                    className="px-4 py-2 bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors flex items-center gap-2 font-dirty-stains"
+                    className="px-4 py-2 bg-white text-theme border-2 border-theme hover:bg-black hover:text-theme transition-colors flex items-center gap-2 font-dirty-stains"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     Voltar
                   </button>
                   <button 
                     onClick={() => router.push('/acervo')}
-                    className="px-4 py-2 bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors font-dirty-stains"
+                    className="px-4 py-2 bg-white text-theme border-2 border-theme hover:bg-black hover:text-theme transition-colors font-dirty-stains"
                   >
                     Ir para Acervo
                   </button>
@@ -140,7 +140,7 @@ const ItemDetailPage = () => {
     <div>
       <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
       
-      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
         {/* Breadcrumb e navegação */}
         <motion.section 
           className="mb-8 px-6"
@@ -148,7 +148,7 @@ const ItemDetailPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="bg-theme-background border-2 border-black p-4">
+          <div className="bg-theme-background border-2 border-theme p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm font-sometype-mono text-gray-600">
                 <button 
@@ -165,7 +165,7 @@ const ItemDetailPage = () => {
               
               <button 
                 onClick={() => router.back()}
-                className="flex items-center gap-2 px-4 py-2 cursor-pointer border-2 border-black hover:bg-black hover:text-white transition-colors font-dirty-stains"
+                className="flex items-center gap-2 px-4 py-2 cursor-pointer border-2 border-theme hover:bg-black hover:text-theme transition-colors font-dirty-stains"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Voltar
@@ -181,7 +181,7 @@ const ItemDetailPage = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="bg-theme-background border-2 border-black p-6">
+          <div className="bg-theme-background border-2 border-theme p-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Imagem principal */}
               <div className="space-y-4">
@@ -198,7 +198,7 @@ const ItemDetailPage = () => {
                         return url;
                       })()} 
                       alt={itemData.title}
-                      className="w-full h-96 object-cover border-2 border-black"
+                      className="w-full h-96 object-cover border-2 border-theme"
                       onError={(e) => {
                         console.error('Erro ao carregar imagem:', e.target.src);
                         e.target.style.display = 'none';
@@ -209,14 +209,14 @@ const ItemDetailPage = () => {
                         href={itemData.digital_object_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="absolute top-4 right-4 bg-black bg-opacity-70 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-4 right-4 bg-black bg-opacity-70 text-theme p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <Eye className="w-5 h-5" />
                       </a>
                     )}
                   </div>
                 ) : (
-                  <div className="w-full h-96 bg-gray-200 border-2 border-black flex items-center justify-center">
+                  <div className="w-full h-96 bg-gray-200 border-2 border-theme flex items-center justify-center">
                     <ImageIcon className="w-16 h-16 text-gray-400" />
                   </div>
                 )}
@@ -229,7 +229,7 @@ const ItemDetailPage = () => {
                         href={itemData.digital_object_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors font-dirty-stains"
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-theme border-2 border-theme hover:bg-black hover:text-theme transition-colors font-dirty-stains"
                       >
                         <Eye className="w-4 h-4" />
                         Ver Original
@@ -239,7 +239,7 @@ const ItemDetailPage = () => {
                       href={`https://base.acervodistritohiphop.com.br/index.php/${itemData.slug}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors font-dirty-stains"
+                      className="flex items-center gap-2 px-4 py-2 bg-white text-theme border-2 border-theme hover:bg-black hover:text-theme transition-colors font-dirty-stains"
                     >
                       <ExternalLink className="w-4 h-4" />
                       Ver no AtoM
@@ -333,7 +333,7 @@ const ItemDetailPage = () => {
             
             <div className="space-y-6">
               {itemData.scope_and_content && (
-                <div className="bg-theme-background border-2 border-black p-6">
+                <div className="bg-theme-background border-2 border-theme p-6">
                   <h3 className="flex items-center gap-2 text-xl font-dirty-stains text-theme-primary mb-4">
                     <FileText className="w-5 h-5" />
                     Âmbito e Conteúdo
@@ -345,7 +345,7 @@ const ItemDetailPage = () => {
               )}
 
               {itemData.archival_history && (
-                <div className="bg-theme-background border-2 border-black p-6">
+                <div className="bg-theme-background border-2 border-theme p-6">
                   <h3 className="flex items-center gap-2 text-xl font-dirty-stains text-theme-primary mb-4">
                     <Archive className="w-5 h-5" />
                     História Arquivística
@@ -357,7 +357,7 @@ const ItemDetailPage = () => {
               )}
 
               {itemData.notes && itemData.notes.length > 0 && (
-                <div className="bg-theme-background border-2 border-black p-6">
+                <div className="bg-theme-background border-2 border-theme p-6">
                   <h3 className="flex items-center gap-2 text-xl font-dirty-stains text-theme-primary mb-4">
                     <Info className="w-5 h-5" />
                     Notas
@@ -386,7 +386,7 @@ const ItemDetailPage = () => {
           <div>
             <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">METADADOS TÉCNICOS</h2>
             
-            <div className="bg-theme-background border-2 border-black p-6">
+            <div className="bg-theme-background border-2 border-theme p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-dirty-stains text-lg text-theme-primary mb-2">Identificação</h4>
@@ -424,11 +424,11 @@ const ItemDetailPage = () => {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="border-2 border-black p-6 text-center">
+          <div className="border-2 border-theme p-6 text-center">
             <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
               <button 
                 onClick={() => router.back()}
-                className="px-6 py-3 text-black border-2 border-black font-dirty-stains hover:bg-black hover:text-white cursor-pointer hover:border-white transition-colors flex items-center gap-2"
+                className="px-6 py-3 text-theme border-2 border-theme font-dirty-stains hover:bg-black hover:text-theme cursor-pointer hover:border-theme transition-colors flex items-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Voltar à Busca
@@ -436,7 +436,7 @@ const ItemDetailPage = () => {
               
               <button 
                 onClick={() => router.push('/acervo')}
-                className="px-6 py-3 border-2 border-black text-black font-dirty-stains hover:bg-black hover:text-white cursor-pointer transition-colors"
+                className="px-6 py-3 border-2 border-theme text-theme font-dirty-stains hover:bg-black hover:text-theme cursor-pointer transition-colors"
               >
                 Explorar Mais Itens
               </button>
@@ -446,7 +446,7 @@ const ItemDetailPage = () => {
                   href={`https://base.acervodistritohiphop.com.br/index.php/${itemData.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3 bg-white text-black border-2 border-white font-dirty-stains hover:bg-black hover:text-white transition-colors flex items-center gap-2"
+                  className="px-6 py-3 bg-white text-theme border-2 border-theme font-dirty-stains hover:bg-black hover:text-theme transition-colors flex items-center gap-2"
                 >
                   <ExternalLink className="w-4 h-4" />
                   Ver no Sistema Original

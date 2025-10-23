@@ -256,10 +256,10 @@ const CreatorDetailPage = () => {
     return (
       <div>
         <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
-        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
           <div className="flex items-center justify-center h-96">
             <div className="text-center">
-              <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin h-8 w-8 border-2 border-theme border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-lg font-sometype-mono">Carregando dados do artista...</p>
             </div>
           </div>
@@ -272,15 +272,15 @@ const CreatorDetailPage = () => {
     return (
       <div>
         <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
-        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
           <div className="flex items-center justify-center h-96">
             <div className="text-center">
-              <div className="bg-theme-background border-2 border-black p-6">
+              <div className="bg-theme-background border-2 border-theme p-6">
                 <p className="font-dirty-stains text-xl mb-2">Erro ao carregar artista</p>
                 <p className="font-sometype-mono mb-4">{error}</p>
                 <button 
                   onClick={() => window.history.back()}
-                  className="px-4 py-2 bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors font-dirty-stains"
+                  className="px-4 py-2 bg-white text-theme border-2 border-theme hover:bg-black hover:text-theme transition-colors font-dirty-stains"
                 >
                   Voltar
                 </button>
@@ -296,7 +296,7 @@ const CreatorDetailPage = () => {
     <div>
       <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
       
-      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
         <main>
         {/* Hero Section com Imagem e Nome */}
         <motion.section 
@@ -311,7 +311,7 @@ const CreatorDetailPage = () => {
                 <img 
                   src={creatorData.image} 
                   alt={creatorData.name}
-                  className="w-full h-96 object-cover border-2 border-black"
+                  className="w-full h-96 object-cover border-2 border-theme"
                 />
               </div>
               <div className="lg:col-span-2 flex flex-col justify-center">
@@ -341,8 +341,8 @@ const CreatorDetailPage = () => {
           viewport={{ once: true }}
         >
           <div className="bg-theme-background">
-            <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left border-black border-b-2 border-t-8 py-8">BIOGRAFIA</h2>
-            <div className="border-black border-b-8 pb-6">
+            <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left border-theme border-b-2 border-t-8 py-8">BIOGRAFIA</h2>
+            <div className="border-theme border-b-8 pb-6">
               <p className="text-lg leading-relaxed font-sometype-mono text-gray-700">
                 {creatorData.biography}
               </p>
@@ -360,7 +360,7 @@ const CreatorDetailPage = () => {
           viewport={{ once: true }}
         >
           <div className="bg-theme-background">
-            <h2 className="text-4xl font-dirty-stains text-theme-primary py-8 border-black border-b-2 text-left">TODOS OS ITENS DO ACERVO</h2>
+            <h2 className="text-4xl font-dirty-stains text-theme-primary py-8 border-theme border-b-2 text-left">TODOS OS ITENS DO ACERVO</h2>
             
             {/* Contador e paginação */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-8">
@@ -375,7 +375,7 @@ const CreatorDetailPage = () => {
                     <button
                       onClick={() => goToPage(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className="px-3 py-1 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains text-sm transition-colors"
+                      className="px-3 py-1 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains text-sm transition-colors"
                     >
                       ←
                     </button>
@@ -397,9 +397,9 @@ const CreatorDetailPage = () => {
                         <button
                           key={pageNum}
                           onClick={() => goToPage(pageNum)}
-                          className={`px-3 py-1 border-2 border-black font-dirty-stains text-sm transition-colors ${
+                          className={`px-3 py-1 border-2 border-theme font-dirty-stains text-sm transition-colors ${
                             pageNum === currentPage 
-                              ? 'bg-blue-500 text-white hover:bg-blue-600' 
+                              ? 'bg-blue-500 text-theme hover:bg-blue-600' 
                               : 'bg-white hover:bg-gray-100'
                           }`}
                         >
@@ -411,7 +411,7 @@ const CreatorDetailPage = () => {
                     <button
                       onClick={() => goToPage(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className="px-3 py-1 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains text-sm transition-colors"
+                      className="px-3 py-1 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains text-sm transition-colors"
                     >
                       →
                     </button>
@@ -425,7 +425,7 @@ const CreatorDetailPage = () => {
               {currentItems.map((item, index) => (
                 <motion.div 
                   key={item.slug || index}
-                  className="bg-white border-2 border-black p-4 hover:bg-zinc-100 transition-all duration-300"
+                  className="bg-white border-2 border-theme p-4 hover:bg-zinc-100 transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -478,7 +478,7 @@ const CreatorDetailPage = () => {
                   <button
                     onClick={() => goToPage(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains transition-colors"
+                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains transition-colors"
                   >
                     ← Anterior
                   </button>
@@ -490,7 +490,7 @@ const CreatorDetailPage = () => {
                   <button
                     onClick={() => goToPage(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black font-dirty-stains transition-colors"
+                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains transition-colors"
                   >
                     Próxima →
                   </button>
@@ -515,14 +515,14 @@ const CreatorDetailPage = () => {
                 {discografia.map((item, index) => (
                   <motion.div 
                     key={item.slug || index}
-                    className="bg-white border-2 border-black p-6 hover:bg-zinc-100 transition-all duration-300"
+                    className="bg-white border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300"
                     whileHover={{ scale: 1.02 }}
                   >
                     {item.thumbnail_url && (
                       <img 
                         src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')} 
                         alt={item.title}
-                        className="w-full h-48 object-cover mb-4 border-b-2 border-black"
+                        className="w-full h-48 object-cover mb-4 border-b-2 border-theme"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
                     )}
@@ -553,20 +553,20 @@ const CreatorDetailPage = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="bg-theme-background border-2 border-black p-6">
+            <div className="bg-theme-background border-2 border-theme p-6">
               <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">VIDEOGRAFIA</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {videografia.map((item, index) => (
                   <motion.div 
                     key={item.slug || index}
-                    className="bg-white border-2 border-black p-6 hover:bg-zinc-100 transition-all duration-300"
+                    className="bg-white border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300"
                     whileHover={{ scale: 1.02 }}
                   >
                     {item.thumbnail_url && (
                       <img 
                         src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')} 
                         alt={item.title}
-                        className="w-full h-48 object-cover mb-4 border-b-2 border-black"
+                        className="w-full h-48 object-cover mb-4 border-b-2 border-theme"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
                     )}
@@ -597,13 +597,13 @@ const CreatorDetailPage = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="bg-theme-background border-2 border-black p-6">
+            <div className="bg-theme-background border-2 border-theme p-6">
               <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">COLABORAÇÕES PARA O MAPA</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {colaboracoesMapa.map((item, index) => (
                   <motion.div 
                     key={item.slug || index}
-                    className="bg-white border-2 border-black p-6 hover:bg-zinc-100 transition-all duration-300"
+                    className="bg-white border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300"
                     whileHover={{ scale: 1.02 }}
                   >
                     <h3 className="font-dirty-stains text-xl mb-2">{item.title}</h3>
@@ -655,13 +655,13 @@ const CreatorDetailPage = () => {
                       viewport={{ once: true }}
                     >
                       {/* Ponto na timeline */}
-                      <div className="absolute left-3 md:left-1/2 transform md:-translate-x-1/2 w-3 h-3 bg-black rounded-full border-2 border-white shadow-lg z-10"></div>
+                      <div className="absolute left-3 md:left-1/2 transform md:-translate-x-1/2 w-3 h-3 bg-black rounded-full border-2 border-theme shadow-lg z-10"></div>
                       
                       {/* Conteúdo */}
                       <div className={`w-full md:w-5/12 ${
                         index % 2 === 0 ? 'md:ml-auto md:pl-8' : 'md:pr-8'
                       } ml-10 md:ml-0`}>
-                        <div className="bg-white border-2 border-black p-6">
+                        <div className="bg-white border-2 border-theme p-6">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-sometype-mono">
                               {formatDate(item.creation_dates[0])}
@@ -691,8 +691,8 @@ const CreatorDetailPage = () => {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="bg-black border-2 border-black p-6 text-white text-center">
-            <h2 className="text-4xl font-dirty-stains text-white mb-8 text-left">CONTRIBUIÇÃO TOTAL</h2>
+          <div className="bg-black border-2 border-theme p-6 text-theme text-center">
+            <h2 className="text-4xl font-dirty-stains text-theme mb-8 text-left">CONTRIBUIÇÃO TOTAL</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div>
                 <div className="text-4xl font-dirty-stains text-blue-400 mb-2">

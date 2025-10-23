@@ -163,11 +163,11 @@ export default function CollectionGrid({ onSelectCollection }) {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
-          <h2 className="text-6xl md:text-8xl font-dirty-stains mb-6 text-white transform rotate-1">
+          <h2 className="text-6xl md:text-8xl font-dirty-stains mb-6 text-theme transform rotate-1">
             COLEÇÕES
           </h2>
-          <div className="bg-white border-2 border-black p-6 transform -rotate-1 mx-auto max-w-2xl">
-            <p className="text-xl font-sometype-mono text-black font-bold">
+          <div className="bg-white border-2 border-theme p-6 transform -rotate-1 mx-auto max-w-2xl">
+            <p className="text-xl font-sometype-mono text-theme font-bold">
               {collections.length} COLEÇÃO{collections.length !== 1 ? 'ÕES' : ''} DISPONÍVEL{collections.length !== 1 ? 'EIS' : ''}
             </p>
           </div>
@@ -182,19 +182,19 @@ export default function CollectionGrid({ onSelectCollection }) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
               className={`
-                bg-white border-2 border-black p-8 transform transition-all duration-300 hover:scale-105
+                bg-white border-2 border-theme p-8 transform transition-all duration-300 hover:scale-105
                 ${index % 2 === 0 ? 'rotate-1' : '-rotate-1'}
               `}
             >
               {/* Collection Header */}
               <div className="mb-6">
-                <h3 className="text-2xl font-dirty-stains text-black mb-4 transform -rotate-1">
+                <h3 className="text-2xl font-dirty-stains text-theme mb-4 transform -rotate-1">
                   {collection.name.toUpperCase()}
                 </h3>
                 
                 {/* Featured Image */}
                 {collection.featured_item?.thumbnail_url && (
-                  <div className="aspect-square bg-gray-100 border-2 border-black mb-4 overflow-hidden">
+                  <div className="aspect-square bg-gray-100 border-2 border-theme mb-4 overflow-hidden">
                     <img 
                       src={collection.featured_item.thumbnail_url}
                       alt={collection.featured_item.title}
@@ -206,17 +206,17 @@ export default function CollectionGrid({ onSelectCollection }) {
 
               {/* Statistics */}
               <div className="grid grid-cols-2 gap-2 mb-6">
-                <div className="bg-black border border-black p-3 text-center">
-                  <div className="text-2xl font-sometype-mono text-white font-bold">
+                <div className="bg-black border border-theme p-3 text-center">
+                  <div className="text-2xl font-sometype-mono text-theme font-bold">
                     {collection.totalItems}
                   </div>
-                  <div className="text-xs text-white uppercase">ITENS</div>
+                  <div className="text-xs text-theme uppercase">ITENS</div>
                 </div>
-                <div className="bg-white border border-black p-3 text-center">
-                  <div className="text-2xl font-sometype-mono text-black font-bold">
+                <div className="bg-white border border-theme p-3 text-center">
+                  <div className="text-2xl font-sometype-mono text-theme font-bold">
                     {collection.mediaItems}
                   </div>
-                  <div className="text-xs text-black uppercase">IMAGENS</div>
+                  <div className="text-xs text-theme uppercase">IMAGENS</div>
                 </div>
               </div>
 
@@ -224,10 +224,10 @@ export default function CollectionGrid({ onSelectCollection }) {
               <div className="space-y-2 mb-6">
                 {collection.locations.length > 0 && (
                   <div className="text-xs">
-                    <div className="font-sometype-mono font-bold text-black mb-1 uppercase">
+                    <div className="font-sometype-mono font-bold text-theme mb-1 uppercase">
                       Localização:
                     </div>
-                    <div className="bg-black text-white px-2 py-1 font-mono text-xs">
+                    <div className="bg-black text-theme px-2 py-1 font-mono text-xs">
                       {collection.locations[0]}
                       {collection.locations.length > 1 && ` +${collection.locations.length - 1}`}
                     </div>
@@ -236,10 +236,10 @@ export default function CollectionGrid({ onSelectCollection }) {
                 
                 {collection.dateRange.earliest && (
                   <div className="text-xs">
-                    <div className="font-sometype-mono font-bold text-black mb-1 uppercase">
+                    <div className="font-sometype-mono font-bold text-theme mb-1 uppercase">
                       Período:
                     </div>
-                    <div className="bg-black text-white px-2 py-1 font-mono text-xs">
+                    <div className="bg-black text-theme px-2 py-1 font-mono text-xs">
                       {collection.dateRange.earliest.getFullYear()}
                       {collection.dateRange.latest && 
                        collection.dateRange.latest.getFullYear() !== collection.dateRange.earliest.getFullYear() &&
@@ -252,7 +252,7 @@ export default function CollectionGrid({ onSelectCollection }) {
 
               {/* Action Button */}
               <button 
-                className="w-full bg-black border-2 border-black text-white font-sometype-mono font-bold text-sm py-3 px-4 transform hover:-rotate-1 transition-all duration-200 uppercase"
+                className="w-full bg-black border-2 border-theme text-theme font-sometype-mono font-bold text-sm py-3 px-4 transform hover:-rotate-1 transition-all duration-200 uppercase"
                 onClick={() => {
                   if (onSelectCollection) {
                     onSelectCollection(collection);
@@ -279,8 +279,8 @@ export default function CollectionGrid({ onSelectCollection }) {
           transition={{ delay: 0.8 }}
           className="mt-16 text-center"
         >
-          <div className="bg-black border border-white p-6 mx-auto max-w-3xl">
-            <p className="text-sm font-sometype-mono text-white">
+          <div className="bg-black border border-theme p-6 mx-auto max-w-3xl">
+            <p className="text-sm font-sometype-mono text-theme">
               🤖 <strong>DETECÇÃO AUTOMÁTICA:</strong> Novas coleções aparecerão automaticamente quando adicionadas à API
             </p>
           </div>

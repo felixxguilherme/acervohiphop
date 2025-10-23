@@ -43,14 +43,14 @@ const FullscreenMapLayout = ({
   return (
     <div className="h-full flex bg-theme-background">
       {/* Menu lateral - 1/5 da tela total */}
-      <div className="w-1/5 bg-white border-r-2 border-black flex flex-col">
-        <div className="p-4 border-b-2 border-black bg-theme-background">
+      <div className="w-1/5 bg-white border-r-2 border-theme flex flex-col">
+        <div className="p-4 border-b-2 border-theme bg-theme-background">
           <h3 className="text-lg font-dirty-stains text-theme-primary text-left">BUSCA E CAMADAS</h3>
         </div>
         
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* Search Component */}
-          <div className="bg-theme-background border-2 border-black p-3">
+          <div className="bg-theme-background border-2 border-theme p-3">
             <h4 className="font-dirty-stains text-sm text-theme-primary mb-2">Busca no Mapa</h4>
             <MapSearchComponent
               isFullscreen={isFullscreen}
@@ -61,7 +61,7 @@ const FullscreenMapLayout = ({
           </div>
           
           {/* Layer Control */}
-          <div className="bg-theme-background border-2 border-black p-3">
+          <div className="bg-theme-background border-2 border-theme p-3">
             <h4 className="font-dirty-stains text-sm text-theme-primary mb-2">Controle de Camadas</h4>
             <LayerControl isVisible={true} />
           </div>
@@ -90,7 +90,7 @@ const FullscreenMapLayout = ({
       {/* Área restante - 4/5 da tela */}
       <div className="flex-1 flex flex-col">
         {/* Barra de tours ocupando 1/4 da área restante */}
-        <div className="h-1/4 bg-white border-b-2 border-black flex flex-col">
+        <div className="h-1/4 bg-white border-b-2 border-theme flex flex-col">
           <div className="p-4 border-b border-gray-200 bg-theme-background">
             <h3 className="text-lg font-dirty-stains text-theme-primary text-left">TOURS INTERATIVOS</h3>
           </div>
@@ -157,7 +157,7 @@ const FullscreenMapLayout = ({
                       ? '#f8e71c' : '#fae523'
                   }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className={`w-8 h-8 border-3 border-black rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
+                  className={`w-8 h-8 border-3 border-theme rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
                     selectedTour ? 'ring-2 ring-white/50' : ''
                   }`}
                   style={{

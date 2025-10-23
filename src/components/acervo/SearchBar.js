@@ -40,7 +40,7 @@ export default function SearchBar({ onSearch, loading = false }) {
               placeholder="Buscar no acervo... (ex: Dino Black, 1994, Candangolândia)"
               className="w-full px-6 py-4 text-lg font-sometype-mono 
                        bg-white/90 backdrop-blur-sm
-                       border-3 border-black
+                       border-3 border-theme
                        focus:outline-none focus:ring-4 focus:ring-yellow-400/50
                        placeholder:text-gray-500
                        transition-all duration-200"
@@ -82,8 +82,8 @@ export default function SearchBar({ onSearch, loading = false }) {
             }}
             className="px-8 py-4 
                      bg-yellow-400 hover:bg-yellow-300
-                     border-3 border-black
-                     font-scratchy text-xl text-black
+                     border-3 border-theme
+                     font-scratchy text-xl text-theme
                      transition-all duration-200
                      disabled:opacity-50 disabled:cursor-not-allowed
                      hover:scale-105 hover:rotate-1
@@ -134,7 +134,7 @@ export default function SearchBar({ onSearch, loading = false }) {
         </div>
 
         {/* Dica de busca */}
-        <p className="mt-2 text-sm text-white/70 font-sometype-mono">
+        <p className="mt-2 text-sm text-theme/70 font-sometype-mono">
           💡 Dica: A busca procura por títulos, descrições e localizações no acervo
         </p>
       </form>

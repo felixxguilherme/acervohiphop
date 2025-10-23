@@ -179,7 +179,7 @@ const CollectionBrowser = ({ onSelectCollection, selectedCollection }) => {
           <div>{error}</div>
           <button
             onClick={loadCollections}
-            className="mt-4 px-4 py-2 bg-red-600/80 text-white rounded hover:bg-red-600 transition-colors"
+            className="mt-4 px-4 py-2 bg-red-600/80 text-theme rounded hover:bg-red-600 transition-colors"
           >
             Tentar Novamente
           </button>
@@ -215,7 +215,7 @@ const CollectionBrowser = ({ onSelectCollection, selectedCollection }) => {
               onClick={() => setViewMode('grid')}
               className={`px-3 py-1 text-sm transition-colors ${
                 viewMode === 'grid' 
-                  ? 'bg-yellow-400 text-black' 
+                  ? 'bg-yellow-400 text-theme' 
                   : 'text-yellow-400 hover:bg-yellow-400/20'
               }`}
             >
@@ -225,7 +225,7 @@ const CollectionBrowser = ({ onSelectCollection, selectedCollection }) => {
               onClick={() => setViewMode('list')}
               className={`px-3 py-1 text-sm transition-colors ${
                 viewMode === 'list' 
-                  ? 'bg-yellow-400 text-black' 
+                  ? 'bg-yellow-400 text-theme' 
                   : 'text-yellow-400 hover:bg-yellow-400/20'
               }`}
             >

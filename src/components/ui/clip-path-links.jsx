@@ -11,7 +11,7 @@ export const ClipPathLinks = () => {
         description={
           <div className="flex flex-col">
 
-            <span className="font-scratchy text-2xl text-black">
+            <span className="font-scratchy text-2xl text-theme">
               + de
               <NumberTicker className="font-scratchy text-4xl" value={50} />
               batalhas mapeadas
@@ -23,7 +23,7 @@ export const ClipPathLinks = () => {
         Icon={BookOpenText}
         description={
           <div className="flex flex-col">
-            <span className="font-scratchy text-2xl text-black">
+            <span className="font-scratchy text-2xl text-theme">
               + de
               <NumberTicker className="font-scratchy text-4xl" value={100} />
               histórias catalogadas
@@ -35,7 +35,7 @@ export const ClipPathLinks = () => {
         Icon={Film}
         description={
           <div className="flex flex-col">
-            <span className="font-scratchy text-2xl text-black">
+            <span className="font-scratchy text-2xl text-theme">
               Acervo multimídia
             </span>
           </div>
@@ -45,7 +45,7 @@ export const ClipPathLinks = () => {
         Icon={BookType}
         description={
            <div className="flex flex-col">
-            <span className="font-scratchy text-2xl text-black">
+            <span className="font-scratchy text-2xl text-theme">
               Revista, entrevistas e mais
             </span>
           </div>
@@ -126,7 +126,7 @@ const LinkBox = ({ Icon, href, imgSrc, className, title, description }) => {
       rel="noopener noreferrer"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="relative cursor-pointer grid w-full h-64 place-content-center bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 p-6 overflow-hidden group">
+      className="relative cursor-pointer grid w-full h-64 place-content-center bg-white border-4 border-theme shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 p-6 overflow-hidden group">
       
       {/* Conteúdo principal - Brutalista */}
       <div className="flex flex-col items-center justify-center text-center space-y-3 relative z-10">
@@ -134,22 +134,22 @@ const LinkBox = ({ Icon, href, imgSrc, className, title, description }) => {
           <img
             src={imgSrc}
             alt="custom icon"
-            className={className ?? "max-h-16 object-contain border-2 border-black"} 
+            className={className ?? "max-h-16 object-contain border-2 border-theme"} 
           />
         ) : (
-          <div className="w-16 h-16 bg-yellow-400 border-4 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <Icon className="text-2xl text-black" />
+          <div className="w-16 h-16 bg-yellow-400 border-4 border-theme flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <Icon className="text-2xl text-theme" />
           </div>
         )}
         
         {/* Texto - Brutalista */}
         {title && (
-          <h3 className="text-sm font-black break-words text-black bg-yellow-400 px-3 py-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase">
+          <h3 className="text-sm font-black break-words text-theme bg-yellow-400 px-3 py-1 border-2 border-theme shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase">
             {title}
           </h3>
         )}
         {description && (
-          <div className="text-xs text-black break-words font-bold bg-white/80 p-2 border-2 border-black max-w-[200px]">
+          <div className="text-xs text-theme break-words font-bold bg-white/80 p-2 border-2 border-theme max-w-[200px]">
             {description}
           </div>
         )}
@@ -159,29 +159,29 @@ const LinkBox = ({ Icon, href, imgSrc, className, title, description }) => {
       <div
         ref={scope}
         style={{ clipPath: BOTTOM_RIGHT_CLIP }}
-        className="absolute inset-0 grid place-content-center bg-black text-white transition-colors duration-300 p-6 border-4 border-white">
+        className="absolute inset-0 grid place-content-center bg-black text-theme transition-colors duration-300 p-6 border-4 border-theme">
         
         <div className="flex flex-col items-center justify-center text-center space-y-3">
           {imgSrc ? (
             <img
               src={imgSrc}
               alt="custom icon hover"
-              className={className ?? "max-h-16 object-contain filter brightness-0 invert border-2 border-white"} 
+              className={className ?? "max-h-16 object-contain filter brightness-0 invert border-2 border-theme"} 
             />
           ) : (
-            <div className="w-16 h-16 bg-yellow-400 border-4 border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-              <Icon className="text-2xl text-black" />
+            <div className="w-16 h-16 bg-yellow-400 border-4 border-theme flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+              <Icon className="text-2xl text-theme" />
             </div>
           )}
           
           {/* Texto no hover - Brutalista */}
           {title && (
-            <h3 className="text-sm font-black break-words bg-yellow-400 text-black px-3 py-1 border-2 border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] uppercase">
+            <h3 className="text-sm font-black break-words bg-yellow-400 text-theme px-3 py-1 border-2 border-theme shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] uppercase">
               {title}
             </h3>
           )}
           {description && (
-            <div className="text-xs font-bold break-words text-white bg-white/20 p-2 border-2 border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] max-w-[200px]">
+            <div className="text-xs font-bold break-words text-theme bg-white/20 p-2 border-2 border-theme shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] max-w-[200px]">
               {description}
             </div>
           )}

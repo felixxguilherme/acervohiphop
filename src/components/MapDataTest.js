@@ -19,9 +19,9 @@ export default function MapDataTest() {
 
   if (isLoading('map')) {
     return (
-      <div className="p-6 bg-white border-2 border-black">
+      <div className="p-6 bg-white border-2 border-theme">
         <h2 className="text-xl font-dirty-stains mb-4">Teste dos Dados do Mapa</h2>
-        <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-8 w-8 border-2 border-theme border-t-transparent rounded-full"></div>
         <p className="mt-2 font-sometype-mono">Carregando dados do mapa...</p>
       </div>
     );
@@ -38,7 +38,7 @@ export default function MapDataTest() {
   }
 
   return (
-    <div className="p-6 bg-white border-2 border-black">
+    <div className="p-6 bg-white border-2 border-theme">
       <h2 className="text-xl font-dirty-stains mb-4">Teste dos Dados do Mapa</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

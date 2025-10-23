@@ -107,21 +107,21 @@ const TourStoryPanel = ({
       >
         <div className="h-full bg-black/95 backdrop-blur-lg border-2 border-yellow-400 rounded-lg shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="p-4 border-b border-white/20 flex-shrink-0">
-            <h2 className="font-dirty-stains text-xl text-white mb-2">
+          <div className="p-4 border-b border-theme/20 flex-shrink-0">
+            <h2 className="font-dirty-stains text-xl text-theme mb-2">
               {selectedTour.title}
             </h2>
             {selectedTour.subtitle && (
-              <p className="text-white/70 text-sm mb-3">
+              <p className="text-theme/70 text-sm mb-3">
                 {selectedTour.subtitle}
               </p>
             )}
             <div className="flex items-center justify-between">
-              <span className="text-yellow-400 text-xs font-mono bg-white/10 px-2 py-1 rounded border border-white/20">
+              <span className="text-yellow-400 text-xs font-mono bg-white/10 px-2 py-1 rounded border border-theme/20">
                 {activeChapter + 1} de {selectedTour.chapters.length}
               </span>
               {selectedTour.byline && (
-                <span className="text-white/60 text-xs">
+                <span className="text-theme/60 text-xs">
                   {selectedTour.byline}
                 </span>
               )}
@@ -148,14 +148,14 @@ const TourStoryPanel = ({
                         alt={chapter.title || `Capítulo ${index + 1}`}
                         width={320}
                         height={200}
-                        className="w-full h-40 object-cover rounded border-2 border-white/20 shadow-md"
+                        className="w-full h-40 object-cover rounded border-2 border-theme/20 shadow-md"
                       />
                     </div>
                   )}
 
                   {/* Chapter title */}
                   {chapter.title && (
-                    <h3 className="font-dirty-stains text-xl mb-4 text-white">
+                    <h3 className="font-dirty-stains text-xl mb-4 text-theme">
                       {chapter.title}
                     </h3>
                   )}
@@ -163,14 +163,14 @@ const TourStoryPanel = ({
                   {/* Chapter description */}
                   {chapter.description && (
                     <div 
-                      className="font-sometype-mono text-sm leading-relaxed text-white/80 mb-4"
+                      className="font-sometype-mono text-sm leading-relaxed text-theme/80 mb-4"
                       dangerouslySetInnerHTML={{ __html: chapter.description }}
                     />
                   )}
 
                   {/* Location info */}
                   {chapter.location && chapter.location.name && (
-                    <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/10 text-white/60">
+                    <div className="flex items-center gap-2 mt-4 pt-4 border-t border-theme/10 text-theme/60">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -192,7 +192,7 @@ const TourStoryPanel = ({
                   Fim da Jornada
                 </span>
               </div>
-              <p className="text-white/60 text-xs mt-2">
+              <p className="text-theme/60 text-xs mt-2">
                 {selectedTour.footer || 'Explore mais histórias do Hip Hop'}
               </p>
             </div>
@@ -202,8 +202,8 @@ const TourStoryPanel = ({
 
       {/* AIDEV-NOTE: Scroll hint */}
       <div className="fixed bottom-8 right-1/2 transform translate-x-1/2 z-30">
-        <div className="bg-yellow-400/90 border border-black rounded-lg px-4 py-2 shadow-lg animate-bounce">
-          <div className="flex items-center gap-2 text-black">
+        <div className="bg-yellow-400/90 border border-theme rounded-lg px-4 py-2 shadow-lg animate-bounce">
+          <div className="flex items-center gap-2 text-theme">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>

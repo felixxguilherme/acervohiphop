@@ -130,14 +130,14 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
   ];
 
   return (
-    <div className="bg-white border-[3px] border-black p-6 mb-8">
+    <div className="bg-white border-[3px] border-theme p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold font-sometype-mono text-black uppercase">
+        <h3 className="text-xl font-bold font-sometype-mono text-theme uppercase">
           Busca Avançada
         </h3>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-black hover:bg-gray-100 p-2 border-[3px] border-black transition-colors font-bold"
+          className="text-theme hover:bg-gray-100 p-2 border-[3px] border-theme transition-colors font-bold"
         >
           {isExpanded ? '−' : '+'}
         </button>
@@ -151,7 +151,7 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
             placeholder="DIGITE SUA BUSCA..."
             value={filters.q}
             onChange={(e) => handleFilterChange('q', e.target.value)}
-            className="w-full px-4 py-3 bg-white border-[3px] border-black text-black placeholder-gray-500 focus:outline-none font-sometype-mono uppercase"
+            className="w-full px-4 py-3 bg-white border-[3px] border-theme text-theme placeholder-gray-500 focus:outline-none font-sometype-mono uppercase"
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
           />
         </div>
@@ -159,10 +159,10 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
           <select
             value={filters.field}
             onChange={(e) => handleFilterChange('field', e.target.value)}
-            className="w-full px-4 py-3 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono"
+            className="w-full px-4 py-3 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono"
           >
             {searchFields.map(field => (
-              <option key={field.value} value={field.value} className="bg-white text-black">
+              <option key={field.value} value={field.value} className="bg-white text-theme">
                 {field.label}
               </option>
             ))}
@@ -172,10 +172,10 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
           <select
             value={filters.operator}
             onChange={(e) => handleFilterChange('operator', e.target.value)}
-            className="w-full px-4 py-3 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono"
+            className="w-full px-4 py-3 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono"
           >
             {searchOperators.map(operator => (
-              <option key={operator.value} value={operator.value} className="bg-white text-black">
+              <option key={operator.value} value={operator.value} className="bg-white text-theme">
                 {operator.label}
               </option>
             ))}
@@ -185,7 +185,7 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
           <button
             onClick={handleSearch}
             disabled={loading}
-            className="w-full px-4 py-3 bg-black text-white font-bold border-[3px] border-black hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sometype-mono uppercase"
+            className="w-full px-4 py-3 bg-black text-theme font-bold border-[3px] border-theme hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-sometype-mono uppercase"
           >
             {loading ? 'BUSCANDO...' : 'BUSCAR'}
           </button>
@@ -193,19 +193,19 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
       </div>
 
       {isExpanded && (
-        <div className="pt-6 border-t-[3px] border-black">
+        <div className="pt-6 border-t-[3px] border-theme">
               
               {/* Filtros Básicos */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div>
-                  <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Ordenação</label>
+                  <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Ordenação</label>
                   <select
                     value={filters.sort}
                     onChange={(e) => handleFilterChange('sort', e.target.value)}
-                    className="w-full px-3 py-2 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono"
+                    className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono"
                   >
                     {sortOptions.map(option => (
-                      <option key={option.value} value={option.value} className="bg-white text-black">
+                      <option key={option.value} value={option.value} className="bg-white text-theme">
                         {option.label}
                       </option>
                     ))}
@@ -213,34 +213,34 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
                 </div>
 
                 <div>
-                  <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Data Inicial</label>
+                  <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Data Inicial</label>
                   <input
                     type="date"
                     value={filters.startDate}
                     onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                    className="w-full px-3 py-2 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono"
+                    className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Data Final</label>
+                  <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Data Final</label>
                   <input
                     type="date"
                     value={filters.endDate}
                     onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                    className="w-full px-3 py-2 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono"
+                    className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Idioma</label>
+                  <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Idioma</label>
                   <select
                     value={filters.languages}
                     onChange={(e) => handleFilterChange('languages', e.target.value)}
-                    className="w-full px-3 py-2 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono"
+                    className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono"
                   >
                     {languageOptions.map(lang => (
-                      <option key={lang.value} value={lang.value} className="bg-white text-black">
+                      <option key={lang.value} value={lang.value} className="bg-white text-theme">
                         {lang.label}
                       </option>
                     ))}
@@ -251,46 +251,46 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
               {/* Filtros de Taxonomia AtoM 2.9 */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div>
-                  <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Criador</label>
+                  <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Criador</label>
                   <input
                     type="text"
                     placeholder="Ex: Dino Black"
                     value={filters.creators}
                     onChange={(e) => handleFilterChange('creators', e.target.value)}
-                    className="w-full px-3 py-2 bg-white border-[3px] border-black text-black placeholder-gray-500 focus:outline-none font-sometype-mono"
+                    className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme placeholder-gray-500 focus:outline-none font-sometype-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Assunto</label>
+                  <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Assunto</label>
                   <input
                     type="text"
                     placeholder="Ex: Rap, Hip Hop"
                     value={filters.subjects}
                     onChange={(e) => handleFilterChange('subjects', e.target.value)}
-                    className="w-full px-3 py-2 bg-white border-[3px] border-black text-black placeholder-gray-500 focus:outline-none font-sometype-mono"
+                    className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme placeholder-gray-500 focus:outline-none font-sometype-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Local</label>
+                  <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Local</label>
                   <input
                     type="text"
                     placeholder="Ex: Candangolândia/DF"
                     value={filters.places}
                     onChange={(e) => handleFilterChange('places', e.target.value)}
-                    className="w-full px-3 py-2 bg-white border-[3px] border-black text-black placeholder-gray-500 focus:outline-none font-sometype-mono"
+                    className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme placeholder-gray-500 focus:outline-none font-sometype-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Gênero (ID)</label>
+                  <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Gênero (ID)</label>
                   <input
                     type="text"
                     placeholder="Ex: 78"
                     value={filters.genres}
                     onChange={(e) => handleFilterChange('genres', e.target.value)}
-                    className="w-full px-3 py-2 bg-white border-[3px] border-black text-black placeholder-gray-500 focus:outline-none font-sometype-mono"
+                    className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme placeholder-gray-500 focus:outline-none font-sometype-mono"
                   />
                 </div>
               </div>
@@ -298,20 +298,20 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
               {/* Filtros Especiais */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div>
-                  <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">Nível (ID)</label>
+                  <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">Nível (ID)</label>
                   <input
                     type="text"
                     placeholder="Ex: 34"
                     value={filters.levels}
                     onChange={(e) => handleFilterChange('levels', e.target.value)}
-                    className="w-full px-3 py-2 bg-white border-[3px] border-black text-black placeholder-gray-500 focus:outline-none font-sometype-mono"
+                    className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme placeholder-gray-500 focus:outline-none font-sometype-mono"
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <label className="block text-black text-xs font-bold font-sometype-mono uppercase">Filtros Rápidos</label>
+                  <label className="block text-theme text-xs font-bold font-sometype-mono uppercase">Filtros Rápidos</label>
                   <div className="space-y-2">
-                    <label className="flex items-center text-black text-xs font-sometype-mono">
+                    <label className="flex items-center text-theme text-xs font-sometype-mono">
                       <input
                         type="checkbox"
                         checked={filters.onlyMedia}
@@ -320,7 +320,7 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
                       />
                       APENAS COM IMAGENS
                     </label>
-                    <label className="flex items-center text-black text-xs font-sometype-mono">
+                    <label className="flex items-center text-theme text-xs font-sometype-mono">
                       <input
                         type="checkbox"
                         checked={filters.topLod}
@@ -333,17 +333,17 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
                 </div>
 
                 <div className="space-y-3">
-                  <label className="block text-black text-xs font-bold font-sometype-mono uppercase">Filtros Rápidos (Criador)</label>
+                  <label className="block text-theme text-xs font-bold font-sometype-mono uppercase">Filtros Rápidos (Criador)</label>
                   <div className="space-y-2">
                     <button
                       onClick={() => handleFilterChange('creators', 'Dino Black')}
-                      className="w-full px-3 py-2 bg-gray-100 border-[3px] border-black text-black hover:bg-gray-200 transition-colors font-sometype-mono text-xs"
+                      className="w-full px-3 py-2 bg-gray-100 border-[3px] border-theme text-theme hover:bg-gray-200 transition-colors font-sometype-mono text-xs"
                     >
                       DINO BLACK
                     </button>
                     <button
                       onClick={() => handleFilterChange('places', 'Candangolândia/DF')}
-                      className="w-full px-3 py-2 bg-gray-100 border-[3px] border-black text-black hover:bg-gray-200 transition-colors font-sometype-mono text-xs"
+                      className="w-full px-3 py-2 bg-gray-100 border-[3px] border-theme text-theme hover:bg-gray-200 transition-colors font-sometype-mono text-xs"
                     >
                       CANDANGOLÂNDIA/DF
                     </button>
@@ -356,16 +356,16 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {taxonomies.subjects?.terms?.length > 0 && (
                   <div>
-                    <label className="block text-black text-xs font-bold mb-2 font-sometype-mono uppercase">
+                    <label className="block text-theme text-xs font-bold mb-2 font-sometype-mono uppercase">
                       Assuntos ({taxonomies.subjects.terms.length})
                     </label>
                     <select
-                      className="w-full px-3 py-2 bg-white border-[3px] border-black text-black focus:outline-none font-sometype-mono"
+                      className="w-full px-3 py-2 bg-white border-[3px] border-theme text-theme focus:outline-none font-sometype-mono"
                       onChange={(e) => handleFilterChange('subject', e.target.value)}
                     >
                       <option value="">SELECIONAR ASSUNTO...</option>
                       {taxonomies.subjects.terms.slice(0, 20).map((term, index) => (
-                        <option key={index} value={term.name} className="bg-white text-black">
+                        <option key={index} value={term.name} className="bg-white text-theme">
                           {term.name}
                         </option>
                       ))}
@@ -378,12 +378,12 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
               <div className="flex justify-between items-center pt-6">
                 <button
                   onClick={handleReset}
-                  className="px-6 py-3 bg-white text-black font-bold border-[3px] border-black hover:bg-gray-100 transition-colors font-sometype-mono uppercase"
+                  className="px-6 py-3 bg-white text-theme font-bold border-[3px] border-theme hover:bg-gray-100 transition-colors font-sometype-mono uppercase"
                 >
                   LIMPAR FILTROS
                 </button>
                 
-                <div className="text-black text-xs font-sometype-mono uppercase">
+                <div className="text-theme text-xs font-sometype-mono uppercase">
                   ✨ Novos filtros AtoM 2.9: Criador, Assunto, Local, Idioma
                 </div>
               </div>

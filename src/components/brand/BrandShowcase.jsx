@@ -32,17 +32,17 @@ export default function BrandShowcase() {
         <h2 className="font-dirty-stains text-2xl mb-4">1. Logotipo e Variações</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="text-center p-4 border-2 border-black">
+          <div className="text-center p-4 border-2 border-theme">
             <DistritoLogo size="tablet" />
             <p className="font-sometype-mono text-sm mt-2">Principal</p>
           </div>
           
-          <div className="text-center p-4 border-2 border-black">
+          <div className="text-center p-4 border-2 border-theme">
             <DistritoLogoTagline size="mobile" />
             <p className="font-sometype-mono text-sm mt-2">Com Tagline</p>
           </div>
           
-          <div className="text-center p-4 border-2 border-black">
+          <div className="text-center p-4 border-2 border-theme">
             <DistritoLogoAcervo size="mobile" />
             <p className="font-sometype-mono text-sm mt-2">Acervo</p>
           </div>
@@ -57,20 +57,20 @@ export default function BrandShowcase() {
           <div>
             <h3 className="font-sometype-mono font-bold mb-2">Paleta Clara (fundos escuros)</h3>
             <div className="grid grid-cols-5 gap-2">
-              <div className="bg-hip-azul-claro h-16 border-2 border-black flex items-center justify-center">
-                <span className="text-black text-xs font-bold">Azul</span>
+              <div className="bg-hip-azul-claro h-16 border-2 border-theme flex items-center justify-center">
+                <span className="text-theme text-xs font-bold">Azul</span>
               </div>
-              <div className="bg-hip-verde-claro h-16 border-2 border-black flex items-center justify-center">
-                <span className="text-black text-xs font-bold">Verde</span>
+              <div className="bg-hip-verde-claro h-16 border-2 border-theme flex items-center justify-center">
+                <span className="text-theme text-xs font-bold">Verde</span>
               </div>
-              <div className="bg-hip-amarelo-claro h-16 border-2 border-black flex items-center justify-center">
-                <span className="text-black text-xs font-bold">Amarelo</span>
+              <div className="bg-hip-amarelo-claro h-16 border-2 border-theme flex items-center justify-center">
+                <span className="text-theme text-xs font-bold">Amarelo</span>
               </div>
-              <div className="bg-hip-laranja-claro h-16 border-2 border-black flex items-center justify-center">
-                <span className="text-black text-xs font-bold">Laranja</span>
+              <div className="bg-hip-laranja-claro h-16 border-2 border-theme flex items-center justify-center">
+                <span className="text-theme text-xs font-bold">Laranja</span>
               </div>
-              <div className="bg-hip-vermelho-claro h-16 border-2 border-black flex items-center justify-center">
-                <span className="text-black text-xs font-bold">Vermelho</span>
+              <div className="bg-hip-vermelho-claro h-16 border-2 border-theme flex items-center justify-center">
+                <span className="text-theme text-xs font-bold">Vermelho</span>
               </div>
             </div>
           </div>
@@ -78,20 +78,20 @@ export default function BrandShowcase() {
           <div>
             <h3 className="font-sometype-mono font-bold mb-2">Paleta Escura (fundos claros)</h3>
             <div className="grid grid-cols-5 gap-2">
-              <div className="bg-hip-azul-escuro h-16 border-2 border-black flex items-center justify-center">
-                <span className="text-white text-xs font-bold">Azul</span>
+              <div className="bg-hip-azul-escuro h-16 border-2 border-theme flex items-center justify-center">
+                <span className="text-theme text-xs font-bold">Azul</span>
               </div>
-              <div className="bg-hip-verde-escuro h-16 border-2 border-black flex items-center justify-center">
-                <span className="text-white text-xs font-bold">Verde</span>
+              <div className="bg-hip-verde-escuro h-16 border-2 border-theme flex items-center justify-center">
+                <span className="text-theme text-xs font-bold">Verde</span>
               </div>
-              <div className="bg-hip-amarelo-escuro h-16 border-2 border-black flex items-center justify-center">
-                <span className="text-white text-xs font-bold">Amarelo</span>
+              <div className="bg-hip-amarelo-escuro h-16 border-2 border-theme flex items-center justify-center">
+                <span className="text-theme text-xs font-bold">Amarelo</span>
               </div>
-              <div className="bg-hip-laranja-escuro h-16 border-2 border-black flex items-center justify-center">
-                <span className="text-white text-xs font-bold">Laranja</span>
+              <div className="bg-hip-laranja-escuro h-16 border-2 border-theme flex items-center justify-center">
+                <span className="text-theme text-xs font-bold">Laranja</span>
               </div>
-              <div className="bg-hip-vermelho-escuro h-16 border-2 border-black flex items-center justify-center">
-                <span className="text-white text-xs font-bold">Vermelho</span>
+              <div className="bg-hip-vermelho-escuro h-16 border-2 border-theme flex items-center justify-center">
+                <span className="text-theme text-xs font-bold">Vermelho</span>
               </div>
             </div>
           </div>
@@ -214,21 +214,21 @@ export default function BrandShowcase() {
         <h2 className="font-dirty-stains text-2xl mb-4">8. Responsividade</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="border-2 border-black p-4 text-center">
+          <div className="border-2 border-theme p-4 text-center">
             <DistritoLogo size="mobile" />
             <p className="font-sometype-mono text-sm mt-2">
               Mobile: 50px
             </p>
           </div>
           
-          <div className="border-2 border-black p-4 text-center">
+          <div className="border-2 border-theme p-4 text-center">
             <DistritoLogo size="tablet" />
             <p className="font-sometype-mono text-sm mt-2">
               Tablet: 75-100px
             </p>
           </div>
           
-          <div className="border-2 border-black p-4 text-center">
+          <div className="border-2 border-theme p-4 text-center">
             <DistritoLogo size="desktop" />
             <p className="font-sometype-mono text-sm mt-2">
               Desktop: 100-150px

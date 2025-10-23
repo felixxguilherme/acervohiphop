@@ -83,7 +83,7 @@ export default function AcervoRealData() {
             Documentos, fotos e memórias reais do Hip Hop brasiliense, direto do nosso arquivo digital
           </p>
           <div className="mt-4 flex justify-center">
-            <span className="text-sm bg-green-600 px-3 py-1 rounded-full text-white">
+            <span className="text-sm bg-green-600 px-3 py-1 rounded-full text-theme">
               🔗 Conectado ao Acervo Digital
             </span>
           </div>

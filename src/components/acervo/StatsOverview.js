@@ -43,7 +43,7 @@ export default function StatsOverview() {
 
   if (loading) {
     return (
-      <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-xl p-6 mx-6 mb-8">
+      <div className="bg-black/40 backdrop-blur-md border border-theme/20 rounded-xl p-6 mx-6 mb-8">
         <div className="animate-pulse">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[...Array(4)].map((_, i) => (
@@ -103,10 +103,10 @@ export default function StatsOverview() {
                     <Image src="cursor02.webp" alt="Marca de spray com escorrimento" width={150} height={180} />
                   </div>
       <div className="text-center mb-8">
-        <h2 className="font-dirty-stains text-3xl font-black text-black mb-4 bg-[#df8d6d] inline-block px-6 py-3 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <h2 className="font-dirty-stains text-3xl font-black text-theme mb-4 bg-[#df8d6d] inline-block px-6 py-3 border-3 border-theme shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           ACERVO HIP HOP DF
         </h2>
-        <p className="font-scratchy text-black font-bold text-2xl p-3 mt-8">
+        <p className="font-scratchy text-theme font-bold text-2xl p-3 mt-8">
           PRESERVANDO A MEMÓRIA DA CULTURA HIP HOP NO DF
         </p>
       </div>
@@ -126,7 +126,7 @@ export default function StatsOverview() {
             className="group relative"
           >
             {/* Container brutalista */}
-            <div className="border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 hover:bg-[#df8d6d]">
+            <div className="border-4 border-theme p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 hover:bg-[#df8d6d]">
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
@@ -140,16 +140,16 @@ export default function StatsOverview() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: index * 0.1 + 0.5 }}
-                className="text-4xl font-black text-black mb-2 text-center"
+                className="text-4xl font-black text-theme mb-2 text-center"
               >
                 <NumberTicker value={stat.value} className="font-black font-scratchy" />
               </motion.div>
               
-              <div className="text-black font-black font-scratchy text-sm mb-2 text-center uppercase tracking-wide">
+              <div className="text-theme font-black font-scratchy text-sm mb-2 text-center uppercase tracking-wide">
                 {stat.label}
               </div>
               
-              <div className="text-black font-bold text-xs text-center bg-[#df8d6d] p-2 border-2 border-black">
+              <div className="text-theme font-bold text-xs text-center bg-[#df8d6d] p-2 border-2 border-theme">
                 {stat.description}
               </div>
             </div>

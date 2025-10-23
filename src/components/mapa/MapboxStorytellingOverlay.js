@@ -103,20 +103,20 @@ const MapboxStorytellingOverlay = ({
       >
         {/* Story header */}
         <div className="absolute top-4 left-4 right-4 bg-black/90 backdrop-blur-md border-2 border-yellow-400 rounded-lg p-4 pointer-events-auto">
-          <h1 className="font-dirty-stains text-2xl text-white mb-2">
+          <h1 className="font-dirty-stains text-2xl text-theme mb-2">
             {selectedTour.title}
           </h1>
           {selectedTour.subtitle && (
-            <p className="font-sometype-mono text-sm text-white/80">
+            <p className="font-sometype-mono text-sm text-theme/80">
               {selectedTour.subtitle}
             </p>
           )}
           <div className="flex items-center justify-between mt-3">
-            <span className="font-sometype-mono text-xs text-yellow-400 bg-white/10 px-2 py-1 rounded border border-white/20">
+            <span className="font-sometype-mono text-xs text-yellow-400 bg-white/10 px-2 py-1 rounded border border-theme/20">
               {activeChapter + 1} de {selectedTour.chapters.length}
             </span>
             {selectedTour.byline && (
-              <span className="font-sometype-mono text-xs text-white/60">
+              <span className="font-sometype-mono text-xs text-theme/60">
                 {selectedTour.byline}
               </span>
             )}
@@ -135,7 +135,7 @@ const MapboxStorytellingOverlay = ({
               className={`story-step transition-all duration-300 min-h-screen flex items-center ${getAlignmentClass(chapter.alignment)}`}
               data-step={index}
             >
-              <div className={`max-w-md mx-4 bg-black/95 backdrop-blur-lg border-2 border-white/20 rounded-lg p-6 shadow-2xl ${getPositionClass(chapter.alignment)}`}>
+              <div className={`max-w-md mx-4 bg-black/95 backdrop-blur-lg border-2 border-theme/20 rounded-lg p-6 shadow-2xl ${getPositionClass(chapter.alignment)}`}>
                 {/* Chapter image */}
                 {chapter.image && (
                   <div className="mb-4">
@@ -144,14 +144,14 @@ const MapboxStorytellingOverlay = ({
                       alt={chapter.title || `Capítulo ${index + 1}`}
                       width={400}
                       height={240}
-                      className="w-full h-48 object-cover rounded border-2 border-white/20 shadow-md"
+                      className="w-full h-48 object-cover rounded border-2 border-theme/20 shadow-md"
                     />
                   </div>
                 )}
 
                 {/* Chapter title */}
                 {chapter.title && (
-                  <h3 className="font-dirty-stains text-xl mb-4 text-white">
+                  <h3 className="font-dirty-stains text-xl mb-4 text-theme">
                     {chapter.title}
                   </h3>
                 )}
@@ -159,14 +159,14 @@ const MapboxStorytellingOverlay = ({
                 {/* Chapter description */}
                 {chapter.description && (
                   <div 
-                    className="font-sometype-mono text-sm leading-relaxed text-white/80 mb-4"
+                    className="font-sometype-mono text-sm leading-relaxed text-theme/80 mb-4"
                     dangerouslySetInnerHTML={{ __html: chapter.description }}
                   />
                 )}
 
                 {/* Location info */}
                 {chapter.location && chapter.location.name && (
-                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/10 text-white/60">
+                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-theme/10 text-theme/60">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -189,12 +189,12 @@ const MapboxStorytellingOverlay = ({
                   Fim da Jornada
                 </span>
               </div>
-              <p className="text-white/80 text-sm font-sometype-mono mb-4">
+              <p className="text-theme/80 text-sm font-sometype-mono mb-4">
                 {selectedTour.footer || 'Explore mais histórias do Hip Hop brasileiro'}
               </p>
               <button 
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="bg-yellow-400 text-black px-4 py-2 rounded font-sometype-mono text-sm hover:bg-yellow-300 transition-colors"
+                className="bg-yellow-400 text-theme px-4 py-2 rounded font-sometype-mono text-sm hover:bg-yellow-300 transition-colors"
               >
                 ↑ Voltar ao início
               </button>

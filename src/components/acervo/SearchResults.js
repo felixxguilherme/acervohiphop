@@ -49,10 +49,10 @@ export default function SearchResults({ results, loading, query, total }) {
           className="max-w-2xl mx-auto"
         >
           <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-2xl font-dirty-stains text-white mb-3">
+          <h3 className="text-2xl font-dirty-stains text-theme mb-3">
             Explore o Acervo Hip Hop DF
           </h3>
-          <p className="text-white/70 font-sometype-mono">
+          <p className="text-theme/70 font-sometype-mono">
             Digite um termo na busca acima para encontrar documentos, 
             composições, imagens e muito mais sobre a história do Hip Hop no Distrito Federal.
           </p>
@@ -71,17 +71,17 @@ export default function SearchResults({ results, loading, query, total }) {
       >
         <div className="max-w-2xl mx-auto">
           <div className="text-6xl mb-4">🤷</div>
-          <h3 className="text-2xl font-dirty-stains text-white mb-3">
+          <h3 className="text-2xl font-dirty-stains text-theme mb-3">
             Nenhum resultado encontrado
           </h3>
-          <p className="text-white/70 font-sometype-mono mb-6">
+          <p className="text-theme/70 font-sometype-mono mb-6">
             Não encontramos nada para "<strong className="text-yellow-400">{query}</strong>"
           </p>
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6">
-            <p className="text-white/90 font-sometype-mono text-sm mb-2">
+          <div className="bg-white/10 backdrop-blur-sm border border-theme/20 rounded-lg p-6">
+            <p className="text-theme/90 font-sometype-mono text-sm mb-2">
               <strong>💡 Dicas de busca:</strong>
             </p>
-            <ul className="text-white/70 text-sm space-y-1 text-left max-w-md mx-auto">
+            <ul className="text-theme/70 text-sm space-y-1 text-left max-w-md mx-auto">
               <li>• Tente termos mais gerais (ex: "Dino" ao invés de "Dino Black")</li>
               <li>• Busque por anos (ex: "1994")</li>
               <li>• Procure por locais (ex: "Candangolândia")</li>
@@ -100,9 +100,9 @@ export default function SearchResults({ results, loading, query, total }) {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6 pb-4 border-b-2 border-white/20"
+        className="mb-6 pb-4 border-b-2 border-theme/20"
       >
-        <p className="text-white font-sometype-mono">
+        <p className="text-theme font-sometype-mono">
           Encontrados <strong className="text-yellow-400 text-xl">{total}</strong> {total === 1 ? 'resultado' : 'resultados'} para 
           <strong className="text-yellow-400"> "{query}"</strong>
         </p>
@@ -118,7 +118,7 @@ export default function SearchResults({ results, loading, query, total }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ delay: index * 0.05 }}
-              className="bg-white/90 backdrop-blur-sm border-3 border-black 
+              className="bg-white/90 backdrop-blur-sm border-3 border-theme 
                        hover:border-yellow-400 transition-all duration-200
                        hover:shadow-xl hover:-translate-y-1
                        overflow-hidden group"
@@ -137,7 +137,7 @@ export default function SearchResults({ results, loading, query, total }) {
               {/* Conteúdo */}
               <div className="p-5">
                 {/* Título */}
-                <h3 className="font-scratchy text-xl text-black mb-2 line-clamp-2 group-hover:text-yellow-600 transition-colors">
+                <h3 className="font-scratchy text-xl text-theme mb-2 line-clamp-2 group-hover:text-yellow-600 transition-colors">
                   {item.title}
                 </h3>
 
@@ -184,7 +184,7 @@ export default function SearchResults({ results, loading, query, total }) {
                   href={`/acervo/${item.slug}`}
                   className="mt-4 inline-block px-4 py-2 
                            bg-yellow-400 hover:bg-yellow-300 
-                           border-2 border-black
+                           border-2 border-theme
                            font-scratchy text-sm
                            transition-all duration-200
                            hover:scale-105"

@@ -365,7 +365,7 @@ const MapaContent = () => {
       <div className={`${isPageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
         <HeaderApp title="MAPA DO HIP HOP" showTitle={true} />
         
-        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-black border-l-3 border-r-3 border-b-3">
+        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -416,14 +416,14 @@ const MapaContent = () => {
                 <div className="bg-theme-background">
                   <div 
                     ref={mapContainerRef}
-                    className={`border-2 border-black overflow-hidden bg-gray-200 relative ${
+                    className={`border-2 border-theme overflow-hidden bg-gray-200 relative ${
                       isFullscreen ? 'fullscreen-map' : ''
                     }`}
                   >
                     {/* Botão de Tela Cheia */}
                     <button
                       onClick={toggleFullscreen}
-                      className="absolute top-4 right-4 z-10 bg-[#fae523] border-2 border-black rounded-lg p-2 hover:bg-[#f8e71c] transition-colors shadow-lg"
+                      className="absolute top-4 right-4 z-10 bg-[#fae523] border-2 border-theme rounded-lg p-2 hover:bg-[#f8e71c] transition-colors shadow-lg"
                       title={isFullscreen ? 'Sair da tela cheia' : 'Expandir para tela cheia'}
                     >
                       {isFullscreen ? (
@@ -481,7 +481,7 @@ const MapaContent = () => {
                                       ? '#f8e71c' : '#fae523'
                                   }}
                                   transition={{ duration: 0.5, ease: "easeOut" }}
-                                  className={`w-8 h-8 border-3 border-black rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
+                                  className={`w-8 h-8 border-3 border-theme rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
                                     selectedTour ? 'ring-2 ring-white/50' : ''
                                   }`}
                                   style={{
@@ -622,7 +622,7 @@ const MapaContent = () => {
                                       ? '#f8e71c' : '#fae523'
                                   }}
                                   transition={{ duration: 0.5, ease: "easeOut" }}
-                                  className={`w-8 h-8 border-3 border-black rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
+                                  className={`w-8 h-8 border-3 border-theme rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
                                     selectedTour ? 'ring-2 ring-white/50' : ''
                                   }`}
                                   style={{
@@ -677,9 +677,9 @@ const MapaContent = () => {
                                 closeButton={true}
                                 className="custom-popup"
                               >
-                                <div className="bg-white border-2 border-black p-4 min-w-[250px]">
-                                  <h3 className="font-dirty-stains text-2xl mb-2 text-black">{selectedLocation.name}</h3>
-                                  <p className="font-sometype-mono text-sm text-black/80 mb-3">{selectedLocation.description}</p>
+                                <div className="bg-white border-2 border-theme p-4 min-w-[250px]">
+                                  <h3 className="font-dirty-stains text-2xl mb-2 text-theme">{selectedLocation.name}</h3>
+                                  <p className="font-sometype-mono text-sm text-theme/80 mb-3">{selectedLocation.description}</p>
                                   <div className="flex items-center gap-2 mb-3">
                                     <span className="bg-blue-100 text-blue-800 px-2 py-1 border border-blue-300 text-xs font-sometype-mono">
                                       {selectedLocation.itemCount} itens
@@ -691,19 +691,19 @@ const MapaContent = () => {
                                     )}
                                   </div>
                                   {selectedLocation.items && selectedLocation.items.length > 0 && (
-                                    <div className="border-t border-black/20 pt-3">
+                                    <div className="border-t border-theme/20 pt-3">
                                       <h4 className="font-sometype-mono text-sm font-bold mb-2">Item em destaque:</h4>
                                       <div className="flex gap-3">
                                         {selectedLocation.items[0].thumbnail && (
                                           <img 
                                             src={selectedLocation.items[0].thumbnail} 
                                             alt={selectedLocation.items[0].title}
-                                            className="w-12 h-12 object-cover border border-black"
+                                            className="w-12 h-12 object-cover border border-theme"
                                           />
                                         )}
                                         <div>
-                                          <p className="font-sometype-mono text-xs font-semibold text-black">{selectedLocation.items[0].title}</p>
-                                          <p className="font-sometype-mono text-xs text-black/60">{selectedLocation.items[0].date}</p>
+                                          <p className="font-sometype-mono text-xs font-semibold text-theme">{selectedLocation.items[0].title}</p>
+                                          <p className="font-sometype-mono text-xs text-theme/60">{selectedLocation.items[0].date}</p>
                                         </div>
                                       </div>
                                     </div>
@@ -739,7 +739,7 @@ const MapaContent = () => {
                   
                   {mapError && (
                     <div className="text-center py-8 mb-8">
-                      <div className="bg-theme-background border-2 border-black p-6">
+                      <div className="bg-theme-background border-2 border-theme p-6">
                         <p className="font-dirty-stains text-xl mb-2">Erro ao carregar mapa</p>
                         <p className="font-sometype-mono">{mapError}</p>
                       </div>
@@ -749,13 +749,13 @@ const MapaContent = () => {
                   {/* Loading específico para regiões */}
                   {isRegionsLoading ? (
                     <div className="text-center py-12">
-                      <div className="bg-white border-2 border-black p-8">
+                      <div className="bg-white border-2 border-theme p-8">
                         <div className="flex justify-center mb-4 h-8">
                           <div className="flex gap-1 items-end">
                             {[0, 1, 2].map((index) => (
                               <motion.div
                                 key={index}
-                                className="w-3 bg-theme-primary border border-black"
+                                className="w-3 bg-theme-primary border border-theme"
                                 style={{ height: '8px' }}
                                 animate={{ 
                                   scaleY: [1, 3, 1],
@@ -787,10 +787,10 @@ const MapaContent = () => {
                         transition={{ delay: 0.7 + index * 0.1 }}
                         whileHover={{ scale: 1.02, y: -5 }}
                         onClick={() => handleMarkerClick(location)}
-                        className="bg-white border-2 border-black p-6 cursor-pointer hover:bg-zinc-100 transition-all duration-300"
+                        className="bg-white border-2 border-theme p-6 cursor-pointer hover:bg-zinc-100 transition-all duration-300"
                       >
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="w-6 h-6 bg-[#fae523] border-2 border-black rounded-full flex items-center justify-center">
+                          <div className="w-6 h-6 bg-[#fae523] border-2 border-theme rounded-full flex items-center justify-center">
                             {location.isRandomPoint ? (
                               // AIDEV-NOTE: Show custom icon for random points in location list
                               (() => {
@@ -805,14 +805,14 @@ const MapaContent = () => {
                               <div className="w-2 h-2 bg-black rounded-full"></div>
                             )}
                           </div>
-                          <h4 className="font-dirty-stains text-2xl text-black">{location.name}</h4>
+                          <h4 className="font-dirty-stains text-2xl text-theme">{location.name}</h4>
                         </div>
                         
-                        <p className="font-sometype-mono text-sm text-black/80 mb-4">{location.description}</p>
+                        <p className="font-sometype-mono text-sm text-theme/80 mb-4">{location.description}</p>
                         
                         <div className="flex items-center justify-between">
                           <div className="flex gap-2">
-                            <span className="bg-[#fae523] text-black px-3 py-1 rounded-full text-sm font-sometype-mono border border-black">
+                            <span className="bg-[#fae523] text-theme px-3 py-1 rounded-full text-sm font-sometype-mono border border-theme">
                               {location.itemCount} item
                             </span>
                             {location.has_real_coordinates && (
@@ -823,14 +823,14 @@ const MapaContent = () => {
                           </div>
                           <button 
                             onClick={() => handleMarkerClick(location)}
-                            className="font-sometype-mono text-sm text-black hover:text-black/70 underline"
+                            className="font-sometype-mono text-sm text-theme hover:text-theme/70 underline"
                           >
                             Ver no mapa →
                           </button>
                         </div>
                         
                         {/* Coordenadas para debug */}
-                        <div className="mt-3 pt-3 border-t border-black/20">
+                        <div className="mt-3 pt-3 border-t border-theme/20">
                           <p className="text-xs font-sometype-mono text-gray-500">
                             📍 {location.coordinates.lat.toFixed(4)}, {location.coordinates.lng.toFixed(4)}
                           </p>
@@ -847,7 +847,7 @@ const MapaContent = () => {
                   
                   {locations.length === 0 && !mapError && !isRegionsLoading && (
                     <div className="text-center py-12">
-                      <div className="bg-white/90 border-2 border-black rounded-lg p-6 max-w-md mx-auto">
+                      <div className="bg-white/90 border-2 border-theme rounded-lg p-6 max-w-md mx-auto">
                         <p className="font-dirty-stains text-xl mb-2">Nenhuma região encontrada</p>
                         <p className="font-sometype-mono text-sm">Não foram encontrados dados de localização no acervo</p>
                       </div>
@@ -867,7 +867,7 @@ const MapaContent = () => {
                           <PaginationItem>
                             <PaginationPrevious 
                               onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
-                              className={`cursor-pointer border-2 border-black ${
+                              className={`cursor-pointer border-2 border-theme ${
                                 currentPage === 1 
                                   ? 'opacity-50 cursor-not-allowed pointer-events-none' 
                                   : 'hover:bg-gray-100 transition-colors'
@@ -880,9 +880,9 @@ const MapaContent = () => {
                               <PaginationLink
                                 onClick={() => goToPage(page)}
                                 isActive={page === currentPage}
-                                className={`cursor-pointer border-2 border-black font-dirty-stains ${
+                                className={`cursor-pointer border-2 border-theme font-dirty-stains ${
                                   page === currentPage
-                                    ? 'bg-blue-500 text-white hover:bg-blue-600'
+                                    ? 'bg-blue-500 text-theme hover:bg-blue-600'
                                     : 'bg-white hover:bg-gray-100 transition-colors'
                                 }`}
                               >
@@ -894,7 +894,7 @@ const MapaContent = () => {
                           <PaginationItem>
                             <PaginationNext 
                               onClick={() => currentPage < totalPages && goToPage(currentPage + 1)}
-                              className={`cursor-pointer border-2 border-black ${
+                              className={`cursor-pointer border-2 border-theme ${
                                 currentPage === totalPages 
                                   ? 'opacity-50 cursor-not-allowed pointer-events-none' 
                                   : 'hover:bg-gray-100 transition-colors'
@@ -908,7 +908,7 @@ const MapaContent = () => {
                 </div>
               </motion.section>
 
-              <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-black p-8">
+              <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-theme p-8">
               
               
                       {/* Decorative elements */}
@@ -967,24 +967,24 @@ Veja o Distrito Federal além dos setores e monumentos. Aqui, traçamos pontos q
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
-                    className="bg-white border-4 border-black rounded-lg p-6 max-w-md w-full"
+                    className="bg-white border-4 border-theme rounded-lg p-6 max-w-md w-full"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="font-dirty-stains text-2xl text-black">{selectedLocation.name}</h3>
+                      <h3 className="font-dirty-stains text-2xl text-theme">{selectedLocation.name}</h3>
                       <button
                         onClick={() => setSelectedLocation(null)}
-                        className="text-black hover:text-gray-600 text-2xl font-bold"
+                        className="text-theme hover:text-gray-600 text-2xl font-bold"
                       >
                         ×
                       </button>
                     </div>
                     
-                    <p className="font-sometype-mono text-sm text-black/80 mb-4">{selectedLocation.description}</p>
+                    <p className="font-sometype-mono text-sm text-theme/80 mb-4">{selectedLocation.description}</p>
                     
                     <div className="space-y-2 mb-4">
                       <div className="flex gap-2">
-                        <span className="bg-[#fae523] text-black px-2 py-1 rounded text-xs font-sometype-mono border border-black">
+                        <span className="bg-[#fae523] text-theme px-2 py-1 rounded text-xs font-sometype-mono border border-theme">
                           {selectedLocation.itemCount} item
                         </span>
                         {selectedLocation.has_real_coordinates && (
@@ -1006,19 +1006,19 @@ Veja o Distrito Federal além dos setores e monumentos. Aqui, traçamos pontos q
                     </div>
                     
                     {selectedLocation.items && selectedLocation.items.length > 0 && (
-                      <div className="border-t border-black/20 pt-4">
+                      <div className="border-t border-theme/20 pt-4">
                         <h4 className="font-sometype-mono text-sm font-bold mb-2">Item em destaque:</h4>
                         <div className="flex gap-3">
                           {selectedLocation.items[0].thumbnail && (
                             <img 
                               src={selectedLocation.items[0].thumbnail} 
                               alt={selectedLocation.items[0].title}
-                              className="w-16 h-16 object-cover rounded border border-black"
+                              className="w-16 h-16 object-cover rounded border border-theme"
                             />
                           )}
                           <div>
-                            <p className="font-sometype-mono text-sm font-semibold text-black">{selectedLocation.items[0].title}</p>
-                            <p className="font-sometype-mono text-xs text-black/60">{selectedLocation.items[0].date}</p>
+                            <p className="font-sometype-mono text-sm font-semibold text-theme">{selectedLocation.items[0].title}</p>
+                            <p className="font-sometype-mono text-xs text-theme/60">{selectedLocation.items[0].date}</p>
                           </div>
                         </div>
                       </div>

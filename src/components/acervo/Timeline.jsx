@@ -28,18 +28,18 @@ export function TimelineDemo() {
         <div>
           {/* Header do evento */}
           <div className="p-6 mb-6">
-            <div className="font-scratchy text-black text-lg font-black px-3 py-1 border-2 border-black inline-block mb-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] tracking-wider uppercase">
+            <div className="font-scratchy text-theme text-lg font-black px-3 py-1 border-2 border-theme inline-block mb-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] tracking-wider uppercase">
               {new Date(event.date).toLocaleDateString('pt-BR', { 
                 day: '2-digit', 
                 month: 'long', 
                 year: 'numeric' 
               })}
             </div>
-            <h3 className="font-sometype-mono text-3xl font-black text-black uppercase tracking-wide mb-3">
+            <h3 className="font-sometype-mono text-3xl font-black text-theme uppercase tracking-wide mb-3">
               {event.title}
             </h3>
             
-              <p className="font-scratchy text-lg font-bold text-black leading-tight">
+              <p className="font-scratchy text-lg font-bold text-theme leading-tight">
                 {event.description}
               </p>
             
@@ -87,7 +87,7 @@ export function TimelineDemo() {
                   </div>
                   
                   {/* Título do item */}
-                  <h4 className="text-sm font-black text-black uppercase tracking-wide bg-red-500 border-2 border-black px-3 py-2 text-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <h4 className="text-sm font-black text-theme uppercase tracking-wide bg-red-500 border-2 border-theme px-3 py-2 text-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                     {item.title}
                   </h4>
                 </div>
@@ -95,11 +95,11 @@ export function TimelineDemo() {
             })}
 
             {/* Card informativo adicional sobre o período */}
-            <div className="text-black border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <div className="font-sometype-monotext-black text-xs font-black px-2 py-1 inline-block mb-3 border border-black">
+            <div className="text-theme border-4 border-theme p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+              <div className="font-sometype-monotext-theme text-xs font-black px-2 py-1 inline-block mb-3 border border-theme">
                 CONTEXTO HISTÓRICO
               </div>
-              <h4 className="text-lg font-sometype-mono font-black mb-3 text-black">
+              <h4 className="text-lg font-sometype-mono font-black mb-3 text-theme">
                 {getContextualInfo(year).title}
               </h4>
               <p className="font-sometype-mono text-sm font-bold leading-relaxed">
@@ -109,7 +109,7 @@ export function TimelineDemo() {
                 {getContextualInfo(year).tags.map((tag, i) => (
                   <span 
                     key={i}
-                    className="font-scratchy text-black px-2 py-1 text-sm font-black border border-black"
+                    className="font-scratchy text-theme px-2 py-1 text-sm font-black border border-theme"
                   >
                     {tag}
                   </span>
@@ -121,7 +121,7 @@ export function TimelineDemo() {
             <div className="mt-8 text-center">
               <button
                 onClick={() => openYearDetails(event)}
-                className="pointer hover:bg-black text-black hover:text-white font-black px-8 py-4 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all duration-200 uppercase tracking-wide text-lg"
+                className="pointer hover:bg-black text-theme hover:text-theme font-black px-8 py-4 border-4 border-theme shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all duration-200 uppercase tracking-wide text-lg"
               >
                 📖 Ver História Completa de {year}
               </button>
@@ -312,22 +312,22 @@ function YearDetailModal({ isOpen, onClose, yearData }) {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            className="bg-white border-4 border-black max-w-4xl max-h-[90vh] overflow-y-auto shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+            className="bg-white border-4 border-theme max-w-4xl max-h-[90vh] overflow-y-auto shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
           >
             {/* Header */}
-            <div className="bg-red-500 p-6 border-b-4 border-black">
+            <div className="bg-red-500 p-6 border-b-4 border-theme">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-4xl font-black text-black mb-2 font-sometype-mono">
+                  <h2 className="text-4xl font-black text-theme mb-2 font-sometype-mono">
                     {year} - {yearData.title}
                   </h2>
-                  <p className="text-lg font-bold text-black font-scratchy">
+                  <p className="text-lg font-bold text-theme font-scratchy">
                     {contextInfo.title}
                   </p>
                 </div>
                 <button
                   onClick={onClose}
-                  className="w-12 h-12 bg-black text-white border-4 border-white hover:bg-white hover:text-black transition-colors font-black text-2xl shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                  className="w-12 h-12 bg-black text-theme border-4 border-theme hover:bg-white hover:text-theme transition-colors font-black text-2xl shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
                 >
                   ×
                 </button>
@@ -349,11 +349,11 @@ function YearDetailModal({ isOpen, onClose, yearData }) {
                   </div>
                   
                   {/* Highlights */}
-                  <div className="bg-yellow-500 border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                    <h4 className="font-black text-black mb-3 font-sometype-mono">📋 MARCOS PRINCIPAIS:</h4>
+                  <div className="bg-yellow-500 border-4 border-theme p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <h4 className="font-black text-theme mb-3 font-sometype-mono">📋 MARCOS PRINCIPAIS:</h4>
                     <ul className="space-y-2">
                       {expandedInfo.highlights.map((highlight, i) => (
-                        <li key={i} className="flex items-start gap-2 text-black font-bold font-scratchy text-sm">
+                        <li key={i} className="flex items-start gap-2 text-theme font-bold font-scratchy text-sm">
                           <span className="text-red-500 font-black">•</span>
                           {highlight}
                         </li>
@@ -364,19 +364,19 @@ function YearDetailModal({ isOpen, onClose, yearData }) {
 
                 {/* Coluna Direita - História */}
                 <div>
-                  <div className="bg-black text-white p-6 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mb-6">
+                  <div className="bg-black text-theme p-6 border-4 border-theme shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mb-6">
                     <h4 className="text-yellow-500 font-black mb-4 text-xl font-sometype-mono">📖 HISTÓRIA COMPLETA</h4>
                     <div className="space-y-4 text-sm font-bold leading-relaxed font-scratchy">
                       {expandedInfo.fullStory.split('\n\n').map((paragraph, i) => (
-                        <p key={i} className="text-white">{paragraph.trim()}</p>
+                        <p key={i} className="text-theme">{paragraph.trim()}</p>
                       ))}
                     </div>
                   </div>
 
                   {/* Impacto */}
-                  <div className="bg-green-500 border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                    <h4 className="font-black text-black mb-3 font-sometype-mono">🎯 IMPACTO:</h4>
-                    <p className="text-black font-bold text-sm leading-relaxed font-scratchy">
+                  <div className="bg-green-500 border-4 border-theme p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <h4 className="font-black text-theme mb-3 font-sometype-mono">🎯 IMPACTO:</h4>
+                    <p className="text-theme font-bold text-sm leading-relaxed font-scratchy">
                       {expandedInfo.impact}
                     </p>
                   </div>
@@ -387,7 +387,7 @@ function YearDetailModal({ isOpen, onClose, yearData }) {
                       {contextInfo.tags.map((tag, i) => (
                         <span 
                           key={i}
-                          className="bg-blue-500 text-black px-3 py-2 text-sm font-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-scratchy"
+                          className="bg-blue-500 text-theme px-3 py-2 text-sm font-black border-2 border-theme shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-scratchy"
                         >
                           #{tag}
                         </span>
