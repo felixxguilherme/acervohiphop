@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AcervoProvider } from "@/contexts/AcervoContext";
 import ThemeBackground from "@/components/ThemeBackground";
 import ImagePreloader from "@/components/ImagePreloader";
+import GlobalLoader from "@/components/GlobalLoader";
 
 export const metadata = {
   title: "Distrito HipHop - Memórias Vivas de um Movimento",
@@ -82,15 +83,17 @@ export default function RootLayout({ children }) {
       >
         <ThemeProvider>
           <AcervoProvider>
-            <ImagePreloader />
-            <ThemeBackground />
-            <div className="min-h-screen flex flex-col relative z-10">
-              
-                {children}
-                     
-              {/* Footer */}
-              <FooterApp />
-            </div>
+            <GlobalLoader>
+              <ImagePreloader />
+              <ThemeBackground />
+              <div className="min-h-screen flex flex-col relative z-10">
+                
+                  {children}
+                       
+                {/* Footer */}
+                <FooterApp />
+              </div>
+            </GlobalLoader>
           </AcervoProvider>
         </ThemeProvider>
       </body>
