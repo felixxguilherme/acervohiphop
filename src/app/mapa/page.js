@@ -918,21 +918,21 @@ const MapaContent = () => {
                         <div
                           className="absolute -bottom-10 left-15 w-64 h-64 bg-contain bg-no-repeat"
                           style={{
-                            backgroundImage: "url('/cursor02.png')"
+                            backgroundImage: "url('/cursor02.webp')"
                           }}
                         />
               
                         <div
                           className="absolute top-0 -right-15 w-32 h-32 bg-contain bg-no-repeat"
                           style={{
-                            backgroundImage: "url('/spray_preto-1.png')"
+                            backgroundImage: "url('/spray_preto-1.webp')"
                           }}
                         />
               
                         <div
                           className="absolute top-5 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
                           style={{
-                            backgroundImage: "url('/spray_preto-2.png')"
+                            backgroundImage: "url('/spray_preto-2.webp')"
                           }}
                         />
                       </div>

@@ -118,7 +118,7 @@ export default function Home() {
               <StoryCard
                 title="MAPA INTERATIVO"
                 description="Navegue pelos territórios e locais históricos do Hip Hop em todas as regiões administrativas do DF."
-                image="mapa.png"
+                image="mapa.webp"
                 tags={["31 regiões mapeadas", "Territórios", "Geografia"]}
                 href="/mapa"
                 index={1}

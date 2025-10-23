@@ -15,15 +15,15 @@ const Audiovisual = () => {
     if (typeof window !== 'undefined') {
       // Pré-armazenar a imagem em cache
       const bgImage = new window.Image();
-      bgImage.src = '/fundo_base.jpg';
+      bgImage.src = '/fundo_base.webp';
 
       // Adicionar preload no head se não existir
-      let link = document.querySelector('link[href="/fundo_base.jpg"]');
+      let link = document.querySelector('link[href="/fundo_base.webp"]');
       if (!link) {
         link = document.createElement('link');
         link.rel = 'preload';
         link.as = 'image';
-        link.href = '/fundo_base.jpg';
+        link.href = '/fundo_base.webp';
         link.type = 'image/jpeg';
         link.fetchpriority = 'high';
         document.head.appendChild(link);
