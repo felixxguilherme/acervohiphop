@@ -86,10 +86,13 @@ export default function HeaderApp({ title, showTitle = false }) {
 
   return (
     <motion.header
-      className={`sticky ${currentTheme === 'light' ? 'fundo-base' : 'fundo-escuro'} top-0 w-full border-3 border-solid border-theme z-50`}
+      className={`sticky ${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'} top-0 w-full border-3 border-solid border-theme z-[9999]`}
       style={{
-        // backgroundColor: currentTheme === 'light' ? '#FFFCF2' : '#252422',
-        // willChange: 'height, transform'
+        backgroundColor: currentTheme === 'light' ? '#FFFCF2' : '#252422',
+        willChange: 'height, transform',
+        position: 'sticky',
+        top: 0,
+        zIndex: 9999
       }}
       initial={{ y: -100, opacity: 0 }}
       animate={{ 
@@ -199,7 +202,7 @@ export default function HeaderApp({ title, showTitle = false }) {
               
               {/* Navegação - adapta tamanho baseado no estado */}
               <motion.nav 
-                className={`flex flex-wrap justify-center gap-1 sm:gap-2 md:gap-4 lg:gap-6 w-full px-2 ${!isScrolled ? 'border-black border-t-3 pt-4 pb-6' : 'py-4'}`}
+                className={`flex flex-wrap justify-center gap-1 sm:gap-2 md:gap-4 lg:gap-6 w-full px-2 ${!isScrolled ? 'border-theme border-t-3 pt-4 pb-6' : 'py-4'}`}
               >
                 <Link href="/">
                   <AnimatedButton 
