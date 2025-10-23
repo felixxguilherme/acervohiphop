@@ -110,6 +110,27 @@
   --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
   --sidebar-border: oklch(0.928 0.006 264.531);
   --sidebar-ring: oklch(0.707 0.022 261.325);
+
+  /* === DISTRITO HIP HOP - PALETA DE CORES OFICIAL === */
+  /* Paleta Clara - uso em fundos escuros */
+  --azul-claro: #73D7F9;
+  --verde-claro: #D2FA49;
+  --amarelo-claro: #FAE521;
+  --laranja-claro: #F7BA24;
+  --vermelho-claro: #FF7B52;
+
+  /* Paleta Escura - uso em fundos claros */
+  --azul-escuro: #19A8CE;
+  --verde-escuro: #7FBD02;
+  --amarelo-escuro: #C6AF28;
+  --laranja-escuro: #D39700;
+  --vermelho-escuro: #C14625;
+
+  /* Backgrounds temáticos */
+  --fundo-claro: #FFFCF2;
+  --fundo-escuro: #252422;
+  --fundo-papel: #F5F5F5;
+  --fundo-concreto: #2B2B2B;
 }
 
 .dark {
@@ -400,28 +421,139 @@ body.theme-dark .border-theme-soft {
   height: 100% !important;
 }
 
-/* Background classes for fundo_base images */
-.fundo-base {
-  background-image: url('/fundo_base.jpg');
+/* === SISTEMA DE BACKGROUNDS HÍBRIDO === */
+
+/* Base: cores sólidas como fallback SEMPRE carregadas primeiro */
+.theme-background-light {
+  background-color: var(--fundo-claro); /* #FFFCF2 - fallback obrigatório */
+  color: #000000;
+}
+
+.theme-background-dark {
+  background-color: var(--fundo-escuro); /* #252422 - fallback obrigatório */
+  color: #FFFFFF;
+}
+
+/* Camada de imagem: aplicada apenas quando carregada */
+.theme-background-light.bg-loaded {
+  background-image: url('/fundo_base.webp');
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: local; /* Melhora performance em mobile */
-  will-change: background-image; /* Otimização para animações */
+  background-repeat: repeat;
+  background-attachment: local;
+  /* A cor de fallback permanece como backup */
+  background-color: var(--fundo-claro);
+}
+
+.theme-background-dark.bg-loaded {
+  background-image: url('/fundo_base_preto.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat;
+  background-attachment: local;
+  /* A cor de fallback permanece como backup */
+  background-color: var(--fundo-escuro);
+}
+
+/* Classes legacy mantidas para compatibilidade */
+.fundo-base {
+  background-color: var(--fundo-claro); /* Fallback primeiro */
+  background-image: url('/fundo_base.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat;
+  background-attachment: local;
 }
 
 .fundo-base-preto {
-  background-image: url('/fundo_base_preto.jpg');
+  background-color: var(--fundo-escuro); /* Fallback primeiro */
+  background-image: url('/fundo_base_preto.webp');
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: local; /* Melhora performance em mobile */
-  will-change: background-image; /* Otimização para animações */
+  background-repeat: repeat;
+  background-attachment: local;
+}
+
+/* Otimizações para performance */
+@media (max-width: 768px) {
+  /* Em mobile, priorizar performance sobre qualidade visual */
+  .theme-background-light.bg-loaded,
+  .theme-background-dark.bg-loaded,
+  .fundo-base,
+  .fundo-base-preto {
+    background-attachment: local; /* Evita problemas de scroll em mobile */
+    background-size: cover;
+    /* Reduzir qualidade em mobile para performance */
+    image-rendering: optimizeSpeed;
+  }
+}
+
+/* Loading states visuais */
+.theme-background-loading {
+  position: relative;
+}
+
+.theme-background-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 50%,
+    transparent 75%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 20px 20px;
+  animation: loading-shimmer 1.5s infinite linear;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+@keyframes loading-shimmer {
+  0% { transform: translateX(-20px); }
+  100% { transform: translateX(20px); }
+}
+
+/* Classes específicas para body */
+.body-theme-light {
+  background-color: var(--fundo-claro);
+  background-image: url('/fundo_base.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat;
+  background-attachment: local;
+  color: #000000;
+  min-height: 100vh;
+}
+
+.body-theme-dark {
+  background-color: var(--fundo-escuro);
+  background-image: url('/fundo_base_preto.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat;
+  background-attachment: local;
+  color: #FFFFFF;
+  min-height: 100vh;
+}
+
+/* Mobile: attachment fixed pode causar problemas */
+@media (max-width: 768px) {
+  .body-theme-light,
+  .body-theme-dark {
+    background-attachment: local;
+  }
 }
 
 /* Background classes for marca-texto images */
 .marca-texto-vermelho {
-  background-image: url('/marca-texto-vermelho.png');
+  background-image: url('/marca-texto-vermelho.webp');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -430,7 +562,7 @@ body.theme-dark .border-theme-soft {
 }
 
 .marca-texto-azul {
-  background-image: url('/marca-texto-azul.png');
+  background-image: url('/marca-texto-azul.webp');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -439,7 +571,7 @@ body.theme-dark .border-theme-soft {
 }
 
 .marca-texto-verde {
-  background-image: url('/marca-texto-verde.png');
+  background-image: url('/marca-texto-verde.webp');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -448,7 +580,7 @@ body.theme-dark .border-theme-soft {
 }
 
 .marca-texto-amarelo {
-  background-image: url('/marca-texto-amarelo.png');
+  background-image: url('/marca-texto-amarelo.webp');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -456,8 +588,9 @@ body.theme-dark .border-theme-soft {
   padding: 0.2em 0.5em;
 }
 
-.marca-texto-rosa {
-  background-image: url('/marca-texto-rosa.png');
+/* Marca-texto - Cores conforme manual */
+.marca-texto-laranja {
+  background-image: url('/marca-texto-laranja.webp');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -465,22 +598,629 @@ body.theme-dark .border-theme-soft {
   padding: 0.2em 0.5em;
 }
 
-.marca-texto-roxo {
-  background-image: url('/marca-texto-roxo.png');
-  background-size: 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
+/* Estilos alternativos para marca-texto usando CSS */
+.marca-texto-css-amarelo {
+  background: linear-gradient(45deg, var(--amarelo-claro) 0%, rgba(250, 229, 33, 0.8) 100%);
   display: inline-block;
   padding: 0.2em 0.5em;
+  border-radius: 3px;
+  position: relative;
 }
 
-.pixo-preto-1 {
-  background-image: url('/cursor03.png');
-  background-size: 100% 100%;
+.marca-texto-css-azul {
+  background: linear-gradient(45deg, var(--azul-claro) 0%, rgba(115, 215, 249, 0.8) 100%);
+  display: inline-block;
+  padding: 0.2em 0.5em;
+  border-radius: 3px;
+  position: relative;
+}
+
+.marca-texto-css-verde {
+  background: linear-gradient(45deg, var(--verde-claro) 0%, rgba(210, 250, 73, 0.8) 100%);
+  display: inline-block;
+  padding: 0.2em 0.5em;
+  border-radius: 3px;
+  position: relative;
+}
+
+.marca-texto-css-laranja {
+  background: linear-gradient(45deg, var(--laranja-claro) 0%, rgba(247, 186, 36, 0.8) 100%);
+  display: inline-block;
+  padding: 0.2em 0.5em;
+  border-radius: 3px;
+  position: relative;
+}
+
+.marca-texto-css-vermelho {
+  background: linear-gradient(45deg, var(--vermelho-claro) 0%, rgba(255, 123, 82, 0.8) 100%);
+  display: inline-block;
+  padding: 0.2em 0.5em;
+  border-radius: 3px;
+  position: relative;
+}
+
+/* === ELEMENTOS SPRAY/GRAFFITI === */
+/* Spray Amarelo */
+.spray-amarelo-1 {
+  background-image: url('/spray_amarelo-1.webp');
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   display: inline-block;
-  padding: 0.2em 0.5em;
+}
+
+.spray-amarelo-2 {
+  background-image: url('/spray_amarelo-2.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-amarelo-3 {
+  background-image: url('/spray_amarelo-3.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-amarelo-4 {
+  background-image: url('/spray_amarelo-4.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+/* Spray Azul */
+.spray-azul-1 {
+  background-image: url('/spray_azul-1.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-azul-2 {
+  background-image: url('/spray_azul-2.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-azul-3 {
+  background-image: url('/spray_azul-3.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-azul-4 {
+  background-image: url('/spray_azul-4.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+/* Spray Verde */
+.spray-verde-1 {
+  background-image: url('/spray_verde-1.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-verde-3 {
+  background-image: url('/spray_verde-3.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-verde-4 {
+  background-image: url('/spray_verde-4.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+/* Spray Vermelho */
+.spray-vermelho-1 {
+  background-image: url('/spray_vermelho-1.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-vermelho-3 {
+  background-image: url('/spray_vermelho-3.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-vermelho-4 {
+  background-image: url('/spray_vermelho-4.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+/* Spray Preto */
+.spray-preto-1 {
+  background-image: url('/spray_preto-1.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-preto-2 {
+  background-image: url('/spray_preto-2.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-preto-4 {
+  background-image: url('/spray_preto-4.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-preto-5 {
+  background-image: url('/spray_preto-5.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.spray-preto-6 {
+  background-image: url('/spray_preto-6.webp');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+/* Classes utilitárias para tamanhos de spray */
+.spray-sm { width: 20px; height: 20px; }
+.spray-md { width: 40px; height: 40px; }
+.spray-lg { width: 60px; height: 60px; }
+.spray-xl { width: 80px; height: 80px; }
+
+/* === DISTRITO HIP HOP - CLASSES UTILITÁRIAS === */
+
+/* Cores de texto - Paleta Clara (fundos escuros) */
+.text-hip-azul-claro { color: var(--azul-claro); }
+.text-hip-verde-claro { color: var(--verde-claro); }
+.text-hip-amarelo-claro { color: var(--amarelo-claro); }
+.text-hip-laranja-claro { color: var(--laranja-claro); }
+.text-hip-vermelho-claro { color: var(--vermelho-claro); }
+
+/* Cores de texto - Paleta Escura (fundos claros) */
+.text-hip-azul-escuro { color: var(--azul-escuro); }
+.text-hip-verde-escuro { color: var(--verde-escuro); }
+.text-hip-amarelo-escuro { color: var(--amarelo-escuro); }
+.text-hip-laranja-escuro { color: var(--laranja-escuro); }
+.text-hip-vermelho-escuro { color: var(--vermelho-escuro); }
+
+/* Backgrounds - Paleta Clara */
+.bg-hip-azul-claro { background-color: var(--azul-claro); }
+.bg-hip-verde-claro { background-color: var(--verde-claro); }
+.bg-hip-amarelo-claro { background-color: var(--amarelo-claro); }
+.bg-hip-laranja-claro { background-color: var(--laranja-claro); }
+.bg-hip-vermelho-claro { background-color: var(--vermelho-claro); }
+
+/* Backgrounds - Paleta Escura */
+.bg-hip-azul-escuro { background-color: var(--azul-escuro); }
+.bg-hip-verde-escuro { background-color: var(--verde-escuro); }
+.bg-hip-amarelo-escuro { background-color: var(--amarelo-escuro); }
+.bg-hip-laranja-escuro { background-color: var(--laranja-escuro); }
+.bg-hip-vermelho-escuro { background-color: var(--vermelho-escuro); }
+
+/* Borders */
+.border-hip-azul-claro { border-color: var(--azul-claro); }
+.border-hip-verde-claro { border-color: var(--verde-claro); }
+.border-hip-amarelo-claro { border-color: var(--amarelo-claro); }
+.border-hip-laranja-claro { border-color: var(--laranja-claro); }
+.border-hip-vermelho-claro { border-color: var(--vermelho-claro); }
+
+.border-hip-azul-escuro { border-color: var(--azul-escuro); }
+.border-hip-verde-escuro { border-color: var(--verde-escuro); }
+.border-hip-amarelo-escuro { border-color: var(--amarelo-escuro); }
+.border-hip-laranja-escuro { border-color: var(--laranja-escuro); }
+.border-hip-vermelho-escuro { border-color: var(--vermelho-escuro); }
+
+/* Backgrounds temáticos */
+.bg-hip-fundo-claro { background-color: var(--fundo-claro); }
+.bg-hip-fundo-escuro { background-color: var(--fundo-escuro); }
+.bg-hip-papel { background-color: var(--fundo-papel); }
+.bg-hip-concreto { background-color: var(--fundo-concreto); }
+
+/* === RESPONSIVIDADE CONFORME MANUAL === */
+
+/* Logo - Dimensionamento conforme especificações */
+.logo-mobile { 
+  height: 50px; 
+  min-height: 50px;
+}
+
+.logo-tablet { 
+  height: 75px; 
+  min-height: 75px;
+}
+
+@media (min-width: 768px) {
+  .logo-tablet { 
+    height: 100px; 
+    min-height: 100px;
+  }
+}
+
+.logo-desktop { 
+  height: 100px; 
+  min-height: 100px;
+}
+
+@media (min-width: 1024px) {
+  .logo-desktop { 
+    height: 150px; 
+    min-height: 150px;
+  }
+}
+
+/* Responsividade para marca com tagline (3x maior) */
+.logo-tagline-mobile { height: 150px; }
+.logo-tagline-tablet { height: 225px; }
+@media (min-width: 768px) {
+  .logo-tagline-tablet { height: 300px; }
+}
+.logo-tagline-desktop { height: 300px; }
+@media (min-width: 1024px) {
+  .logo-tagline-desktop { height: 450px; }
+}
+
+/* Responsividade para braços do projeto (2x maior) */
+.logo-branch-mobile { height: 100px; }
+.logo-branch-tablet { height: 150px; }
+@media (min-width: 768px) {
+  .logo-branch-tablet { height: 200px; }
+}
+.logo-branch-desktop { height: 200px; }
+@media (min-width: 1024px) {
+  .logo-branch-desktop { height: 300px; }
+}
+
+/* Tipografia responsiva */
+@media (max-width: 767px) {
+  .responsive-title {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+  
+  .responsive-subtitle {
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+  
+  .responsive-body {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .responsive-title {
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+  
+  .responsive-subtitle {
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+  
+  .responsive-body {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-title {
+    font-size: 2.5rem;
+    line-height: 1.1;
+  }
+  
+  .responsive-subtitle {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+  
+  .responsive-body {
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+}
+
+/* Elementos gráficos responsivos */
+@media (max-width: 767px) {
+  .marca-texto-amarelo,
+  .marca-texto-azul,
+  .marca-texto-verde,
+  .marca-texto-vermelho,
+  .marca-texto-laranja {
+    padding: 0.1em 0.3em;
+    font-size: 0.9em;
+  }
+  
+  .spray-sm { width: 16px; height: 16px; }
+  .spray-md { width: 24px; height: 24px; }
+  .spray-lg { width: 32px; height: 32px; }
+  .spray-xl { width: 40px; height: 40px; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .marca-texto-amarelo,
+  .marca-texto-azul,
+  .marca-texto-verde,
+  .marca-texto-vermelho,
+  .marca-texto-laranja {
+    padding: 0.15em 0.4em;
+    font-size: 1em;
+  }
+  
+  .spray-sm { width: 18px; height: 18px; }
+  .spray-md { width: 36px; height: 36px; }
+  .spray-lg { width: 54px; height: 54px; }
+  .spray-xl { width: 72px; height: 72px; }
+}
+
+/* Containers responsivos */
+.container-hip-hop {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 640px) {
+  .container-hip-hop {
+    max-width: 640px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .container-hip-hop {
+    max-width: 768px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-hip-hop {
+    max-width: 1024px;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-hip-hop {
+    max-width: 1280px;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+/* Shadows Hip Hop style */
+.shadow-hip-hop { box-shadow: 6px 6px 0px 0px rgba(0,0,0,1); }
+.shadow-hip-hop-sm { box-shadow: 3px 3px 0px 0px rgba(0,0,0,1); }
+.shadow-hip-hop-lg { box-shadow: 8px 8px 0px 0px rgba(0,0,0,1); }
+
+/* === ACESSIBILIDADE WCAG AA === */
+
+/* Combinações de cores com contraste WCAG AA (4.5:1) */
+.text-accessible-light {
+  /* Cores escuras em fundo claro */
+  color: var(--azul-escuro); /* #19A8CE - bom contraste */
+}
+
+.text-accessible-dark {
+  /* Cores claras em fundo escuro */
+  color: var(--azul-claro); /* #73D7F9 - bom contraste */
+}
+
+/* Classes específicas para alta legibilidade */
+.high-contrast-light {
+  background-color: #FFFFFF;
+  color: #000000;
+  border: 2px solid #000000;
+}
+
+.high-contrast-dark {
+  background-color: #000000;
+  color: #FFFFFF;
+  border: 2px solid #FFFFFF;
+}
+
+/* Texto alternativo visualmente oculto mas acessível a screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus states acessíveis */
+.focus-hip-hop:focus {
+  outline: 3px solid var(--amarelo-claro);
+  outline-offset: 2px;
+}
+
+.focus-hip-hop:focus-visible {
+  outline: 3px solid var(--amarelo-claro);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(250, 229, 33, 0.3);
+}
+
+/* Links acessíveis */
+.link-hip-hop {
+  color: var(--azul-escuro);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
+
+.link-hip-hop:hover {
+  color: var(--azul-claro);
+  text-decoration-thickness: 3px;
+}
+
+.link-hip-hop:focus {
+  outline: 3px solid var(--amarelo-claro);
+  outline-offset: 2px;
+}
+
+/* Botões acessíveis */
+.button-accessible {
+  min-height: 44px; /* Tamanho mínimo para touch */
+  min-width: 44px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button-accessible:focus {
+  outline: 3px solid var(--amarelo-claro);
+  outline-offset: 2px;
+}
+
+.button-accessible:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Texto pequeno com contraste aumentado */
+.small-text-accessible {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Garantir que marca-texto não interfira na legibilidade */
+.marca-texto-amarelo,
+.marca-texto-azul,
+.marca-texto-verde,
+.marca-texto-vermelho,
+.marca-texto-laranja {
+  color: #000000 !important; /* Texto preto em marca-texto clara */
+  font-weight: bold;
+}
+
+.marca-texto-css-amarelo,
+.marca-texto-css-azul,
+.marca-texto-css-verde,
+.marca-texto-css-laranja,
+.marca-texto-css-vermelho {
+  color: #000000 !important;
+  font-weight: bold;
+}
+
+/* Media query para usuários que preferem movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  .spray-amarelo-1,
+  .spray-amarelo-2,
+  .spray-amarelo-3,
+  .spray-amarelo-4,
+  .spray-azul-1,
+  .spray-azul-2,
+  .spray-azul-3,
+  .spray-azul-4,
+  .spray-verde-1,
+  .spray-verde-3,
+  .spray-verde-4,
+  .spray-vermelho-1,
+  .spray-vermelho-3,
+  .spray-vermelho-4,
+  .spray-preto-1,
+  .spray-preto-2,
+  .spray-preto-4,
+  .spray-preto-5,
+  .spray-preto-6 {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Alto contraste para usuários com preferência */
+@media (prefers-contrast: high) {
+  .bg-hip-amarelo-claro,
+  .bg-hip-azul-claro,
+  .bg-hip-verde-claro,
+  .bg-hip-laranja-claro,
+  .bg-hip-vermelho-claro {
+    border: 3px solid #000000 !important;
+  }
+  
+  .text-hip-amarelo-escuro,
+  .text-hip-azul-escuro,
+  .text-hip-verde-escuro,
+  .text-hip-laranja-escuro,
+  .text-hip-vermelho-escuro {
+    color: #000000 !important;
+  }
+}
+
+/* Skip links para navegação por teclado */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--amarelo-claro);
+  color: #000000;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+  z-index: 9999;
+}
+
+.skip-link:focus {
+  top: 6px;
 }
 
 @layer base {
@@ -489,5 +1229,15 @@ body.theme-dark .border-theme-soft {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Melhor contraste para elementos focáveis */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 3px solid var(--amarelo-claro);
+    outline-offset: 2px;
   }
 }
