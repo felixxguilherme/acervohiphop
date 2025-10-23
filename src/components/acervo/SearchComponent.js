@@ -73,7 +73,7 @@ const SearchComponent = () => {
               {/* Thumbnail */}
               <div className="relative h-48 overflow-hidden">
                 <Image
-                  src={item.digitalObjects?.[0]?.thumbnail || '/fundo-base-branca-1.jpg'}
+                  src={item.digitalObjects?.[0]?.thumbnail || '/fundo-base-branca-1.webp'}
                   alt={item.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"

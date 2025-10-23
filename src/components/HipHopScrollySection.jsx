@@ -19,84 +19,84 @@ const HipHopScrollySection = () => {
       text: "1985", 
       title: "CHEGADA",
       content: "O Hip Hop desembarca no DF através de jovens como X, Marquim do Trema e DJ Jamaika, que trouxeram a cultura das ruas de Nova York para Brasília.",
-      image: "/images/hiphop/pioneiros-df.jpg"
+      image: "/images/hiphop/pioneiros-df.webp"
     },
     { 
       id: 2, 
       text: "RODOVIÁRIA", 
       title: "BERÇO",
       content: "A Rodoviária do Plano Piloto vira o point oficial. Nas plataformas superiores, as primeiras rodas de break e encontros de rap tomam forma.",
-      image: "/images/hiphop/rodoviaria-break.jpg"
+      image: "/images/hiphop/rodoviaria-break.webp"
     },
     { 
       id: 3, 
       text: "CÂMBIO", 
       title: "PRIMEIRA POSSE",
       content: "Nasce a Câmbio Negro, primeira posse do DF, fundada por DJ Jamaika e Fase Terminal. Marco histórico do movimento organizado.",
-      image: "/images/hiphop/cambio-negro.jpg"
+      image: "/images/hiphop/cambio-negro.webp"
     },
     { 
       id: 4, 
       text: "CEILÂNDIA", 
       title: "EPICENTRO",
       content: "A Ceilândia explode como berço do rap nacional. Surgem grupos como Câmbio Negro, Base Comunitária e outros que definem o som brasiliense.",
-      image: "/images/hiphop/ceilandia-90s.jpg"
+      image: "/images/hiphop/ceilandia-90s.webp"
     },
     { 
       id: 5, 
       text: "GOG", 
       title: "LENDA VIVA",
       content: "Genival Oliveira Gonçalves lança 'Que Nem Jiló' em 1994, colocando o rap do DF no mapa nacional com consciência social e identidade própria.",
-      image: "/images/hiphop/gog-jiló.jpg"
+      image: "/images/hiphop/gog-jiló.webp"
     },
     { 
       id: 6, 
       text: "FEMININO", 
       title: "MULHERES NA LUTA",
       content: "Dina Di, Vera Verônika, Lady Braga e outras pioneiras quebram barreiras no rap e breaking, abrindo caminhos para futuras gerações.",
-      image: "/images/hiphop/mulheres-rap.jpg"
+      image: "/images/hiphop/mulheres-rap.webp"
     },
     { 
       id: 7, 
       text: "GRAFFITI", 
       title: "ARTE NOS MUROS",
       content: "Writers como Tinho, Robson Pilão e outros transformam pilotis e muros em galerias urbanas, criando identidade visual única.",
-      image: "/images/hiphop/graffiti-pilotis.jpg"
+      image: "/images/hiphop/graffiti-pilotis.webp"
     },
     { 
       id: 8, 
       text: "BATALHAS", 
       title: "DUELOS DE RIMA",
       content: "Batalhas de MCs na Rodoviária revelam talentos como Rappin' Hood, estabelecendo o freestyle como tradição local.",
-      image: "/images/hiphop/batalhas-rodo.jpg"
+      image: "/images/hiphop/batalhas-rodo.webp"
     },
     { 
       id: 9, 
       text: "FACÇÃO", 
       title: "NOVA ESCOLA",
       content: "Facção Central e outros grupos dos anos 2000 levam o rap do DF para novo patamar com producões profissionais e letras contundentes.",
-      image: "/images/hiphop/faccao-central.jpg"
+      image: "/images/hiphop/faccao-central.webp"
     },
     { 
       id: 10, 
       text: "EVENTOS", 
       title: "CONSOLIDAÇÃO",
       content: "Duelo de MCs, Festival de Inverno de Bonito, Hutúz Festival e outros eventos consolidam o DF como capital nacional do Hip Hop.",
-      image: "/images/hiphop/eventos-df.jpg"
+      image: "/images/hiphop/eventos-df.webp"
     },
     { 
       id: 11, 
       text: "NOVA", 
       title: "GERAÇÃO",
       content: "Djonga, Sant, Menor do Chapa, BK' e nova geração mantêm viva a tradição, inovando e conquistando público nacional.",
-      image: "/images/hiphop/nova-geracao.jpg"
+      image: "/images/hiphop/nova-geracao.webp"
     },
     { 
       id: 12, 
       text: "PATRIMÔNIO", 
       title: "LEGADO ETERNO",
       content: "O Hip Hop do DF é reconhecido como patrimônio cultural imaterial, inspirando jovens de todo Brasil e preservando a memória do movimento.",
-      image: "/images/hiphop/patrimonio-cultural.jpg"
+      image: "/images/hiphop/patrimonio-cultural.webp"
     }
   ];
 

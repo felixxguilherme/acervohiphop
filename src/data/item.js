@@ -100,7 +100,7 @@ const atomItemDetailResponse = {
   "digitalObjects": [
     {
       "id": "do-001-01",
-      "name": "foto_encontro_hip_hop_ceilandia_1995_01.jpg",
+      "name": "foto_encontro_hip_hop_ceilandia_1995_01.webp",
       "mediaType": "image/jpeg",
       "byteSize": 2856743,
       "checksum": "sha256:a8f3d2e9b1c4f6e7d8a9b2c3f4e5d6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3",
@@ -112,7 +112,7 @@ const atomItemDetailResponse = {
     },
     {
       "id": "do-001-02",
-      "name": "foto_encontro_hip_hop_ceilandia_1995_02.jpg",
+      "name": "foto_encontro_hip_hop_ceilandia_1995_02.webp",
       "mediaType": "image/jpeg",
       "byteSize": 3124567,
       "checksum": "sha256:b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0",

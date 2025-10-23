@@ -15,9 +15,9 @@ const PreloadedBackground = ({
     // Determinar qual imagem carregar baseado na classe
     let imageSrc = '';
     if (backgroundClass === 'fundo-base') {
-      imageSrc = '/fundo_base.jpg';
+      imageSrc = '/fundo_base.webp';
     } else if (backgroundClass === 'fundo-base-preto') {
-      imageSrc = '/fundo_base_preto.jpg';
+      imageSrc = '/fundo_base_preto.webp';
     }
 
     if (imageSrc) {

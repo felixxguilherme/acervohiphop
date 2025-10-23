@@ -72,7 +72,7 @@ export default function ApiResults() {
               {items.map((item, index) => (
                 <div key={item.id || index} className="group">
                   <PolaroidPhoto
-                    imageSrc={item.digital_object?.thumbnail_url || item.thumbnail_url || '/placeholder-image.jpg'}
+                    imageSrc={item.digital_object?.thumbnail_url || item.thumbnail_url || '/placeholder-image.webp'}
                     title={item.title}
                     subtitle={item.level_of_description}
                     description={item.scope_and_content || item.physical_characteristics}
@@ -106,7 +106,7 @@ export default function ApiResults() {
                 textSize="text-xl" 
                 text="VER ACERVO COMPLETO" 
                 backgroundMode="static" 
-                imagePath="marca-texto-amarelo.png"
+                imagePath="marca-texto-amarelo.webp"
                 onClick={() => window.location.href = '/acervo'}
               />
             </div>

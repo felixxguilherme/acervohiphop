@@ -3,35 +3,69 @@ import { useEffect } from 'react';
 
 const ImagePreloader = () => {
   useEffect(() => {
-    // Lista de imagens críticas para precarregar
-    const criticalImages = [
-      '/fundo_base.jpg',
-      '/fundo_base_preto.jpg',
-      '/marca-texto-vermelho.png',
-      '/marca-texto-amarelo.png',
-      '/marca-texto-azul.png',
-      '/marca-texto-verde.png'
+    // Lista de imagens por prioridade
+    const priorityImages = [
+      // ALTA PRIORIDADE: Backgrounds de tema (sempre visíveis)
+      '/fundo_base.webp',
+      '/fundo_base_preto.webp'
+    ];
+    
+    const secondaryImages = [
+      // MÉDIA PRIORIDADE: Elementos de UI comuns
+      '/marca-texto-vermelho.webp',
+      '/marca-texto-amarelo.webp',
+      '/marca-texto-azul.webp',
+      '/marca-texto-verde.webp'
+    ];
+    
+    const tertiaryImages = [
+      // BAIXA PRIORIDADE: Elementos decorativos
+      '/spray_preto-2.webp',
+      '/spray_amarelo-1.webp',
+      '/spray_azul-1.webp',
+      '/silvertape01.webp'
     ];
 
-    // Precarregar imagens de forma assíncrona
-    const preloadImages = async () => {
-      const imagePromises = criticalImages.map(src => {
-        return new Promise((resolve, reject) => {
+    // Função para precarregar com prioridade específica
+    const preloadImageSet = (images, priority = 'high') => {
+      return images.map(src => {
+        return new Promise((resolve) => {
           const img = new Image();
-          img.fetchPriority = 'high'; // Prioridade alta
-          img.onload = () => resolve(src);
+          img.fetchPriority = priority;
+          img.onload = () => {
+            console.log(`✅ Loaded: ${src}`);
+            resolve(src);
+          };
           img.onerror = () => {
+            console.warn(`❌ Failed to load: ${src}`);
             resolve(src); // Não falhar por uma imagem
           };
           img.src = src;
         });
       });
+    };
 
+    // Precarregar em sequência por prioridade
+    const preloadImages = async () => {
       try {
-        await Promise.allSettled(imagePromises);
-        // Imagens críticas pré-carregadas
+        // 1. PRIORIDADE ALTA: Backgrounds (críticos para tema)
+        console.log('🔄 Preloading priority images...');
+        await Promise.all(preloadImageSet(priorityImages, 'high'));
+        
+        // 2. PRIORIDADE MÉDIA: UI elements (carrega depois)
+        setTimeout(async () => {
+          console.log('🔄 Preloading secondary images...');
+          await Promise.all(preloadImageSet(secondaryImages, 'low'));
+          
+          // 3. PRIORIDADE BAIXA: Decorações (carrega por último)
+          setTimeout(async () => {
+            console.log('🔄 Preloading tertiary images...');
+            await Promise.all(preloadImageSet(tertiaryImages, 'low'));
+            console.log('✅ All images preloaded');
+          }, 1000);
+        }, 500);
       } catch (error) {
-        // Erro no pré-carregamento
+        console.error('Error preloading images:', error);
       }
     };
 

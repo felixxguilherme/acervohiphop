@@ -100,7 +100,7 @@ export default function StatsOverview() {
       className="mt-8 p-8 mx-6 mb-8 transition-all duration-200"
     >
       <div className="flex items-start px-4 absolute top-[-50px] left-[-50px]">
-                    <Image src="cursor02.png" alt="Marca de spray com escorrimento" width={150} height={180} />
+                    <Image src="cursor02.webp" alt="Marca de spray com escorrimento" width={150} height={180} />
                   </div>
       <div className="text-center mb-8">
         <h2 className="font-dirty-stains text-3xl font-black text-black mb-4 bg-[#df8d6d] inline-block px-6 py-3 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">

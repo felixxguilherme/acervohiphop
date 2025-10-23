@@ -43,7 +43,7 @@ const atomItemsResponse = {
       "digitalObjects": [
         {
           "id": "do-001",
-          "name": "foto_encontro_hip_hop_ceilandia_1995_01.jpg",
+          "name": "foto_encontro_hip_hop_ceilandia_1995_01.webp",
           "mediaType": "image/jpeg",
           "byteSize": 2856743,
           "checksum": "sha256:a8f3d2e9b1c4f6e7d8a9b2c3f4e5d6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3",
@@ -101,7 +101,7 @@ const atomItemsResponse = {
       "digitalObjects": [
         {
           "id": "do-002",
-          "name": "cartaz_festa_hip_hop_samambaia_1998.jpg",
+          "name": "cartaz_festa_hip_hop_samambaia_1998.webp",
           "mediaType": "image/jpeg",
           "byteSize": 3245671,
           "checksum": "sha256:b9e4f3a0c2d5e8f1a4b7c0d3e6f9a2b5c8d1e4f7a0b3c6d9e2f5a8b1c4d7e0f3",
@@ -217,7 +217,7 @@ const atomItemsResponse = {
       "digitalObjects": [
         {
           "id": "do-004",
-          "name": "mural_grafite_taguatinga_2003_serie.jpg",
+          "name": "mural_grafite_taguatinga_2003_serie.webp",
           "mediaType": "image/jpeg",
           "byteSize": 4567891,
           "checksum": "sha256:d1b6c9f2a5e8b1d4e7f0a3b6c9e2f5a8b1d4e7f0a3b6c9e2f5a8b1d4e7f0a3b6",

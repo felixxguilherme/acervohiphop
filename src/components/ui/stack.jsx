@@ -16,7 +16,7 @@
 //       title: "ORIGENS DO HIP HOP NO DF",
 //       subtitle: "Década de 1980 - Primeiros Movimentos",
 //       content: "O Hip Hop chegou ao Distrito Federal nos anos 80, trazido por jovens das periferias que se identificaram com a cultura urbana americana. Ceilândia se tornou o berço do movimento.",
-//       imageSrc: "https://imgsapp2.correiobraziliense.com.br/app/noticia_127983242361/2013/04/09/359432/20130409170517234307i.jpg",
+//       imageSrc: "https://imgsapp2.correiobraziliense.com.br/app/noticia_127983242361/2013/04/09/359432/20130409170517234307i.webp",
 //       tapePosition: "top-left",
 //       tapeAngle: -15,
 //       bgColor: ""
@@ -61,7 +61,7 @@
 //       title: "TERRITÓRIO E IDENTIDADE",
 //       subtitle: "Mapeando a Cultura",
 //       content: "Cada região do DF desenvolveu características únicas do Hip Hop. Ceilândia, Samambaia, Santa Maria e outras cidades criaram suas próprias cenas e identidades culturais.",
-//       imageSrc: "https://www.jornaldorap.com.br/wp-content/uploads/2025/03/Casa-hip-hop-de-Ceilandia-DJ-Jamaika-960x605.jpg",
+//       imageSrc: "https://www.jornaldorap.com.br/wp-content/uploads/2025/03/Casa-hip-hop-de-Ceilandia-DJ-Jamaika-960x605.webp",
 //       tapePosition: "top-right",
 //       tapeAngle: 10,
 //       bgColor: "bg-white/80"

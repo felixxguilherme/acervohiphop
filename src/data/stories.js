@@ -7,13 +7,13 @@ const storiesData = [
     subtitle: 'Uma jornada pelas raízes do movimento hip hop brasiliense',
     author: 'Coletivo Distrito Hip Hop',
     description: 'Explore os primeiros passos do movimento Hip Hop no Distrito Federal, desde os pioneiros até os locais que marcaram história.',
-    image: '/fundo_base.jpg',
+    image: '/fundo_base.webp',
     chapters: [
       {
         id: 'chapter-1-pioneiros',
         title: 'Os Pioneiros',
         description: 'No final dos anos 80, o Hip Hop chegou ao Distrito Federal através de jovens que descobriram o movimento em viagens ao Rio de Janeiro e São Paulo. As primeiras <strong>rodas de break</strong> aconteciam na Rodoviária do Plano Piloto.',
-        image: '/folha-pauta-1.png',
+        image: '/folha-pauta-1.webp',
         location: {
           center: [-47.8826, -15.7942], // Rodoviária do Plano Piloto
           zoom: 16,
@@ -26,7 +26,7 @@ const storiesData = [
         id: 'chapter-2-ceilandia',
         title: 'Ceilândia: Berço do Rap Nacional',
         description: 'A Ceilândia se tornou o epicentro do rap brasileiro nos anos 90. Aqui nasceram grupos icônicos como <em>GOG</em>, <em>Câmbio Negro</em> e <em>Viela 17</em>, que levaram a voz da periferia para todo o país.',
-        image: '/folha-pauta-2.png',
+        image: '/folha-pauta-2.webp',
         location: {
           center: [-48.1094, -15.8419], // Ceilândia (matching mapa.js coordinates)
           zoom: 14,

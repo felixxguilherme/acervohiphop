@@ -16,7 +16,7 @@ const storiesMapboxFormat = [
         alignment: "left",
         hidden: false,
         title: "Os Pioneiros",
-        image: "/folha-pauta-1.png",
+        image: "/folha-pauta-1.webp",
         description: "No final dos anos 80, o Hip Hop chegou ao Distrito Federal através de jovens que descobriram o movimento em viagens ao Rio de Janeiro e São Paulo. As primeiras <strong>rodas de break</strong> aconteciam na Rodoviária do Plano Piloto.",
         location: {
           center: [-47.8826, -15.7942], // Rodoviária do Plano Piloto
@@ -37,7 +37,7 @@ const storiesMapboxFormat = [
         alignment: "left",
         hidden: false,
         title: "Ceilândia: Berço do Rap Nacional",
-        image: "/folha-pauta-2.png",
+        image: "/folha-pauta-2.webp",
         description: "A Ceilândia se tornou o epicentro do rap brasileiro nos anos 90. Aqui nasceram grupos icônicos como <em>GOG</em>, <em>Câmbio Negro</em> e <em>Viela 17</em>, que levaram a voz da periferia para todo o país.",
         location: {
           center: [-48.1094, -15.8419], // Ceilândia (matching mapa.js coordinates)

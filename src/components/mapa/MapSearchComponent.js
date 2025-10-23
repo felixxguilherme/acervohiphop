@@ -158,7 +158,7 @@ const MapSearchComponent = ({ isFullscreen, onLocationFilter, onMarkerClick, sel
                           >
                             <div className="flex items-start gap-3">
                               <img
-                                src={item.digitalObjects?.[0]?.thumbnail || '/fundo-base-branca-1.jpg'}
+                                src={item.digitalObjects?.[0]?.thumbnail || '/fundo-base-branca-1.webp'}
                                 alt={item.title}
                                 className="w-12 h-12 rounded object-cover flex-shrink-0"
                               />

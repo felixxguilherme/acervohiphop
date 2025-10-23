@@ -41,9 +41,7 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
         position: position
       }}
     >
-      <PreloadedBackground
-        backgroundClass="fundo-base"
-        placeholderColor={color}
+      <div
         className="card border-black border-3"
         style={{backgroundColor: color, scale, top:`calc(-5vh + ${i * 25}px)`}}
       >
@@ -92,7 +90,7 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
           </div>
 
         </div>
-      </PreloadedBackground>
+      </div>
     </motion.div>
   )
 }

@@ -10,7 +10,7 @@ const atomTimelineResponse = {
         {
           "id": "ahhdf-timeline-001",
           "title": "Primeiro grafite registrado",
-          "thumbnail": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2F736x%2F91%2F9b%2F41%2F919b4175a3c8400cf0932155fce58d23.jpg&f=1&nofb=1&ipt=b10f67349650da198cdbe1d45afe00dbfc1f1c75eabdc407ad00922449a550cf"
+          "thumbnail": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2F736x%2F91%2F9b%2F41%2F919b4175a3c8400cf0932155fce58d23.webp&f=1&nofb=1&ipt=b10f67349650da198cdbe1d45afe00dbfc1f1c75eabdc407ad00922449a550cf"
         }
       ]
     },
@@ -36,7 +36,7 @@ const atomTimelineResponse = {
         {
           "id": "ahhdf-002",
           "title": "Festa Hip Hop Samambaia",
-          "thumbnail": "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages.genius.com%2F27fe315372d1c5f86827ca9847eeca2b.336x336x1.jpg&f=1&nofb=1&ipt=c5117b791aa7abd1e0df2ed5749cc5801e8578d78dd5f105930a523a0b567111"
+          "thumbnail": "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages.genius.com%2F27fe315372d1c5f86827ca9847eeca2b.336x336x1.webp&f=1&nofb=1&ipt=c5117b791aa7abd1e0df2ed5749cc5801e8578d78dd5f105930a523a0b567111"
         }
       ]
     },

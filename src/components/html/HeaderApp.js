@@ -86,10 +86,10 @@ export default function HeaderApp({ title, showTitle = false }) {
 
   return (
     <motion.header
-      className="sticky top-0 w-full border-3 border-solid border-theme z-50"
+      className={`sticky ${currentTheme === 'light' ? 'fundo-base' : 'fundo-escuro'} top-0 w-full border-3 border-solid border-theme z-50`}
       style={{
-        backgroundColor: currentTheme === 'light' ? '#FFFCF2' : '#252422',
-        willChange: 'height, transform'
+        // backgroundColor: currentTheme === 'light' ? '#FFFCF2' : '#252422',
+        // willChange: 'height, transform'
       }}
       initial={{ y: -100, opacity: 0 }}
       animate={{ 
@@ -129,9 +129,9 @@ export default function HeaderApp({ title, showTitle = false }) {
               >
                 {showTitle && title && (
                   <motion.img
-                    src="/spray_preto-2.png"
+                    src={`${currentTheme === 'light' ? "/spray_preto-2.webp" : "/spray_vermelho-1.webp"}`}
                     alt="Spray decoration"
-                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain"
+                    className={`${currentTheme === 'light' ? "w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain" : "w-32 h-32 sm:w-35 sm:h-35 md:w-32 md:h-32 lg:w-28 lg:h-28 object-contain"}`}
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.5 }}
@@ -238,9 +238,9 @@ export default function HeaderApp({ title, showTitle = false }) {
           </div>
           
           {/* Toggle de tema fixo no canto superior direito */}
-          {/* <div className="absolute top-2 right-2">
+          <div className="absolute top-2 right-2">
             <ThemeToggle />
-          </div> */}
+          </div>
         </div>
       </motion.div>
     </motion.header>

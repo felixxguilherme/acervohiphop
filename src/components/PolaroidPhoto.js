@@ -16,10 +16,10 @@ const PolaroidCard = ({
     useEffect(() => {
         if (typeof window !== 'undefined') {
           const tapeImage = new Image();
-          tapeImage.src = '/silvertape02.png';
+          tapeImage.src = '/silvertape02.webp';
 
           const tapeImage2 = new Image();
-          tapeImage2.src = '/silvertape01.png';
+          tapeImage2.src = '/silvertape01.webp';
           
           const polaroidImage = new window.Image();
           polaroidImage.src = imageSrc;
@@ -126,7 +126,7 @@ const PolaroidCard = ({
         {tape && !isLoading && (
           <div className={tapeStyles.className} style={tapeStyles.style}>
             <img 
-              src="/silvertape02.png" 
+              src="/silvertape02.webp" 
               alt="Silver tape" 
               className="w-full h-full object-contain"
             />
@@ -136,7 +136,7 @@ const PolaroidCard = ({
         {secondTape && !isLoading && (
           <div className={tape2Styles.className} style={tape2Styles.style}>
             <img 
-              src="/silvertape01.png" 
+              src="/silvertape01.webp" 
               alt="Silver tape" 
               className="w-full h-full object-contain"
             />

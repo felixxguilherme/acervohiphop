@@ -154,7 +154,7 @@ export default function AcervoRealData() {
                   transition={{ duration: 0.4, delay: index * 0.1 }}
                 >
                   <PolaroidCard
-                    src={item.thumbnail_url || '/placeholder-image.jpg'}
+                    src={item.thumbnail_url || '/placeholder-image.webp'}
                     alt={item.title}
                     caption={item.title}
                     size="md"
@@ -243,7 +243,7 @@ export default function AcervoRealData() {
               text="EXPLORAR ACERVO COMPLETO" 
               textSize="text-xl"
               backgroundMode="static" 
-              imagePath="marca-texto-roxo.png"
+              imagePath="marca-texto-roxo.webp"
               onClick={() => window.location.href = '/acervo'}
             />
           </div>
