@@ -1,21 +1,34 @@
 "use client";
 
 import { useTheme } from "@/contexts/ThemeContext";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from 'next/link';
 
 export default function FooterApp() {
   const currentYear = new Date().getFullYear();
   const { theme } = useTheme();
+  const [currentTheme, setCurrentTheme] = useState('light');
+
+  useEffect(() => {
+    // Carrega o tema do localStorage no primeiro render
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setCurrentTheme(savedTheme);
+  }, []);
+
+  useEffect(() => {
+    // Atualiza quando o tema muda
+    setCurrentTheme(theme);
+  }, [theme]);
 
   const isDark = theme === "dark";
-  const facImage = isDark ? "/fac_cor.png" : "/fac_b&w.png";
-  const gdfImage = isDark ? "/gdf_cor.png" : "/gdf_b&w.png";
+  const facImage = isDark ? "/fac_cor.webp" : "/fac_b&w.webp";
+  const gdfImage = isDark ? "/gdf_cor.webp" : "/gdf_b&w.webp";
 
   
   return (
   <footer
-      className="relative z-10 border-b-3 border-l-3 border-r-3 border-solid border-theme text-center bg-[#FFFCF2] dark:bg-[#312F2C]"
+      className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'} relative z-10 border-b-3 border-l-3 border-r-3 border-solid border-theme text-center bg-[#FFFCF2] dark:bg-[#312F2C]`}
       style={{
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
       }}

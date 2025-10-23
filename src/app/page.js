@@ -21,34 +21,48 @@ import { motion, AnimatePresence } from 'motion/react';
 export default function Home() {
   // Hooks do contexto
   const { loadStatistics, statistics, loadAllItems, allItems } = useAcervo();
+
+  const [currentTheme, setCurrentTheme] = useState('light');
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Carrega o tema do localStorage no primeiro render
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setCurrentTheme(savedTheme);
+    
+    // Delay para evitar conflitos com animações da página
+    setTimeout(() => {
+      setIsInitialized(true);
+    }, 100);
+  }, []);
   
   // Estado para projetos dinâmicos
   const [projects, setProjects] = useState([
     {
       title: "",
       description: "O arquivo é trincheira. Aqui lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios e invisibilidade.",
-      src: "/fundo_base.jpg",
+      src: "/fundo_base.webp",
       link: "/acervo",
       color: "#FFF",
     },
     {
       title: "ACERVO DIGITAL",
       description: "Documentos únicos que contam a trajetória do Hip Hop no DF.",
-      src: "/fundo_base_preto.jpg",
+      src: "/fundo_base_preto.webp",
       link: "/acervo",
       color: "#FFF",
     },
     {
       title: "MAPA DAS BATALHAS",
       description: "Território cultural mapeado com precisão geográfica.",
-      src: "/fundo_base.jpg",
+      src: "/fundo_base.webp",
       link: "/mapa",
       color: "#FFF",
     },
     {
       title: "REVISTA DIGITAL",
       description: "Curadoria colaborativa conectando ruas, estudos e produção artística.",
-      src: "/fundo_base_preto.jpg",
+      src: "/fundo_base_preto.webp",
       link: "/revista",
       color: "#FFF",
     }
@@ -172,7 +186,7 @@ export default function Home() {
         {
           title: "",
           description: vielaItem?.archival_history || "O arquivo é trincheira. Memória viva do Hip Hop do DF.",
-          src: vielaItem?.thumbnail_url || "/fundo_base.jpg",
+          src: vielaItem?.thumbnail_url || "/fundo_base.webp",
           link: "/acervo",
           color: "#FFF",
           itemTitle: vielaItem?.title || "",
@@ -183,7 +197,7 @@ export default function Home() {
         {
           title: "",
           description: veraItem?.archival_history || "Documentos únicos preservados digitalmente.",
-          src: veraItem?.thumbnail_url || "/fundo_base.jpg",
+          src: veraItem?.thumbnail_url || "/fundo_base.webp",
           link: "/acervo",
           color: "#FFF",
           itemTitle: veraItem?.title || "",
@@ -194,7 +208,7 @@ export default function Home() {
         {
           title: "",
           description: dinoBlackItem?.archival_history || "Geografia cultural do Hip Hop no DF",
-          src: dinoBlackItem?.thumbnail_url || "/fundo_base.jpg",
+          src: dinoBlackItem?.thumbnail_url || "/fundo_base.webp",
           link: "/mapa",
           color: "#FFF",
           itemTitle: dinoBlackItem?.title || "",
@@ -205,7 +219,7 @@ export default function Home() {
         {
           title: "",
           description: revistaBizzItem?.archival_history || "Conteúdo editorial sobre a cultura Hip Hop",
-          src: revistaBizzItem?.thumbnail_url || "/fundo_base_preto.jpg",
+          src: revistaBizzItem?.thumbnail_url || "/fundo_base_preto.webp",
           link: "/revista",
           color: "#FFF",
           itemTitle: revistaBizzItem?.title || "",
@@ -438,39 +452,35 @@ export default function Home() {
       </section> */}
 
       {/* SEÇÃO DESTAQUES DO ACERVO */}
-      <section className="relative bg-theme-background overflow-hidden pb-20 md:pt-16 pt-8  border-black border-r-3 border-l-3 border-t-3">
+      <motion.section
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+        className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-escuro'} relative overflow-hidden pb-20 border-black border-r-3 border-l-3 border-t-3`}>
+        
         {/* Elementos decorativos */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
+        <div className="absolute inset-0 z-25 pointer-events-none">
           <div
             className="absolute top-20 -right-10 w-40 h-40 bg-contain bg-no-repeat"
             style={{
-              backgroundImage: "url('/spray_preto-1.png')"
-            }}
-          />
-          <div
-            className="absolute bottom-20 left-10 w-40 h-40 bg-contain bg-no-repeat rotate-12"
-            style={{
-              backgroundImage: "url('/spray_preto-2.png')"
+              backgroundImage: "url('/spray_preto-1.webp')"
             }}
           />
         </div>
 
         <div className="relative z-20 w-full">
           {/* Título da seção */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-left mb-16 border-black border-b-3 w-full pb-6 px-6"
+          <div
+            className={`bg-hip-azul-claro text-left mb-16 border-black border-b-3 w-full pb-6 pt-6 px-6`}
           >
-            <h2 className="marca-texto-vermelho text-4xl md:text-5xl mb-6">
+            <h2 className="marca-texto-vermelho text-8xl pl-6 md:text-5xl mb-6">
               DESTAQUES
             </h2>
             <p className="pl-6 text-xl md:text-2xl font-sometype-mono text-theme-secondary max-w-4xl leading-relaxed">
               Mergulhe na história viva do Hip Hop do DF através de documentos únicos que contam nossa trajetória
             </p>
-          </motion.div>
+          </div>
 
           {/* Grid de artistas em destaque - DADOS REAIS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-12 px-4 sm:px-6 md:px-8">
@@ -581,7 +591,7 @@ export default function Home() {
               {statistics?.totalItems ? `Mais de ${statistics.totalItems} itens` : 'Centenas de itens'} documentando 4 décadas de cultura Hip Hop
             </p>          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* SEÇÃO TIMELINE HISTÓRICA SIMPLES */}
       {/* <section className="relative py-20 overflow-hidden border-black border-t-3 border-l-3 border-r-3">
@@ -590,13 +600,13 @@ export default function Home() {
           <div
             className="absolute -top-10 left-8 w-48 h-48 bg-contain bg-no-repeat"
             style={{
-              backgroundImage: "url('/spray_preto-1.png')"
+              backgroundImage: "url('/spray_preto-1.webp')"
             }}
           />
           <div
             className="absolute bottom-32 right-16 w-20 h-20 bg-contain bg-no-repeat rotate-45"
             style={{
-              backgroundImage: "url('/cursor01.png')"
+              backgroundImage: "url('/cursor01.webp')"
             }}
           />
         </div>
@@ -634,7 +644,7 @@ export default function Home() {
               >
                 <div className="w-full md:w-1/2 pl-16 md:pl-0 md:pr-8 text-left md:text-right">
                   <div
-                    style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}}
+                    style={{backgroundImage: "url('/folha-pauta-1.webp')", backgroundSize: 'cover'}}
                     className="p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
                     <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">1980</div>
                     <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">PRIMEIROS PASSOS</h3>
@@ -662,7 +672,7 @@ export default function Home() {
                   <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
                 <div className="w-full md:w-1/2 pl-16 md:pl-8">
-                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                  <div style={{backgroundImage: "url('/folha-pauta-1.webp')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
                     <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">1995</div>
                     <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">PRIMEIRO ENCONTRO</h3>
                     <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
@@ -681,7 +691,7 @@ export default function Home() {
                 className="flex items-center"
               >
                 <div className="w-full md:w-1/2 pl-16 md:pl-0 md:pr-8 text-left md:text-right">
-                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                  <div style={{backgroundImage: "url('/folha-pauta-1.webp')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
                     <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">2001</div>
                     <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">ERA DIGITAL</h3>
                     <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
@@ -708,7 +718,7 @@ export default function Home() {
                   <div className="w-6 h-6 md:w-8 md:h-8 bg-black border-4 border-white rounded-full shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"></div>
                 </div>
                 <div className="w-full md:w-1/2 pl-16 md:pl-8">
-                  <div style={{backgroundImage: "url('/folha-pauta-1.png')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+                  <div style={{backgroundImage: "url('/folha-pauta-1.webp')", backgroundSize: 'cover'}} className="p-6 md:p-9 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
                     <div className="font-scratchy font-black text-black text-xl md:text-2xl mb-2">2020</div>
                     <h3 className="font-dirty-stains text-2xl md:text-3xl text-black mb-3">PATRIMÔNIO CULTURAL</h3>
                     <p className="font-sometype-mono text-xs md:text-sm text-black font-bold leading-relaxed">
@@ -723,7 +733,7 @@ export default function Home() {
         </div>
       </section> */}
 
-      <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-black p-8">
+      <section className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'} relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-black p-8`}>
 
 
         {/* Decorative elements */}
@@ -733,21 +743,21 @@ export default function Home() {
           <div
             className="absolute -bottom-10 left-15 w-64 h-64 bg-contain bg-no-repeat"
             style={{
-              backgroundImage: "url('/cursor02.png')"
+              backgroundImage: "url('/cursor02.webp')"
             }}
           />
 
           <div
             className="absolute top-0 -right-15 w-32 h-32 bg-contain bg-no-repeat"
             style={{
-              backgroundImage: "url('/spray_preto-1.png')"
+              backgroundImage: "url('/spray_preto-1.webp')"
             }}
           />
 
           <div
             className="absolute top-5 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
             style={{
-              backgroundImage: "url('/spray_preto-2.png')"
+              backgroundImage: "url('/spray_preto-2.webp')"
             }}
           />
         </div>
