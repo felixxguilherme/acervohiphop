@@ -209,7 +209,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                     textSize={isScrolled ? "text-xl sm:text-2xl md:text-3xl" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
                     text="INÍCIO" 
                     backgroundMode="static" 
-                    backgroundClass="marca-texto-amarelo" 
+                    backgroundClass="marca-texto-azul" 
                   />
                 </Link>
                 <Link href="/acervo">
@@ -217,7 +217,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                     textSize={isScrolled ? "text-lg sm:text-xl md:text-2xl" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
                     text="ACERVO" 
                     backgroundMode="static" 
-                    backgroundClass="marca-texto-vermelho" 
+                    backgroundClass="marca-texto-verde" 
                   />
                 </Link>
                 <Link href="/mapa">
@@ -225,7 +225,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                     textSize={isScrolled ? "text-lg sm:text-xl md:text-2xl" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
                     text="MAPA" 
                     backgroundMode="static" 
-                    backgroundClass="marca-texto-azul" 
+                    backgroundClass="marca-texto-amarelo" 
                   />
                 </Link>
                 <Link href="/revista">
@@ -233,7 +233,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                     textSize={isScrolled ? "text-lg sm:text-xl md:text-2xl" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
                     text="REVISTA" 
                     backgroundMode="static" 
-                    backgroundClass="marca-texto-verde" 
+                    backgroundClass="marca-texto-vermelho" 
                   />
                 </Link>
               </motion.nav>

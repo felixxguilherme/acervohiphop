@@ -589,8 +589,8 @@ body.theme-dark .border-theme-soft {
 }
 
 /* Marca-texto - Cores conforme manual */
-.marca-texto-laranja {
-  background-image: url('/marca-texto-laranja.webp');
+.marca-texto-vermelho {
+  background-image: url('/marca-texto-vermelho.webp');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -964,7 +964,7 @@ body.theme-dark .border-theme-soft {
   .marca-texto-azul,
   .marca-texto-verde,
   .marca-texto-vermelho,
-  .marca-texto-laranja {
+  .marca-texto-vermelho {
     padding: 0.1em 0.3em;
     font-size: 0.9em;
   }
@@ -980,7 +980,7 @@ body.theme-dark .border-theme-soft {
   .marca-texto-azul,
   .marca-texto-verde,
   .marca-texto-vermelho,
-  .marca-texto-laranja {
+  .marca-texto-vermelho {
     padding: 0.15em 0.4em;
     font-size: 1em;
   }
@@ -1140,7 +1140,7 @@ body.theme-dark .border-theme-soft {
 .marca-texto-azul,
 .marca-texto-verde,
 .marca-texto-vermelho,
-.marca-texto-laranja {
+.marca-texto-vermelho {
   color: #000000 !important; /* Texto preto em marca-texto clara */
   font-weight: bold;
 }
