@@ -179,9 +179,7 @@ export default function Home() {
       const veraItem = specificItems.find(item => item.slug === 'vera-ver-onika-e-parceiros-do-jardim-ing-a-na-candangol-andia-foto-de-dino-black');
       const dinoBlackItem = specificItems.find(item => item.slug === 'dino-black-vera-ver-onika-e-parceiros-do-hip-hop-df-na-candangol-andia');
       const revistaBizzItem = specificItems.find(item => item.slug === 'revista-bizz-primeiro-encontro-de-rap-nacional-no-gin-asio-do-palmeiras');
-      
-      console.log('Cards data:', { vielaItem, veraItem, dinoBlackItem, revistaBizzItem });
-      
+            
       const newProjects = [
         {
           title: "",
@@ -308,7 +306,7 @@ export default function Home() {
 
       {/* <section id="posscrolly" style={{ position: 'relative', zIndex: 1, backgroundColor: 'white', padding: '4rem 2rem' }}>
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-6xl font-dirty-stains text-center mb-8 text-theme-primary">EXPLORE MAIS</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-dirty-stains text-center mb-8 text-theme-primary">EXPLORE MAIS</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
             <div className="bg-theme-card p-6 rounded-lg">
@@ -332,11 +330,11 @@ export default function Home() {
             </div>
             
             <div className="bg-theme-card p-6 rounded-lg">
-              <h3 className="text-2xl font-sometype-mono mb-4 marca-texto-laranja text-theme px-3 py-1">REVISTA</h3>
-              <p className="text-lg mb-4">Leia <span className="marca-texto-laranja px-2 py-1">reportagens e entrevistas</span> exclusivas</p>
+              <h3 className="text-2xl font-sometype-mono mb-4 marca-texto-vermelho text-theme px-3 py-1">REVISTA</h3>
+              <p className="text-lg mb-4">Leia <span className="marca-texto-vermelho px-2 py-1">reportagens e entrevistas</span> exclusivas</p>
               <CartoonButton
                 label="LER MAIS"
-                color="marca-texto-laranja"
+                color="marca-texto-vermelho"
                 onClick={() => window.location.href = '/revista'}
               />
             </div>
@@ -425,7 +423,7 @@ export default function Home() {
 
       {/* <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#f0f0f0', padding: '4rem 2rem' }}>
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-6xl font-dirty-stains text-center mb-8">CRONOLOGIA</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-dirty-stains text-center mb-8">CRONOLOGIA</h2>
           
           <div className="space-y-8">
             {[
@@ -455,14 +453,14 @@ export default function Home() {
       <motion.section
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.4 }}
         viewport={{ once: true }}
-        className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-escuro'} relative overflow-hidden pb-20 border-theme border-r-3 border-l-3 border-t-3`}>
+        className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'} relative overflow-hidden pb-20 border-theme border-r-3 border-l-3 border-t-3`}>
 
         <div className={`relative z-20 w-full`}>
           {/* Título da seção */}
           <div
-            className={`bg-hip-vermelho-claro text-left mb-16 text-theme border-theme w-full pb-10 pt-10 px-6`}
+            className={`${currentTheme === 'light' ? 'bg-hip-vermelho-escuro' : 'bg-hip-vermelho-escuro'} text-left mb-16 text-theme border-theme w-full pb-10 pt-10 px-6`}
           >
             <h2 className="text-8xl pl-6 md:text-5xl mb-6 text-bold">
               DESTAQUES
@@ -480,7 +478,7 @@ export default function Home() {
                 key={artist.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+                transition={{ duration: 0.3, delay: 0.05 * (index + 1) }}
                 viewport={{ once: true }}
                 className={`group cursor-pointer bg-theme-background border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg`}
                 onClick={() => window.location.href = `/acervo/artista/${artist.id}`}
@@ -493,6 +491,8 @@ export default function Home() {
                         src={artist.thumbnail}
                         alt={artist.name}
                         className="w-full h-full object-cover border-b-2 border-theme"
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
                     ) : (
@@ -519,7 +519,7 @@ export default function Home() {
                     {/* Preview dos itens recentes */}
                     {artist.recentItems.length > 0 && (
                       <div className="mt-4 pt-4 border-t-2 border-theme">
-                        <h4 className="font-dirty-stains text-lg mb-3">Itens Recentes:</h4>
+                        <h4 className="font-dirty-stains text-lg mb-3">Itens recentes:</h4>
                         <div className="grid grid-cols-3 gap-2">
                           {artist.recentItems.map((item, itemIndex) => (
                             <div
@@ -531,6 +531,8 @@ export default function Home() {
                                   src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')}
                                   alt={item.title || 'Item'}
                                   className="w-full h-16 object-cover border border-gray-200 mb-1"
+                                  loading="lazy"
+                                  decoding="async"
                                   onError={(e) => { e.target.style.display = 'none'; }}
                                 />
                               )}
@@ -552,7 +554,7 @@ export default function Home() {
                   key={index}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+                  transition={{ duration: 0.3, delay: 0.05 * (index + 1) }}
                   viewport={{ once: true }}
                   className="bg-theme-background border-2 border-theme p-6"
                 >
@@ -575,9 +577,9 @@ export default function Home() {
           >
             <CartoonButton
               label="EXPLORAR TODO O ACERVO"
-              color=""
+              color={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'}`}
               onClick={() => window.location.href = '/acervo'}
-              className="text-xl px-8 py-4 bg-theme-primary text-theme"
+              className="cursor-pointer text-xl px-8 py-4"
             />            <p className="font-sometype-mono text-sm text-theme-secondary mt-4">
               {statistics?.totalItems ? `Mais de ${statistics.totalItems} itens` : 'Centenas de itens'} documentando 4 décadas de cultura Hip Hop
             </p>          </motion.div>
@@ -607,7 +609,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             viewport={{ once: true }}
             className="text-left mb-16 border-theme border-b-3 w-full px-6"
           >
@@ -762,9 +764,9 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="mt-15 text-2xl md:text-2xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
           >
-            O arquivo é muito mais que um depósito de papel ou um monólito de verdade única; é trincheira. É onde agora lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios, exclusão e invisibilidade. O arquivo bruto, direto e factual. Sem filtros, sem medo. Porque a verdade não precisa de retoques; ela precisa chegar e ser ouvida. O acervo pretende refletir essa vitalidade, capturando a evolução das expressões artísticas e das narrativas desse movimento. Essa potente fonte que é o Hip Hop, se abastece com nossos percursos, fazendo com que o fluxo nunca seque.
-Não tem como falar de memória sem falar de quem a construiu, corporificam nossa pesquisa grandes pilares desta cultura no Distrito Federal que apoiam o Projeto. Memória não é passado morto; são vidas que ecoam no presente e avançam para quem vem depois. É o legado vivo que inspira e transforma. Arquivos não mais encarnados, mas a arte não morre; ela nos consome, sobrevive e se expande. A memória cultural não é um registro estático do passado, mas uma entidade dinâmica que ressoa no presente e influencia o futuro. Cada história compartilhada, cada som, fotografia, baile e parede são o Hip Hop. Porque, no fim, o que a gente faz é simples: a gente compra a briga.
-Se você está na mesma luta, o Acervo te espera. 
+            <span className="marca-texto-verde px-2 py-1">O arquivo</span> é muito mais que um depósito de papel ou um monólito de verdade única; é trincheira. É onde agora lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios, exclusão e invisibilidade. <span className="marca-texto-verde px-2 py-1">O arquivo</span> bruto, direto e factual. Sem filtros, sem medo. Porque a verdade não precisa de retoques; ela precisa chegar e ser ouvida. <span className="marca-texto-verde px-2 py-1">O acervo</span> pretende refletir essa vitalidade, capturando a evolução das expressões artísticas e das narrativas desse movimento. Essa potente fonte que é o Hip Hop, se abastece com nossos percursos, fazendo com que o fluxo nunca seque.
+Não tem como falar de <span className="marca-texto-verde px-2 py-1">memória</span> sem falar de quem a construiu, corporificam nossa pesquisa grandes pilares desta cultura no <span className="marca-texto-amarelo px-2 py-1">Distrito Federal</span> que apoiam o Projeto. <span className="marca-texto-verde px-2 py-1">Memória</span> não é passado morto; são vidas que ecoam no presente e avançam para quem vem depois. É o legado vivo que inspira e transforma. <span className="marca-texto-verde px-2 py-1">Arquivos</span> não mais encarnados, mas a arte não morre; ela nos consome, sobrevive e se expande. A <span className="marca-texto-verde px-2 py-1">memória cultural</span> não é um registro estático do passado, mas uma entidade dinâmica que ressoa no presente e influencia o futuro. Cada <span className="marca-texto-verde px-2 py-1">história compartilhada</span>, cada som, <span className="marca-texto-verde px-2 py-1">fotografia</span>, baile e parede são o Hip Hop. Porque, no fim, o que a gente faz é simples: a gente compra a briga.
+Se você está na mesma luta, <span className="marca-texto-verde px-2 py-1">o Acervo</span> te espera. 
           </motion.p>
 
 

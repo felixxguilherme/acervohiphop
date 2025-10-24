@@ -31,7 +31,7 @@ export default function ApiResults() {
     return (
       <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#1a1a1a', color: 'white', padding: '4rem 2rem' }}>
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-6xl font-dirty-stains text-center mb-8">ÚLTIMAS ADIÇÕES</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-dirty-stains text-center mb-8">ÚLTIMAS ADIÇÕES</h2>
           <div className="flex justify-center">
             <div className="text-2xl font-sometype-mono">Carregando...</div>
           </div>
@@ -44,7 +44,7 @@ export default function ApiResults() {
     return (
       <section style={{ position: 'relative', zIndex: 10, backgroundColor: '#1a1a1a', color: 'white', padding: '4rem 2rem' }}>
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-6xl font-dirty-stains text-center mb-8">ÚLTIMAS ADIÇÕES</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-dirty-stains text-center mb-8">ÚLTIMAS ADIÇÕES</h2>
           <div className="text-center">
             <div className="text-xl font-sometype-mono mb-4">Não foi possível carregar os dados.</div>
             <div className="text-lg text-gray-400">{error}</div>

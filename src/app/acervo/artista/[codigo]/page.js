@@ -341,7 +341,7 @@ const CreatorDetailPage = () => {
           viewport={{ once: true }}
         >
           <div className="bg-theme-background">
-            <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left border-theme border-b-2 border-t-8 py-8">BIOGRAFIA</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-dirty-stains text-theme-primary mb-8 text-left border-theme border-b-2 border-t-8 py-8">BIOGRAFIA</h2>
             <div className="border-theme border-b-8 pb-6">
               <p className="text-lg leading-relaxed font-sometype-mono text-gray-700">
                 {creatorData.biography}
@@ -360,7 +360,7 @@ const CreatorDetailPage = () => {
           viewport={{ once: true }}
         >
           <div className="bg-theme-background">
-            <h2 className="text-4xl font-dirty-stains text-theme-primary py-8 border-theme border-b-2 text-left">TODOS OS ITENS DO ACERVO</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-dirty-stains text-theme-primary py-8 border-theme border-b-2 text-left">TODOS OS ITENS DO ACERVO</h2>
             
             {/* Contador e paginação */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-8">

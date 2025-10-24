@@ -266,7 +266,7 @@ export default function CollectionViewer() {
           setFilteredCollections(response.results);
           
           if (isUsingFallback) {
-            console.log('📊 Usando fallback estático com', response.results.length, 'itens');
+            console.log('Usando fallback estático com', response.results.length, 'itens');
           }
         } else {
           throw new Error('Nenhum dado disponível');
@@ -332,7 +332,7 @@ export default function CollectionViewer() {
       <div className="min-h-screen bg-black text-theme p-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center">
-            <h1 className="text-6xl font-dirty-stains mb-8">COLEÇÕES DO ACERVO</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-dirty-stains mb-8">COLEÇÕES DO ACERVO</h1>
             <div className="text-2xl font-sometype-mono">Carregando coleções...</div>
           </div>
         </div>
@@ -345,7 +345,7 @@ export default function CollectionViewer() {
       <div className="min-h-screen bg-black text-theme p-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center">
-            <h1 className="text-6xl font-dirty-stains mb-8">COLEÇÕES DO ACERVO</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-dirty-stains mb-8">COLEÇÕES DO ACERVO</h1>
             <div className="text-xl font-sometype-mono text-red-400">
               Erro ao carregar: {error}
             </div>
