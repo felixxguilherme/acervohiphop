@@ -18,28 +18,42 @@ import LayerControl from '@/components/mapa/LayerControl';
 import storiesMapboxFormat from '@/data/storiesMapboxFormat';
 import { iconTypes } from '@/components/mapa/MapIcons';
 import { useAcervo } from '@/contexts/AcervoContext';
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
 } from '@/components/ui/pagination';
 
 // AIDEV-NOTE: Internal component that uses map context
 const MapaContent = () => {
   // Context hook for real data from development branch
-  const { 
-    mapData, 
-    geoJson, 
-    mapStatistics, 
-    loadMapData, 
-    isLoading, 
-    getError 
+  const {
+    mapData,
+    geoJson,
+    mapStatistics,
+    loadMapData,
+    isLoading,
+    getError
   } = useAcervo();
 
   const mapLayers = useMapLayers();
+
+  const [currentTheme, setCurrentTheme] = useState('light');
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Carrega o tema do localStorage no primeiro render
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setCurrentTheme(savedTheme);
+    
+    // Delay para evitar conflitos com animações da página
+    setTimeout(() => {
+      setIsInitialized(true);
+    }, 100);
+  }, []);
 
   // AIDEV-NOTE: Initialize map layers when component mounts
   useEffect(() => {
@@ -56,17 +70,17 @@ const MapaContent = () => {
   // AIDEV-NOTE: Helper function to check if tour chapter matches location
   const checkTourLocationMatch = (chapter, location) => {
     if (!chapter || !chapter.location || !location) return false;
-    
+
     // Check if coordinates are close enough (within ~100m)
     const chapterLng = chapter.location.center[0];
     const chapterLat = chapter.location.center[1];
     const locationLng = location.coordinates.lng;
     const locationLat = location.coordinates.lat;
-    
+
     const distance = Math.sqrt(
       Math.pow(chapterLng - locationLng, 2) + Math.pow(chapterLat - locationLat, 2)
     );
-    
+
     return distance < 0.001; // Approximately 100m
   };
 
@@ -79,11 +93,11 @@ const MapaContent = () => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const flyToTimeoutRef = useRef(null);
-  
+
   // Estados para paginação
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6); // 6 regiões por página
-  
+
   // Estado local para controlar carregamento das regiões separadamente
   const [regionsLoading, setRegionsLoading] = useState(false);
 
@@ -109,7 +123,7 @@ const MapaContent = () => {
 
     // Delay para permitir que a página renderize primeiro
     const timeoutId = setTimeout(loadMapDataAsync, 100);
-    
+
     // Cleanup do timeout se o componente for desmontado
     return () => clearTimeout(timeoutId);
   }, []); // Dependências vazias para executar apenas uma vez
@@ -117,7 +131,7 @@ const MapaContent = () => {
   // Convert GeoJSON features to locations format for the map (memoized)
   const locations = useMemo(() => {
     if (!geoJson?.features) return [];
-    
+
     return geoJson.features.map(feature => ({
       id: feature.properties.id,
       name: feature.properties.title,
@@ -142,7 +156,7 @@ const MapaContent = () => {
 
   // Set filtered locations state for search functionality
   const [filteredLocations, setFilteredLocations] = useState([]);
-  
+
   // Update filtered locations when locations change
   useEffect(() => {
     setFilteredLocations(locations);
@@ -182,7 +196,7 @@ const MapaContent = () => {
   const handleTourSelect = (tour) => {
     setSelectedTour(tour);
     setCurrentChapter(0);
-    
+
     if (tour) {
       // Move to first chapter location with flyTo
       const firstChapter = tour.chapters[0];
@@ -204,7 +218,7 @@ const MapaContent = () => {
       ...viewState,
       ...newViewState
     });
-    
+
     // Reset animation flag after transition
     setTimeout(() => {
       setIsAnimating(false);
@@ -214,13 +228,13 @@ const MapaContent = () => {
   // AIDEV-NOTE: Handler for flyTo using MapLibre GL JS native method
   const handleMapFlyTo = (flyToOptions) => {
     if (!mapRef.current) return;
-    
+
     setIsAnimating(true);
-    
+
     const map = mapRef.current.getMap();
     const speed = flyToOptions.speed || 2;
     const duration = Math.max(1000, Math.min(4000, 2000 / speed));
-    
+
     // Use MapLibre's native flyTo method
     map.flyTo({
       center: [flyToOptions.longitude, flyToOptions.latitude],
@@ -230,7 +244,7 @@ const MapaContent = () => {
       duration: duration,
       essential: true
     });
-    
+
     // Reset animation flag after transition
     setTimeout(() => {
       setIsAnimating(false);
@@ -319,17 +333,17 @@ const MapaContent = () => {
   // Função para navegar entre páginas
   const goToPage = (page) => {
     setCurrentPage(page);
-    
+
     // Scroll para a seção de regiões
     const regionsSection = document.getElementById('regions-section');
     if (regionsSection) {
       const sectionTop = regionsSection.offsetTop;
       const offset = 100;
       const targetPosition = Math.max(0, sectionTop - offset);
-      
-      window.scrollTo({ 
-        top: targetPosition, 
-        behavior: 'smooth' 
+
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
       });
     }
   };
@@ -364,61 +378,46 @@ const MapaContent = () => {
       {/* Conteúdo da página */}
       <div className={`${isPageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
         <HeaderApp title="MAPA DO HIP HOP" showTitle={true} />
-        
-        <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -50, opacity: 0 }}
-            transition={{
-              type: 'tween',
-              duration: 0.8,
-              ease: [0.25, 0.1, 0.25, 1]
-            }}
-            className="w-full overflow-hidden"
-          >
+        <div className="relative max-w-7xl mx-auto min-h-screen border-theme border-l-3 border-r-3 border-b-3">
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -50, opacity: 0 }}
+              transition={{
+                type: 'tween',
+                duration: 0.8,
+                ease: [0.25, 0.1, 0.25, 1]
+              }}
+              className="w-full overflow-hidden"
+            >
               {/* Hero Section */}
-              <motion.section 
-                className="mb-12 px-6"
+              <motion.section
+                className="mb-12"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="bg-theme-background pt-6">
-                  <h2 className="text-4xl font-dirty-stains text-theme-primary mb-4 text-left marca-texto-amarelo px-4 py-2">
+
+                <div
+                  className={`${currentTheme === 'light' ? 'bg-hip-amarelo-escuro' : 'bg-hip-amarelo-claro'} text-left mb-16 text-theme border-theme w-full pb-10 pt-10 px-6`}
+                >
+                  <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl pl-6 mb-6 text-bold">
                     MAPA INTERATIVO
                   </h2>
-                  <p className="font-sometype-mono text-lg text-gray-600 text-left mb-4">
+                  <p className="border-theme border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-theme max-w-4xl leading-relaxed">
                     Explore <span className="marca-texto-amarelo px-2 py-1">locais históricos</span>, eventos marcantes e a <span className="marca-texto-amarelo px-2 py-1">geografia do movimento</span> Hip Hop brasiliense
                   </p>
-                  {mapStatistics && (
-                    <div className="flex flex-wrap gap-4 text-sm font-sometype-mono">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 border border-blue-300">
-                        {mapStatistics.totalItems} locais mapeados
-                      </span>
-                      <span className="bg-green-100 text-green-800 px-2 py-1 border border-green-300">
-                        {mapStatistics.extractionSuccessRate} precisão
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </motion.section>
 
-              {/* Container do Mapa */}
-              <motion.section
-                className="mb-12 px-6"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-              >
-                <div className="bg-theme-background">
-                  <div 
+                </div>
+
+                <div className="px-6">
+                  <div
                     ref={mapContainerRef}
-                    className={`border-2 border-theme overflow-hidden bg-gray-200 relative ${
-                      isFullscreen ? 'fullscreen-map' : ''
-                    }`}
+                    className={`border-2 border-theme overflow-hidden bg-gray-200 relative ${isFullscreen ? 'fullscreen-map' : ''
+                      }`}
                   >
                     {/* Botão de Tela Cheia */}
                     <button
@@ -436,7 +435,7 @@ const MapaContent = () => {
                         </svg>
                       )}
                     </button>
-                    
+
                     <div style={{ height: isFullscreen ? '100vh' : '600px', position: isFullscreen ? 'fixed' : 'relative', top: isFullscreen ? 0 : 'auto', left: isFullscreen ? 0 : 'auto', width: isFullscreen ? '100vw' : '100%', zIndex: isFullscreen ? 9999 : 'auto' }}>
                       {isFullscreen ? (
                         /* Layout fullscreen - mapa tela inteira com menus flutuantes */
@@ -446,13 +445,13 @@ const MapaContent = () => {
                             ref={mapRef}
                             {...viewState}
                             onLoad={(evt) => {
-                              console.log('Map loaded successfully');
+                              console.log('Mapa carregado.');
                             }}
                             onMove={evt => {
                               setViewState(evt.viewState);
                             }}
-                            style={{ 
-                              width: '100%', 
+                            style={{
+                              width: '100%',
                               height: '100%',
                               cursor: 'grab'
                             }}
@@ -473,17 +472,16 @@ const MapaContent = () => {
                                   whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
                                   whileTap={{ scale: 0.9 }}
                                   animate={{
-                                    scale: (selectedTour && 
-                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location)) 
+                                    scale: (selectedTour &&
+                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
                                       ? 1.3 : 1,
                                     backgroundColor: (selectedTour &&
                                       checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
                                       ? '#f8e71c' : '#fae523'
                                   }}
                                   transition={{ duration: 0.5, ease: "easeOut" }}
-                                  className={`w-8 h-8 border-3 border-theme rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
-                                    selectedTour ? 'ring-2 ring-white/50' : ''
-                                  }`}
+                                  className={`w-8 h-8 border-3 border-theme rounded-full flex items-center justify-center shadow-lg cursor-pointer ${selectedTour ? 'ring-2 ring-white/50' : ''
+                                    }`}
                                   style={{
                                     backgroundColor: (selectedTour &&
                                       checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
@@ -494,11 +492,11 @@ const MapaContent = () => {
                                     (() => {
                                       const IconComponent = getIconComponent(location);
                                       return IconComponent ? (
-                                        <IconComponent 
-                                          size={20} 
+                                        <IconComponent
+                                          size={20}
                                           color={(selectedTour &&
                                             checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                            ? '#f8e71c' : '#fae523'} 
+                                            ? '#f8e71c' : '#fae523'}
                                         />
                                       ) : (
                                         <motion.div
@@ -525,23 +523,23 @@ const MapaContent = () => {
                               </Marker>
                             ))}
                           </MapRenderer>
-                          
+
                           {/* Menus flutuantes preservados */}
                           <TourMenu
                             isFullscreen={isFullscreen}
                             onTourSelect={handleTourSelect}
                             selectedTour={selectedTour}
                           />
-                          
+
                           <LayerControl isVisible={isFullscreen && !selectedTour} />
-                          
+
                           <MapboxStorytellingOverlay
                             selectedTour={selectedTour}
                             onMapMove={handleMapFlyTo}
                             onChapterChange={handleChapterChange}
                             isVisible={isFullscreen && !!selectedTour}
                           />
-                          
+
                           {!selectedTour && (
                             <MapSearchComponent
                               isFullscreen={isFullscreen}
@@ -560,10 +558,10 @@ const MapaContent = () => {
                             onTourSelect={handleTourSelect}
                             selectedTour={selectedTour}
                           />
-                          
+
                           {/* AIDEV-NOTE: Layer control component */}
                           <LayerControl isVisible={isFullscreen && !selectedTour} />
-                          
+
                           {/* AIDEV-NOTE: Mapbox Storytelling Overlay */}
                           <MapboxStorytellingOverlay
                             selectedTour={selectedTour}
@@ -571,7 +569,7 @@ const MapaContent = () => {
                             onChapterChange={handleChapterChange}
                             isVisible={isFullscreen && !!selectedTour}
                           />
-                          
+
                           {/* Search Component - only visible in fullscreen when no tour selected */}
                           {!selectedTour && (
                             <MapSearchComponent
@@ -581,19 +579,19 @@ const MapaContent = () => {
                               selectedLocation={selectedLocation}
                             />
                           )}
-                          
+
                           <MapRenderer
                             ref={mapRef}
                             {...viewState}
                             onLoad={(evt) => {
-                              console.log('Map loaded successfully');
+                              console.log('Mapa carregado.');
                             }}
                             onMove={evt => {
                               // Always update viewState but prevent user interaction during tour
                               setViewState(evt.viewState);
                             }}
-                            style={{ 
-                              width: '100%', 
+                            style={{
+                              width: '100%',
                               height: '100%',
                               cursor: 'grab'
                             }}
@@ -614,17 +612,16 @@ const MapaContent = () => {
                                   whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
                                   whileTap={{ scale: 0.9 }}
                                   animate={{
-                                    scale: (selectedTour && 
-                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location)) 
+                                    scale: (selectedTour &&
+                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
                                       ? 1.3 : 1,
                                     backgroundColor: (selectedTour &&
                                       checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
                                       ? '#f8e71c' : '#fae523'
                                   }}
                                   transition={{ duration: 0.5, ease: "easeOut" }}
-                                  className={`w-8 h-8 border-3 border-theme rounded-full flex items-center justify-center shadow-lg cursor-pointer ${
-                                    selectedTour ? 'ring-2 ring-white/50' : ''
-                                  }`}
+                                  className={`w-8 h-8 border-3 border-theme rounded-full flex items-center justify-center shadow-lg cursor-pointer ${selectedTour ? 'ring-2 ring-white/50' : ''
+                                    }`}
                                   style={{
                                     backgroundColor: (selectedTour &&
                                       checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
@@ -636,11 +633,11 @@ const MapaContent = () => {
                                     (() => {
                                       const IconComponent = getIconComponent(location);
                                       return IconComponent ? (
-                                        <IconComponent 
-                                          size={20} 
+                                        <IconComponent
+                                          size={20}
                                           color={(selectedTour &&
                                             checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                            ? '#f8e71c' : '#fae523'} 
+                                            ? '#f8e71c' : '#fae523'}
                                         />
                                       ) : (
                                         <motion.div
@@ -695,8 +692,8 @@ const MapaContent = () => {
                                       <h4 className="font-sometype-mono text-sm font-bold mb-2">Item em destaque:</h4>
                                       <div className="flex gap-3">
                                         {selectedLocation.items[0].thumbnail && (
-                                          <img 
-                                            src={selectedLocation.items[0].thumbnail} 
+                                          <img
+                                            src={selectedLocation.items[0].thumbnail}
                                             alt={selectedLocation.items[0].title}
                                             className="w-12 h-12 object-cover border border-theme"
                                           />
@@ -718,25 +715,29 @@ const MapaContent = () => {
                     </div>
                   </div>
                 </div>
+
+
               </motion.section>
+
+            
 
               {/* Lista de Locais */}
               <motion.section
-                className="mb-12 px-6"
+                className={`mb-12 px-6 ${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'}`}
                 id="regions-section"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
               >
-                <div className="bg-theme-background">
+                <div>
                   <div className="mb-8">
-                    <h3 className="text-4xl font-dirty-stains text-theme-primary mb-4 text-left">REGIÕES MAPEADAS</h3>
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-dirty-stains text-theme-primary mb-4 text-left">REGIÕES MAPEADAS</h3>
                     <p className="font-sometype-mono text-lg text-gray-600 text-left">
                       {locations.length} {locations.length === 1 ? 'região mapeada' : 'regiões mapeadas'}
                       {totalPages > 1 && ` - Página ${currentPage} de ${totalPages}`}
                     </p>
                   </div>
-                  
+
                   {mapError && (
                     <div className="text-center py-8 mb-8">
                       <div className="bg-theme-background border-2 border-theme p-6">
@@ -745,7 +746,7 @@ const MapaContent = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Loading específico para regiões */}
                   {isRegionsLoading ? (
                     <div className="text-center py-12">
@@ -757,7 +758,7 @@ const MapaContent = () => {
                                 key={index}
                                 className="w-3 bg-theme-primary border border-theme"
                                 style={{ height: '8px' }}
-                                animate={{ 
+                                animate={{
                                   scaleY: [1, 3, 1],
                                   transformOrigin: 'bottom'
                                 }}
@@ -780,71 +781,71 @@ const MapaContent = () => {
                   ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentLocations.map((location, index) => (
-                      <motion.div
-                        key={location.id}
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.7 + index * 0.1 }}
-                        whileHover={{ scale: 1.02, y: -5 }}
-                        onClick={() => handleMarkerClick(location)}
-                        className="bg-white border-2 border-theme p-6 cursor-pointer hover:bg-zinc-100 transition-all duration-300"
-                      >
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-6 h-6 bg-[#fae523] border-2 border-theme rounded-full flex items-center justify-center">
-                            {location.isRandomPoint ? (
-                              // AIDEV-NOTE: Show custom icon for random points in location list
-                              (() => {
-                                const IconComponent = getIconComponent(location);
-                                return IconComponent ? (
-                                  <IconComponent size={16} color="#000" />
-                                ) : (
-                                  <div className="w-2 h-2 bg-black rounded-full"></div>
-                                );
-                              })()
-                            ) : (
-                              <div className="w-2 h-2 bg-black rounded-full"></div>
-                            )}
+                        <motion.div
+                          key={location.id}
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.7 + index * 0.1 }}
+                          whileHover={{ scale: 1.02, y: -5 }}
+                          onClick={() => handleMarkerClick(location)}
+                          className="bg-white border-2 border-theme p-6 cursor-pointer hover:bg-zinc-100 transition-all duration-300"
+                        >
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-6 h-6 bg-[#fae523] border-2 border-theme rounded-full flex items-center justify-center">
+                              {location.isRandomPoint ? (
+                                // AIDEV-NOTE: Show custom icon for random points in location list
+                                (() => {
+                                  const IconComponent = getIconComponent(location);
+                                  return IconComponent ? (
+                                    <IconComponent size={16} color="#000" />
+                                  ) : (
+                                    <div className="w-2 h-2 bg-black rounded-full"></div>
+                                  );
+                                })()
+                              ) : (
+                                <div className="w-2 h-2 bg-black rounded-full"></div>
+                              )}
+                            </div>
+                            <h4 className="font-dirty-stains text-2xl text-theme">{location.name}</h4>
                           </div>
-                          <h4 className="font-dirty-stains text-2xl text-theme">{location.name}</h4>
-                        </div>
-                        
-                        <p className="font-sometype-mono text-sm text-theme/80 mb-4">{location.description}</p>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex gap-2">
-                            <span className="bg-[#fae523] text-theme px-3 py-1 rounded-full text-sm font-sometype-mono border border-theme">
-                              {location.itemCount} item
-                            </span>
-                            {location.has_real_coordinates && (
-                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-sometype-mono border border-green-300">
-                                GPS
+
+                          <p className="font-sometype-mono text-sm text-theme/80 mb-4">{location.description}</p>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex gap-2">
+                              <span className="bg-[#fae523] text-theme px-3 py-1 rounded-full text-sm font-sometype-mono border border-theme">
+                                {location.itemCount} item
                               </span>
+                              {location.has_real_coordinates && (
+                                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-sometype-mono border border-green-300">
+                                  GPS
+                                </span>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => handleMarkerClick(location)}
+                              className="font-sometype-mono text-sm text-theme hover:text-theme/70 underline"
+                            >
+                              Ver no mapa →
+                            </button>
+                          </div>
+
+                          {/* Coordenadas para debug */}
+                          <div className="mt-3 pt-3 border-t border-theme/20">
+                            <p className="text-xs font-sometype-mono text-gray-500">
+                              📍 {location.coordinates.lat.toFixed(4)}, {location.coordinates.lng.toFixed(4)}
+                            </p>
+                            {location.reference_code && (
+                              <p className="text-xs font-sometype-mono text-gray-500">
+                                🏷️ {location.reference_code}
+                              </p>
                             )}
                           </div>
-                          <button 
-                            onClick={() => handleMarkerClick(location)}
-                            className="font-sometype-mono text-sm text-theme hover:text-theme/70 underline"
-                          >
-                            Ver no mapa →
-                          </button>
-                        </div>
-                        
-                        {/* Coordenadas para debug */}
-                        <div className="mt-3 pt-3 border-t border-theme/20">
-                          <p className="text-xs font-sometype-mono text-gray-500">
-                            📍 {location.coordinates.lat.toFixed(4)}, {location.coordinates.lng.toFixed(4)}
-                          </p>
-                          {location.reference_code && (
-                            <p className="text-xs font-sometype-mono text-gray-500">
-                              🏷️ {location.reference_code}
-                            </p>
-                          )}
-                        </div>
-                      </motion.div>
-                    ))}
+                        </motion.div>
+                      ))}
                     </div>
                   )}
-                  
+
                   {locations.length === 0 && !mapError && !isRegionsLoading && (
                     <div className="text-center py-12">
                       <div className="bg-white/90 border-2 border-theme rounded-lg p-6 max-w-md mx-auto">
@@ -853,10 +854,10 @@ const MapaContent = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Paginação - só mostra se não está carregando */}
                   {totalPages > 1 && !isRegionsLoading && (
-                    <motion.div 
+                    <motion.div
                       className="flex justify-center mt-8"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -865,40 +866,37 @@ const MapaContent = () => {
                       <Pagination>
                         <PaginationContent>
                           <PaginationItem>
-                            <PaginationPrevious 
+                            <PaginationPrevious
                               onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
-                              className={`cursor-pointer border-2 border-theme ${
-                                currentPage === 1 
-                                  ? 'opacity-50 cursor-not-allowed pointer-events-none' 
+                              className={`cursor-pointer border-2 border-theme ${currentPage === 1
+                                  ? 'opacity-50 cursor-not-allowed pointer-events-none'
                                   : 'hover:bg-gray-100 transition-colors'
-                              }`}
+                                }`}
                             />
                           </PaginationItem>
-                          
+
                           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                             <PaginationItem key={page}>
                               <PaginationLink
                                 onClick={() => goToPage(page)}
                                 isActive={page === currentPage}
-                                className={`cursor-pointer border-2 border-theme font-dirty-stains ${
-                                  page === currentPage
+                                className={`cursor-pointer border-2 border-theme font-dirty-stains ${page === currentPage
                                     ? 'bg-blue-500 text-theme hover:bg-blue-600'
                                     : 'bg-white hover:bg-gray-100 transition-colors'
-                                }`}
+                                  }`}
                               >
                                 {page}
                               </PaginationLink>
                             </PaginationItem>
                           ))}
-                          
+
                           <PaginationItem>
-                            <PaginationNext 
+                            <PaginationNext
                               onClick={() => currentPage < totalPages && goToPage(currentPage + 1)}
-                              className={`cursor-pointer border-2 border-theme ${
-                                currentPage === totalPages 
-                                  ? 'opacity-50 cursor-not-allowed pointer-events-none' 
+                              className={`cursor-pointer border-2 border-theme ${currentPage === totalPages
+                                  ? 'opacity-50 cursor-not-allowed pointer-events-none'
                                   : 'hover:bg-gray-100 transition-colors'
-                              }`}
+                                }`}
                             />
                           </PaginationItem>
                         </PaginationContent>
@@ -909,50 +907,50 @@ const MapaContent = () => {
               </motion.section>
 
               <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-theme p-8">
-              
-              
-                      {/* Decorative elements */}
-                      <div className="absolute inset-0 z-10 pointer-events-none decorative-elements">
-              
-                        {/* Spray effects */}
-                        <div
-                          className="absolute -bottom-10 left-15 w-64 h-64 bg-contain bg-no-repeat"
-                          style={{
-                            backgroundImage: "url('/cursor02.webp')"
-                          }}
-                        />
-              
-                        <div
-                          className="absolute top-0 -right-15 w-32 h-32 bg-contain bg-no-repeat"
-                          style={{
-                            backgroundImage: "url('/spray_preto-1.webp')"
-                          }}
-                        />
-              
-                        <div
-                          className="absolute top-5 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
-                          style={{
-                            backgroundImage: "url('/spray_preto-2.webp')"
-                          }}
-                        />
-                      </div>
-              
-                      {/* Main content */}
-                      <div className="relative z-20 text-center max-w-6xl mx-auto px-6">
-                        {/* Subtitle */}
-                        <motion.p
-                          initial={{ opacity: 0, y: 30 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.8, delay: 0.3 }}
-                          className="mt-15 text-2xl md:text-2xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
-                        >
-                          Este é o <span className="marca-texto-amarelo px-2 py-1">Mapa das Batalhas</span>: uma ferramenta da nossa plataforma interativa que conecta as Batalhas de MC´s do DF, mostrando de forma dinâmica e precisa onde e quando a cultura urbana se manifestou e continua a pulsar.
 
-Neste mapa, <span className="marca-texto-amarelo px-2 py-1">geolocalizações e arquivos</span> se unem para criar um panorama da resistência cultural do DF, mapeando encontros, datas e trajetórias que desenham o <span className="marca-texto-amarelo px-2 py-1">território Hip Hop</span>. Nosso mapa permite navegar por essa geografia em tempo real, onde a memória se move e se transforma em dados dinâmicos. A cada clique, você mergulha na história do Hip Hop DF.
-Veja o Distrito Federal além dos setores e monumentos. Aqui, traçamos pontos que conectam a força de uma cultura que nasceu à margem. E com isso, fazemos do território um palco, onde cada batalha é parte dessa construção. Ao acessar, surpreenda-se com a potência desta cidade, agora também construída por você. 
-                        </motion.p>
-                      </div>
-                    </section>
+
+                {/* Decorative elements */}
+                <div className="absolute inset-0 z-10 pointer-events-none decorative-elements">
+
+                  {/* Spray effects */}
+                  <div
+                    className="absolute -bottom-10 left-15 w-64 h-64 bg-contain bg-no-repeat"
+                    style={{
+                      backgroundImage: "url('/cursor02.webp')"
+                    }}
+                  />
+
+                  <div
+                    className="absolute top-0 -right-15 w-32 h-32 bg-contain bg-no-repeat"
+                    style={{
+                      backgroundImage: "url('/spray_preto-1.webp')"
+                    }}
+                  />
+
+                  <div
+                    className="absolute top-5 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
+                    style={{
+                      backgroundImage: "url('/spray_preto-2.webp')"
+                    }}
+                  />
+                </div>
+
+                {/* Main content */}
+                <div className="relative z-20 text-center max-w-6xl mx-auto px-6">
+                  {/* Subtitle */}
+                  <motion.p
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                    className="mt-15 text-2xl md:text-2xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
+                  >
+                    Este é o <span className="marca-texto-amarelo px-2 py-1">Mapa das Batalhas</span>: uma ferramenta da nossa plataforma interativa que conecta as Batalhas de MC´s do DF, mostrando de forma dinâmica e precisa onde e quando a cultura urbana se manifestou e continua a pulsar.
+
+                    Neste mapa, <span className="marca-texto-amarelo px-2 py-1">geolocalizações</span> e <span className="marca-texto-verde px-2 py-1">arquivos</span> se unem para criar um panorama da resistência cultural do DF, <span className="marca-texto-amarelo px-2 py-1">mapeando encontros</span>, datas e trajetórias que desenham o <span className="marca-texto-amarelo px-2 py-1">território Hip Hop</span>. Nosso <span className="marca-texto-amarelo px-2 py-1">mapa</span> permite navegar por essa <span className="marca-texto-amarelo px-2 py-1">geografia</span> em tempo real, onde a <span className="marca-texto-verde px-2 py-1">memória</span> se move e se transforma em dados dinâmicos. A cada clique, você mergulha na <span className="marca-texto-verde px-2 py-1">história</span> do Hip Hop DF.
+                    Veja o <span className="marca-texto-amarelo px-2 py-1">Distrito Federal</span> além dos setores e monumentos. Aqui, traçamos <span className="marca-texto-amarelo px-2 py-1">pontos</span> que conectam a força de uma cultura que nasceu à margem. E com isso, fazemos do <span className="marca-texto-amarelo px-2 py-1">território</span> um palco, onde cada <span className="marca-texto-amarelo px-2 py-1">batalha</span> é parte dessa construção. Ao acessar, surpreenda-se com a potência desta <span className="marca-texto-amarelo px-2 py-1">cidade</span>, agora também construída por você.
+                  </motion.p>
+                </div>
+              </section>
 
               {/* Modal de detalhes do local */}
               {/* {selectedLocation && (
@@ -1026,8 +1024,8 @@ Veja o Distrito Federal além dos setores e monumentos. Aqui, traçamos pontos q
                   </motion.div>
                 </motion.div>
               )} */}
-          </motion.div>
-        </AnimatePresence>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </>

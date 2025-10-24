@@ -339,7 +339,7 @@ const Acervo = () => {
     <div>
       <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
       
-      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
+      <div className="relative mx-auto min-h-screen border-theme border-l-3 border-r-3 border-b-3">
         
         {/* Seção de Artistas em Destaque */}
         <motion.section 
@@ -348,12 +348,23 @@ const Acervo = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="text-center mb-8 px-6">
+          <div
+            className={`${currentTheme === 'light' ? 'bg-hip-verde-claro' : 'bg-hip-verde-escuro'} text-left mb-16 text-black border-theme w-full pb-10`}
+          >
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
+               ARTISTAS EM DESTAQUE
+            </h2>
+            <p className="border-theme border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-black max-w-4xl leading-relaxed">
+               Conheça os artistas que fazem parte do nosso acervo
+            </p>
+
+          </div>
+          <div className={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'} text-center mb-8 px-6`}>
             <h2 className="text-4xl font-dirty-stains text-theme-primary mb-4 text-left">
-              ARTISTAS EM DESTAQUE
+             
             </h2>
             <p className="text-lg text-left font-sometype-mono text-gray-600">
-              Conheça os artistas que fazem parte do nosso acervo
+             
             </p>
           </div>
 
@@ -459,14 +470,14 @@ const Acervo = () => {
         </motion.section>
 
         <motion.section 
-          className="mb-12 px-6"
+          className="mb-12 px-6 mt-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           {/* Barra de Busca Melhorada */}
         <motion.div 
-          className="mb-8 p-6 bg-white/90 border-2 border-theme"
+          className="mb-8 p-6 border-2 fundo-base-preto border-theme"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -481,7 +492,7 @@ const Acervo = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   placeholder="Digite sua busca... (ex: vera, dino, 1994)"
-                  className="flex-1 px-4 py-3 border-2 border-theme font-sometype-mono text-base focus:outline-none focus:border-yellow-400"
+                  className="flex-1 px-4 py-3 border-2 border-theme font-sometype-mono text-base focus:outline-none focus:border-yellow-400 text-black"
                 />
                 <div className="flex gap-2">
                   <button
@@ -501,7 +512,7 @@ const Acervo = () => {
               
               {/* Seleção de Campo de Busca */}
               <div className="space-y-2">
-                <p className="text-sm font-sometype-mono text-gray-700">Buscar por:</p>
+                <p className="text-sm font-sometype-mono text-black">Buscar por:</p>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { value: 'title', label: 'Título' },
@@ -515,8 +526,8 @@ const Acervo = () => {
                       onClick={() => setSearchField(field.value)}
                       className={`px-3 py-2 border-2 border-theme font-sometype-mono text-sm transition-colors ${
                         searchField === field.value
-                          ? 'bg-black text-theme'
-                          : 'bg-white text-theme hover:bg-gray-100'
+                          ? 'bg-white text-black'
+                          : 'bg-white text-black hover:bg-gray-100'
                       }`}
                     >
                       {field.label}
@@ -526,10 +537,6 @@ const Acervo = () => {
               </div>
             </div>
           </div>
-          
-          <p className="mt-3 text-sm text-gray-600 font-sometype-mono text-center">
-            💡 Use a busca textual para termos específicos ou a busca por Creator para ver todos os itens de um criador
-          </p>
         </motion.div>
 
         {/* Contador de Resultados e Paginação */}

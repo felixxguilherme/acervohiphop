@@ -104,7 +104,7 @@ const Revista = () => {
           >
             <div className="w-full overflow-hidden">
               {/* Hero Section da Revista */}
-              <div className="container mx-auto px-4 py-8">
+              <div className="container mx-auto px-4 pt-6 pb-8">
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ const Revista = () => {
                   className="text-center text-theme mb-12"
                 >
                   <h2 className="font-sometype-mono text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 max-w-4xl mx-auto">
-                    Revista Digital do Hip Hop Brasiliense - <span className="marca-texto-laranja px-2 py-1">Preservando memórias</span>, <span className="marca-texto-laranja px-2 py-1">contando histórias</span>
+                    Revista Digital do Hip Hop Brasiliense - <span className="marca-texto-vermelho px-2 py-1">Preservando memórias</span>, <span className="marca-texto-vermelho px-2 py-1">contando histórias</span>
                   </h2>
                 </motion.div>
 
@@ -133,7 +133,7 @@ const Revista = () => {
                         />
                       </div>
                       <div>
-                        <h3 className="font-dirty-stains text-4xl mb-4 text-theme">REVISTA ZULU NATION DF</h3>
+                        <h3 className="font-dirty-stains text-2xl sm:text-3xl md:text-4xl mb-4 text-theme">REVISTA ZULU NATION DF</h3>
                         <h4 className="font-sometype-mono text-xl mb-4 text-theme">Edição #03 - Abril 2005</h4>
                         <p className="font-sometype-mono text-theme mb-6">
                           Terceira edição da revista independente da Zulu Nation DF, contendo entrevistas com artistas locais,
@@ -158,7 +158,7 @@ const Revista = () => {
                   transition={{ delay: 0.4 }}
                   className="mb-16"
                 >
-                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-theme marca-texto-laranja px-4 py-2">REPORTAGENS EM DESTAQUE</h3>
+                  <h3 className="font-dirty-stains text-2xl sm:text-3xl md:text-4xl text-center mb-8 text-theme marca-texto-vermelho px-4 py-2">REPORTAGENS EM DESTAQUE</h3>
 
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[
@@ -242,7 +242,7 @@ const Revista = () => {
                   transition={{ delay: 0.8 }}
                   className="bg-black/20 backdrop-blur-sm border-3 border-theme rounded-lg p-8 mb-16"
                 >
-                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-theme marca-texto-verde px-4 py-2">NOSSO ACERVO</h3>
+                  <h3 className="font-dirty-stains text-2xl sm:text-3xl md:text-4xl text-center mb-8 text-theme marca-texto-verde px-4 py-2">NOSSO ACERVO</h3>
                   <div className="grid md:grid-cols-4 gap-6 text-center">
                     {[
                       { number: "2.500+", label: "Itens Documentais", icon: "📚" },
@@ -311,8 +311,8 @@ const Revista = () => {
                 transition={{ duration: 0.8, delay: 0.3 }}
                 className="mt-15 text-2xl md:text-2xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
               >
-                A Revista Digital é o <span className="marca-texto-laranja px-2 py-1">ponto de encontro</span> entre o que acontece nas ruas, nos estudos e na produção artística Hip Hop. É um sistema de <span className="marca-texto-laranja px-2 py-1">curadoria colaborativa</span> que conecta canais, coletivos e vozes independentes para oferecer conteúdo vivo e atual do movimento Hip Hop. Cada edição é alimentada pela participação de quem faz o Hip Hop no Distrito Federal e no Brasil, trazendo novidades, estudos, pesquisas e análises que constroem a base intelectual do movimento.
-                A Revista Digital organiza e difunde a cultura de rua para jovens, pesquisadores e agentes culturais. Oferece <span className="marca-texto-laranja px-2 py-1">informações robustas</span>, de artigos científicos a entrevistas com artistas, sendo ferramenta essencial para quem quer entender e acompanhar o movimento.
+                A <span className="marca-texto-vermelho px-2 py-1">Revista Digital</span> é o <span className="marca-texto-vermelho px-2 py-1">ponto de encontro</span> entre o que acontece nas ruas, nos estudos e na <span className="marca-texto-vermelho px-2 py-1">produção artística</span> Hip Hop. É um sistema de <span className="marca-texto-vermelho px-2 py-1">curadoria colaborativa</span> que conecta canais, coletivos e vozes independentes para oferecer <span className="marca-texto-vermelho px-2 py-1">conteúdo vivo</span> e atual do movimento Hip Hop. Cada <span className="marca-texto-vermelho px-2 py-1">edição</span> é alimentada pela participação de quem faz o Hip Hop no <span className="marca-texto-amarelo px-2 py-1">Distrito Federal</span> e no Brasil, trazendo <span className="marca-texto-vermelho px-2 py-1">novidades</span>, <span className="marca-texto-vermelho px-2 py-1">estudos</span>, <span className="marca-texto-vermelho px-2 py-1">pesquisas</span> e <span className="marca-texto-vermelho px-2 py-1">análises</span> que constroem a base intelectual do movimento.
+                A <span className="marca-texto-vermelho px-2 py-1">Revista Digital</span> organiza e difunde a cultura de rua para jovens, pesquisadores e agentes culturais. Oferece <span className="marca-texto-vermelho px-2 py-1">informações robustas</span>, de <span className="marca-texto-vermelho px-2 py-1">artigos científicos</span> a <span className="marca-texto-vermelho px-2 py-1">entrevistas</span> com artistas, sendo ferramenta essencial para quem quer entender e acompanhar o movimento.
               </motion.p>
 
 

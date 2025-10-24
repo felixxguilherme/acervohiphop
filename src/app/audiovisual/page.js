@@ -84,15 +84,15 @@ const Audiovisual = () => {
             }}
             className="w-full overflow-hidden"
           >
-            <div className="container mx-auto px-4 py-16">
+            <div className="container mx-auto px-4 pt-6 pb-16">
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 className="text-center text-theme"
               >
-                <h2 className="font-sometype-mono text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 max-w-4xl mx-auto">
-                  Documentário, videoclipes, registros de eventos e performances que capturam a essência do Hip Hop brasiliense
+                <h2 className="font-sometype-mono text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 max-w-4xl mx-auto">
+                  <span className="marca-texto-verde px-2 py-1">Documentário</span>, <span className="marca-texto-verde px-2 py-1">videoclipes</span>, <span className="marca-texto-verde px-2 py-1">registros de eventos</span> e performances que capturam a essência do Hip Hop <span className="marca-texto-amarelo px-2 py-1">brasiliense</span>
                 </h2>
                 
                 <motion.div
