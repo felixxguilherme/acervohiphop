@@ -117,9 +117,6 @@ const PolaroidCard = ({
     >
       <motion.div 
         className="bg-white shadow-xl rounded-sm p-1 sm:p-2 md:p-3 w-full h-full max-w-full max-h-full relative"
-        animate={{ 
-          rotate: isHovered ? 0 : Math.random() * 6 - 3 
-        }}
         transition={{ duration: 0.3 }}
       >
         {/* Silver Tape */}
@@ -144,7 +141,7 @@ const PolaroidCard = ({
         )}
         
         {/* Área da foto */}
-        <div className="relative bg-gray-200 h-5/6 w-full overflow-hidden">
+        <div className="relative bg-gray-200 h-5/7 w-full overflow-hidden">
           {isLoading ? (
             <div className="w-full h-full bg-gray-300 animate-pulse"></div>
           ) : (
@@ -159,8 +156,8 @@ const PolaroidCard = ({
         </div>
         
         {/* Área branca abaixo da foto */}
-        <div className="h-1/6 flex items-center justify-center">
-          <p className="text-gray-700 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-scratchy px-1 sm:px-2 text-center leading-tight">{caption}</p>
+        <div className="h-2/6 flex items-center justify-center">
+          <p className="text-black text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-sometype-mono font-bold px-1 sm:px-2 text-center leading-tight" style={{ color: '#000000 !important' }}>{caption}</p>
         </div>
         
       </motion.div>

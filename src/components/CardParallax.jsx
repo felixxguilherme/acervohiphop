@@ -45,12 +45,12 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
     >
       <div
         className="card"
-        style={{backgroundColor: color, scale, top:`calc(-5vh + ${i * 25}px)`}}
+        style={{backgroundColor: color, top:`calc(-5vh + ${i * 25}px)`}}
       >
         <h2 className="font-dirty-stains text-theme-primary">{title}</h2>
         <div className="body">
           <div 
-            className={`description -mt-6 relative border-2 border-theme ${theme === 'dark' ? 'bg-black' : 'bg-white'}`}
+            className={`description h-60 md:h-90 pt-6 -mt-6 relative border-2 border-theme ${theme === 'dark' ? 'bg-black' : 'bg-white'}`}
             style={{
               transform: `rotate(${-1 + (i * 0.5)}deg)`,
               transformOrigin: 'center center',
@@ -62,13 +62,13 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
             <div className="p-6 space-y-4">
               {/* Título do item */}
               {itemTitle && (
-                <h3 className={`font-dirty-stains text-xl md:text-2xl ${theme === 'dark' ? 'text-white' : 'text-black'} leading-tight`}>
+                <h3 className={`font-dirty-stains font-bold text-xl md:text-2xl ${theme === 'dark' ? 'text-white' : 'text-black'} leading-tight`} style={{ fontFamily: 'var(--font-dirty-stains)' }}>
                   {itemTitle.length > 45 ? `${itemTitle.substring(0, 45)}...` : itemTitle}
                 </h3>
               )}
               
               {/* Descrição principal */}
-              <p className={`font-sometype-mono text-base md:text-lg leading-relaxed ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+              <p className={`border-theme border-b-3 pb-2 font-sometype-mono text-base md:text-lg leading-relaxed ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
                 {description}
               </p>
               
@@ -76,31 +76,15 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
               <div className="space-y-2">
                 {place_access_points && place_access_points.length > 0 && (
                   <div className={`font-sometype-mono text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} flex items-center gap-2`}>
-                    <span className="marca-texto-azul px-2 py-1 text-black font-bold">📍</span>
                     <span>{place_access_points[0]}</span>
                   </div>
                 )}
                 
                 {itemDate && (
                   <div className={`font-sometype-mono text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} flex items-center gap-2`}>
-                    <span className="marca-texto-verde px-2 py-1 text-black font-bold">📅</span>
                     <span>{itemDate}</span>
                   </div>
                 )}
-              </div>
-              
-              {/* Link de explorar */}
-              <div className="pt-3 border-t border-gray-400">
-                <a 
-                  href={url || link} 
-                  target={url ? "_blank" : "_self"}
-                  className={`font-sometype-mono flex items-center gap-3 text-lg md:text-xl font-bold ${theme === 'dark' ? 'text-white hover:text-gray-300' : 'text-black hover:text-gray-700'} transition-colors duration-200`}
-                >
-                  <span>EXPLORAR</span>
-                  <svg width="24" height="14" viewBox="0 0 22 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M21.5303 6.53033C21.8232 6.23744 21.8232 5.76256 21.5303 5.46967L16.7574 0.696699C16.4645 0.403806 15.9896 0.403806 15.6967 0.696699C15.4038 0.989592 15.4038 1.46447 15.6967 1.75736L19.9393 6L15.6967 10.2426C15.4038 10.5355 15.4038 11.0104 15.6967 11.3033C15.9896 11.5962 16.4645 11.5962 16.7574 11.3033L21.5303 6.53033ZM0 6.75L21 6.75V5.25L0 5.25L0 6.75Z" fill={theme === 'dark' ? 'white' : 'black'}/>
-                  </svg>
-                </a>
               </div>
             </div>
           </div>
@@ -112,9 +96,7 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
             >
               <PolaroidCard 
                 imageSrc={src.startsWith('http') ? src : (src.startsWith('/') ? src : `/images/${src}`)}
-                caption={itemTitle ? (itemTitle.length > 30 ? `${itemTitle.substring(0, 30)}...` : itemTitle) : title}
-                tape={{ position: 'top-right', angle: 15 }}
-                secondTape={{ position: 'bottom-left', angle: -10 }}
+                caption={itemTitle || title}
               />
             </motion.div>
           </div>

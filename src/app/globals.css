@@ -330,7 +330,7 @@ body.theme-dark h4,
 body.theme-dark h5,
 body.theme-dark h6 {
   color: #ffffff;
-  font-family: var(--font-scratchy);
+  font-family: var(--font-dirty-stains);
 }
 
 /* Textos de código com Sometype Mono */
