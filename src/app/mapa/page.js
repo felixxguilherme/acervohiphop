@@ -387,11 +387,11 @@ const MapaContent = () => {
                 transition={{ duration: 0.6 }}
               >
                 <div className="bg-theme-background pt-6">
-                  <h2 className="text-4xl font-dirty-stains text-theme-primary mb-4 text-left">
+                  <h2 className="text-4xl font-dirty-stains text-theme-primary mb-4 text-left marca-texto-amarelo px-4 py-2">
                     MAPA INTERATIVO
                   </h2>
                   <p className="font-sometype-mono text-lg text-gray-600 text-left mb-4">
-                    Explore locais históricos, eventos marcantes e a geografia do movimento Hip Hop brasiliense
+                    Explore <span className="marca-texto-amarelo px-2 py-1">locais históricos</span>, eventos marcantes e a <span className="marca-texto-amarelo px-2 py-1">geografia do movimento</span> Hip Hop brasiliense
                   </p>
                   {mapStatistics && (
                     <div className="flex flex-wrap gap-4 text-sm font-sometype-mono">
@@ -946,9 +946,9 @@ const MapaContent = () => {
                           transition={{ duration: 0.8, delay: 0.3 }}
                           className="mt-15 text-2xl md:text-2xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
                         >
-                          Este é o Mapa das Batalhas: uma ferramenta da nossa plataforma interativa que conecta as Batalhas de MC´s do DF, mostrando de forma dinâmica e precisa onde e quando a cultura urbana se manifestou e continua a pulsar.
+                          Este é o <span className="marca-texto-amarelo px-2 py-1">Mapa das Batalhas</span>: uma ferramenta da nossa plataforma interativa que conecta as Batalhas de MC´s do DF, mostrando de forma dinâmica e precisa onde e quando a cultura urbana se manifestou e continua a pulsar.
 
-Neste mapa, geolocalizações e arquivos se unem para criar um panorama da resistência cultural do DF, mapeando encontros, datas e trajetórias que desenham o território Hip Hop. Nosso mapa permite navegar por essa geografia em tempo real, onde a memória se move e se transforma em dados dinâmicos. A cada clique, você mergulha na história do Hip Hop DF.
+Neste mapa, <span className="marca-texto-amarelo px-2 py-1">geolocalizações e arquivos</span> se unem para criar um panorama da resistência cultural do DF, mapeando encontros, datas e trajetórias que desenham o <span className="marca-texto-amarelo px-2 py-1">território Hip Hop</span>. Nosso mapa permite navegar por essa geografia em tempo real, onde a memória se move e se transforma em dados dinâmicos. A cada clique, você mergulha na história do Hip Hop DF.
 Veja o Distrito Federal além dos setores e monumentos. Aqui, traçamos pontos que conectam a força de uma cultura que nasceu à margem. E com isso, fazemos do território um palco, onde cada batalha é parte dessa construção. Ao acessar, surpreenda-se com a potência desta cidade, agora também construída por você. 
                         </motion.p>
                       </div>

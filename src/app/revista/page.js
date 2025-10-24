@@ -8,8 +8,24 @@ import AnimatedButton from '@/components/AnimatedButton';
 import HeaderApp from '@/components/html/HeaderApp';
 import StackedPagesScroll from "@/components/ui/stack";
 
+import { CartoonButton } from '@/components/ui/cartoon-button';
+
 const Revista = () => {
   const [isLoading, setIsLoading] = useState(true);
+
+  const [currentTheme, setCurrentTheme] = useState('light');
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Carrega o tema do localStorage no primeiro render
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setCurrentTheme(savedTheme);
+
+    // Delay para evitar conflitos com animações da página
+    setTimeout(() => {
+      setIsInitialized(true);
+    }, 100);
+  }, []);
 
   useEffect(() => {
     // Estratégia de carregamento otimizado - mesma da homepage
@@ -74,6 +90,7 @@ const Revista = () => {
 
         {/* Page Content with Transition */}
         <AnimatePresence mode="wait">
+
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -95,7 +112,7 @@ const Revista = () => {
                   className="text-center text-theme mb-12"
                 >
                   <h2 className="font-sometype-mono text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 max-w-4xl mx-auto">
-                    Revista Digital do Hip Hop Brasiliense - Preservando memórias, contando histórias
+                    Revista Digital do Hip Hop Brasiliense - <span className="marca-texto-laranja px-2 py-1">Preservando memórias</span>, <span className="marca-texto-laranja px-2 py-1">contando histórias</span>
                   </h2>
                 </motion.div>
 
@@ -109,8 +126,8 @@ const Revista = () => {
                   <div className="bg-black/20 backdrop-blur-sm border-3 border-theme rounded-lg p-8">
                     <div className="grid md:grid-cols-2 gap-8 items-center">
                       <div>
-                        <img 
-                          src="https://images.unsplash.com/photo-1635796403527-50ae19d7f65d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGhpcGhvcCUyMGNyZXd8ZW58MHx8MHx8fDA%3D" 
+                        <img
+                          src="https://images.unsplash.com/photo-1635796403527-50ae19d7f65d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGhpcGhvcCUyMGNyZXd8ZW58MHx8MHx8fDA%3D"
                           alt="Revista Zulu Nation DF - Edição #03"
                           className="w-full rounded-lg shadow-lg border-2 border-theme"
                         />
@@ -119,7 +136,7 @@ const Revista = () => {
                         <h3 className="font-dirty-stains text-4xl mb-4 text-theme">REVISTA ZULU NATION DF</h3>
                         <h4 className="font-sometype-mono text-xl mb-4 text-theme">Edição #03 - Abril 2005</h4>
                         <p className="font-sometype-mono text-theme mb-6">
-                          Terceira edição da revista independente da Zulu Nation DF, contendo entrevistas com artistas locais, 
+                          Terceira edição da revista independente da Zulu Nation DF, contendo entrevistas com artistas locais,
                           agenda cultural, letras de rap e artigos sobre a cultura Hip Hop no Distrito Federal.
                         </p>
                         <div className="flex flex-wrap gap-2 mb-4">
@@ -141,8 +158,8 @@ const Revista = () => {
                   transition={{ delay: 0.4 }}
                   className="mb-16"
                 >
-                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-theme">REPORTAGENS EM DESTAQUE</h3>
-                  
+                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-theme marca-texto-laranja px-4 py-2">REPORTAGENS EM DESTAQUE</h3>
+
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[
                       {
@@ -196,8 +213,8 @@ const Revista = () => {
                         whileHover={{ scale: 1.02, y: -5 }}
                         className="bg-white/90 backdrop-blur-sm border-3 border-theme rounded-lg overflow-hidden cursor-pointer shadow-lg"
                       >
-                        <img 
-                          src={story.image} 
+                        <img
+                          src={story.image}
                           alt={story.title}
                           className="w-full h-48 object-cover"
                         />
@@ -225,7 +242,7 @@ const Revista = () => {
                   transition={{ delay: 0.8 }}
                   className="bg-black/20 backdrop-blur-sm border-3 border-theme rounded-lg p-8 mb-16"
                 >
-                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-theme">NOSSO ACERVO</h3>
+                  <h3 className="font-dirty-stains text-4xl text-center mb-8 text-theme marca-texto-verde px-4 py-2">NOSSO ACERVO</h3>
                   <div className="grid md:grid-cols-4 gap-6 text-center">
                     {[
                       { number: "2.500+", label: "Itens Documentais", icon: "📚" },
@@ -255,6 +272,66 @@ const Revista = () => {
               </div>
             </div>
           </motion.div>
+
+          <section className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'} relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-theme p-8`}>
+
+
+            {/* Decorative elements */}
+            <div className="absolute inset-0 z-10 pointer-events-none decorative-elements">
+
+              {/* Spray effects */}
+              <div
+                className="absolute -bottom-10 left-15 w-64 h-64 bg-contain bg-no-repeat"
+                style={{
+                  backgroundImage: "url('/cursor02.webp')"
+                }}
+              />
+
+              <div
+                className="absolute top-0 -right-15 w-32 h-32 bg-contain bg-no-repeat"
+                style={{
+                  backgroundImage: "url('/spray_preto-1.webp')"
+                }}
+              />
+
+              <div
+                className="absolute top-5 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
+                style={{
+                  backgroundImage: "url('/spray_preto-2.webp')"
+                }}
+              />
+            </div>
+
+            {/* Main content */}
+            <div className="relative z-20 text-center max-w-6xl mx-auto px-6">
+              {/* Subtitle */}
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="mt-15 text-2xl md:text-2xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
+              >
+                A Revista Digital é o <span className="marca-texto-laranja px-2 py-1">ponto de encontro</span> entre o que acontece nas ruas, nos estudos e na produção artística Hip Hop. É um sistema de <span className="marca-texto-laranja px-2 py-1">curadoria colaborativa</span> que conecta canais, coletivos e vozes independentes para oferecer conteúdo vivo e atual do movimento Hip Hop. Cada edição é alimentada pela participação de quem faz o Hip Hop no Distrito Federal e no Brasil, trazendo novidades, estudos, pesquisas e análises que constroem a base intelectual do movimento.
+                A Revista Digital organiza e difunde a cultura de rua para jovens, pesquisadores e agentes culturais. Oferece <span className="marca-texto-laranja px-2 py-1">informações robustas</span>, de artigos científicos a entrevistas com artistas, sendo ferramenta essencial para quem quer entender e acompanhar o movimento.
+              </motion.p>
+
+
+              {/* Call to Action */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.2 }}
+                className="space-y-6"
+              >
+                <CartoonButton
+                  label="EXPLORAR ACERVO COMPLETO"
+                  color=""
+                  onClick={() => window.location.href = '/acervo'}
+                  className="text-xl px-8 py-4 mx-auto"
+                />
+              </motion.div>
+            </div>
+          </section>
         </AnimatePresence>
       </div>
     </>

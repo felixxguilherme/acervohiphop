@@ -312,31 +312,31 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
             <div className="bg-theme-card p-6 rounded-lg">
-              <h3 className="text-2xl font-sometype-mono mb-4">ACERVO</h3>
-              <p className="text-lg mb-4">Navegue por nossa coleção de documentos históricos</p>
+              <h3 className="text-2xl font-sometype-mono mb-4 marca-texto-verde text-theme px-3 py-1">ACERVO</h3>
+              <p className="text-lg mb-4">Navegue por nossa <span className="marca-texto-verde px-2 py-1">coleção de documentos históricos</span></p>
               <CartoonButton
                 label="EXPLORAR"
-                color="bg-red-400"
+                color="marca-texto-verde"
                 onClick={() => window.location.href = '/acervo'}
               />
             </div>
             
             <div className="bg-theme-card p-6 rounded-lg">
-              <h3 className="text-2xl font-sometype-mono mb-4">MAPA</h3>
-              <p className="text-lg mb-4">Descubra os locais históricos do Hip Hop no DF</p>
+              <h3 className="text-2xl font-sometype-mono mb-4 marca-texto-amarelo text-theme px-3 py-1">MAPA</h3>
+              <p className="text-lg mb-4">Descubra os <span className="marca-texto-amarelo px-2 py-1">locais históricos</span> do Hip Hop no DF</p>
               <CartoonButton
                 label="NAVEGAR"
-                color="bg-sky-400"
+                color="marca-texto-amarelo"
                 onClick={() => window.location.href = '/mapa'}
               />
             </div>
             
             <div className="bg-theme-card p-6 rounded-lg">
-              <h3 className="text-2xl font-sometype-mono mb-4">REVISTA</h3>
-              <p className="text-lg mb-4">Leia reportagens e entrevistas exclusivas</p>
+              <h3 className="text-2xl font-sometype-mono mb-4 marca-texto-laranja text-theme px-3 py-1">REVISTA</h3>
+              <p className="text-lg mb-4">Leia <span className="marca-texto-laranja px-2 py-1">reportagens e entrevistas</span> exclusivas</p>
               <CartoonButton
                 label="LER MAIS"
-                color="bg-lime-400"
+                color="marca-texto-laranja"
                 onClick={() => window.location.href = '/revista'}
               />
             </div>
@@ -458,28 +458,19 @@ export default function Home() {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
         className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-escuro'} relative overflow-hidden pb-20 border-theme border-r-3 border-l-3 border-t-3`}>
-        
-        {/* Elementos decorativos */}
-        <div className="absolute inset-0 z-25 pointer-events-none">
-          <div
-            className="absolute top-20 -right-10 w-40 h-40 bg-contain bg-no-repeat"
-            style={{
-              backgroundImage: "url('/spray_azul-1.webp')"
-            }}
-          />
-        </div>
 
-        <div className="relative z-20 w-full">
+        <div className={`relative z-20 w-full`}>
           {/* Título da seção */}
           <div
-            className={`bg-hip-azul-claro text-left mb-16 border-theme border-b-3 w-full pb-6 pt-6 px-6`}
+            className={`bg-hip-vermelho-claro text-left mb-16 text-theme border-theme w-full pb-10 pt-10 px-6`}
           >
-            <h2 className="marca-texto-vermelho text-8xl pl-6 md:text-5xl mb-6">
+            <h2 className="text-8xl pl-6 md:text-5xl mb-6 text-bold">
               DESTAQUES
             </h2>
-            <p className="pl-6 text-xl md:text-2xl font-sometype-mono text-theme-secondary max-w-4xl leading-relaxed">
-              Mergulhe na história viva do Hip Hop do DF através de documentos únicos que contam nossa trajetória
+            <p className="border-theme border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-theme max-w-4xl leading-relaxed">
+              Mergulhe na <span className="marca-texto-verde px-2 py-1">história viva</span> do Hip Hop do DF através de <span className="marca-texto-verde px-2 py-1">documentos únicos</span> que contam nossa trajetória
             </p>
+
           </div>
 
           {/* Grid de artistas em destaque - DADOS REAIS */}
@@ -491,7 +482,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
                 viewport={{ once: true }}
-                className="group cursor-pointer bg-theme-background border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg"
+                className={`group cursor-pointer bg-theme-background border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg`}
                 onClick={() => window.location.href = `/acervo/artista/${artist.id}`}
               >
                 <div className="flex flex-col gap-6">
@@ -501,7 +492,7 @@ export default function Home() {
                       <img
                         src={artist.thumbnail}
                         alt={artist.name}
-                        className="w-full h-full object-cover border-2 border-theme"
+                        className="w-full h-full object-cover border-b-2 border-theme"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
                     ) : (
@@ -513,15 +504,15 @@ export default function Home() {
 
                   {/* Informações do artista */}
                   <div className="flex flex-col">
-                    <h3 className="font-dirty-stains text-3xl text-theme-primary mb-3">
+                    <h3 className="font-dirty-stains text-3xl mb-3" style={{ fontFamily: 'var(--font-dirty-stains)' }}>
                       {artist.name}
                     </h3>
                     <p className="font-sometype-mono text-gray-700 mb-4 text-lg">
                       {artist.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      <span className="bg-blue-100 text-blue-800 px-3 py-1 border border-blue-300 font-sometype-mono text-sm">
-                        📊 {artist.totalItems} {artist.totalItems === 1 ? 'item' : 'itens'}
+                      <span className="bg-theme text-theme px-3 py-1 border border-theme font-sometype-mono text-sm">
+                        {artist.totalItems} {artist.totalItems === 1 ? 'item' : 'itens'}
                       </span>
                     </div>
                     
@@ -584,9 +575,9 @@ export default function Home() {
           >
             <CartoonButton
               label="EXPLORAR TODO O ACERVO"
-              color="bg-theme-primary text-theme"
+              color=""
               onClick={() => window.location.href = '/acervo'}
-              className="text-xl px-8 py-4"
+              className="text-xl px-8 py-4 bg-theme-primary text-theme"
             />            <p className="font-sometype-mono text-sm text-theme-secondary mt-4">
               {statistics?.totalItems ? `Mais de ${statistics.totalItems} itens` : 'Centenas de itens'} documentando 4 décadas de cultura Hip Hop
             </p>          </motion.div>
@@ -750,14 +741,14 @@ export default function Home() {
           <div
             className="absolute top-0 -right-15 w-32 h-32 bg-contain bg-no-repeat"
             style={{
-              backgroundImage: "url('/spray_azul-1.webp')"
+              backgroundImage: "url('/spray_preto-1.webp')"
             }}
           />
 
           <div
             className="absolute top-5 left-16 w-28 h-28 bg-contain bg-no-repeat rotate-45"
             style={{
-              backgroundImage: "url('/spray_azul-2.webp')"
+              backgroundImage: "url('/spray_preto-2.webp')"
             }}
           />
         </div>
@@ -786,11 +777,10 @@ Se você está na mesma luta, o Acervo te espera.
           >
             <CartoonButton
               label="EXPLORAR ACERVO COMPLETO"
-              color="bg-black text-theme"
+              color=""
               onClick={() => window.location.href = '/acervo'}
-              className="text-xl px-8 py-4 mx-auto"
+              className="text-xl px-8 py-4 mx-auto cursor-pointer"
             />
-
             {/* <div className="flex flex-wrap justify-center gap-4 text-sm font-sometype-mono text-theme-secondary">
               <span>📸 {artistsData.reduce((total, result) => total + result.total, 0)} itens no acervo</span>
               <span>🎭 {artistsData.length} artistas em destaque</span>
