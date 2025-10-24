@@ -6,7 +6,8 @@
     "dev": "next dev -p 8041",
     "build": "next build",
     "start": "next start -p 8041",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "rsync -avz --progress .next/ guilherme@168.231.96.196:acervohiphop/.next/"
   },
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.2",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "critters": "^0.0.23",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.2.9"
   }
