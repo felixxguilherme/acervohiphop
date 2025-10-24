@@ -9,6 +9,7 @@ import { AcervoProvider } from "@/contexts/AcervoContext";
 import ThemeBackground from "@/components/ThemeBackground";
 import ImagePreloader from "@/components/ImagePreloader";
 import GlobalLoader from "@/components/GlobalLoader";
+import Script from 'next/script'
 
 export const metadata = {
   title: "Distrito HipHop - Memórias Vivas de um Movimento",
@@ -63,10 +64,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
       <head>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=G-DVW7ZE035L`}
+          strategy="afterInteractive"
+        />
+
         {/* Preload critical background images with high priority */}
         <link rel="preload" as="image" href="/fundo_base.webp" fetchPriority="high" />
         <link rel="preload" as="image" href="/fundo_base_preto.webp" fetchPriority="high" />
         
+    
+
         {/* Preload essential UI images */}
         <link rel="preload" as="image" href="/marca-texto-amarelo.webp" fetchPriority="low" />
         <link rel="preload" as="image" href="/marca-texto-vermelho.webp" fetchPriority="low" />

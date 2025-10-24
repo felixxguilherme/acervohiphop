@@ -206,15 +206,15 @@ export default function HeaderApp({ title, showTitle = false }) {
               >
                 <Link href="/">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-lg" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
-                    text="HOME" 
+                    textSize={isScrolled ? "text-xl sm:text-2xl md:text-3xl" : "text-lg sm:text-xl md:text-2xl lg:text-3xl"} 
+                    text="INÍCIO" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-amarelo" 
                   />
                 </Link>
                 <Link href="/acervo">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-base" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-lg sm:text-xl md:text-2xl" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
                     text="ACERVO" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-vermelho" 
@@ -222,7 +222,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/mapa">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-base" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-lg sm:text-xl md:text-2xl" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
                     text="MAPA" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-azul" 
@@ -230,7 +230,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                 </Link>
                 <Link href="/revista">
                   <AnimatedButton 
-                    textSize={isScrolled ? "text-base" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
+                    textSize={isScrolled ? "text-lg sm:text-xl md:text-2xl" : "text-lg sm:text-2xl md:text-2xl lg:text-3xl"} 
                     text="REVISTA" 
                     backgroundMode="static" 
                     backgroundClass="marca-texto-verde" 
