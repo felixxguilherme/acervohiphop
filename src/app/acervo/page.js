@@ -6,6 +6,8 @@ import { useAcervo } from '@/contexts/AcervoContext';
 import { motion } from 'motion/react';
 import { fetchCompat } from '@/utils/httpClient';
 
+import { CartoonButton } from '@/components/ui/cartoon-button';
+
 // Helper para labels dos campos
 const getFieldLabel = (field) => {
   const labels = {
@@ -60,6 +62,20 @@ const Acervo = () => {
   // Estado para artistas em destaque
   const [featuredArtists, setFeaturedArtists] = useState([]);
   const [loadingArtists, setLoadingArtists] = useState(true);
+
+  const [currentTheme, setCurrentTheme] = useState('light');
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Carrega o tema do localStorage no primeiro render
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setCurrentTheme(savedTheme);
+    
+    // Delay para evitar conflitos com animações da página
+    setTimeout(() => {
+      setIsInitialized(true);
+    }, 100);
+  }, []);
   
 
   // Função para limpar busca local
@@ -324,6 +340,7 @@ const Acervo = () => {
       <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
       
       <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
+        
         {/* Seção de Artistas em Destaque */}
         <motion.section 
           className="mb-12"
