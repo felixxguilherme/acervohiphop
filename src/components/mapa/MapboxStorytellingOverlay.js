@@ -25,12 +25,6 @@ const MapboxStorytellingOverlay = ({
       }
       return;
     }
-
-    // Prevent re-initialization if already exists for same tour
-    if (scrollamaInstance.current) {
-      console.log('Scrollama: Already initialized for tour:', selectedTour.title);
-      return;
-    }
     
     // Add small delay to ensure DOM is ready
     const initTimer = setTimeout(() => {
@@ -49,7 +43,7 @@ const MapboxStorytellingOverlay = ({
           
           // AIDEV-NOTE: Prevent duplicate triggers for same chapter
           if (index === lastTriggeredIndex) {
-            console.log('Scrollama: Skipping duplicate trigger for chapter', index);
+            console.log('Scrollama: Pulando gatilho duplicado para o capítulo', index);
             return;
           }
           

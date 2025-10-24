@@ -50,7 +50,7 @@ const TourStoryPanel = ({
           
           // AIDEV-NOTE: Prevent duplicate triggers for same chapter
           if (index === lastTriggeredIndex) {
-            console.log('TourPanel: Skipping duplicate trigger for chapter', index);
+            console.log('Pulando gatilho duplicado para o capítulo', index);
             return;
           }
           

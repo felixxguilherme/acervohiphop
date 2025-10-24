@@ -61,8 +61,8 @@ export default function FooterApp() {
           </div>
         </div>
 
-        <p className="text-theme mt-4 mb-4 dark:text-theme">
-          © {currentYear} Distrito HipHop. Todos os direitos reservados. <span>📧 contato@distritohiphop.com</span>
+        <p className="font-sometype-mono mt-4">
+          © {currentYear} Distrito HipHop. Todos os direitos reservados <strong>acervodistritohiphop@gmail.com</strong>
         </p>
       </div>
     </footer>

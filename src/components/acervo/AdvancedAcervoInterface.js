@@ -92,12 +92,6 @@ const AdvancedAcervoInterface = () => {
       
       const results = await getInformationObjects(searchParams);
       
-      if (results.results && results.results.length > 0) {
-        results.results.forEach((item, index) => {
-          console.log(`${index + 1}. ${item.title} (${item.reference_code || item.slug})`);
-        });
-      }
-      
       setSearchResults(results.results || []);
       setSearchFilters(filters);
       setApiError(null);

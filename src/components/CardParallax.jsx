@@ -50,13 +50,14 @@ const CardParallax = ({i, title, description, src, url, link, color, progress, r
         <h2 className="font-dirty-stains text-theme-primary">{title}</h2>
         <div className="body">
           <div 
-            className={`description h-60 md:h-90 pt-6 -mt-6 relative border-2 border-theme ${theme === 'dark' ? 'bg-black' : 'bg-white'}`}
+            className={`description h-90 pt-6 -mt-6 relative border-2 border-theme ${theme === 'dark' ? 'bg-black' : 'bg-white'}`}
             style={{
               transform: `rotate(${-1 + (i * 0.5)}deg)`,
               transformOrigin: 'center center',
               position: 'relative',
               zIndex: 10 + i,
-              boxShadow: `${3 + i}px ${3 + i}px 0px ${theme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.3)'}`
+              boxShadow: `${3 + i}px ${3 + i}px 0px ${theme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.3)'}`,
+              willChange: 'transform'
             }}
           >
             <div className="p-6 space-y-4">

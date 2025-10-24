@@ -41,7 +41,6 @@ const AdvancedSearch = ({ onSearch, onReset, initialFilters = {} }) => {
       try {
         // const data = await getTaxonomies();
         // setTaxonomies(data);
-        console.log('Taxonomias desabilitadas temporariamente');
       } catch (error) {
         console.error('Erro ao carregar taxonomias:', error);
       }

@@ -33,7 +33,6 @@ const ImagePreloader = () => {
           const img = new Image();
           img.fetchPriority = priority;
           img.onload = () => {
-            console.log(`✅ Loaded: ${src}`);
             resolve(src);
           };
           img.onerror = () => {
@@ -49,19 +48,15 @@ const ImagePreloader = () => {
     const preloadImages = async () => {
       try {
         // 1. PRIORIDADE ALTA: Backgrounds (críticos para tema)
-        console.log('🔄 Preloading priority images...');
         await Promise.all(preloadImageSet(priorityImages, 'high'));
         
         // 2. PRIORIDADE MÉDIA: UI elements (carrega depois)
         setTimeout(async () => {
-          console.log('🔄 Preloading secondary images...');
           await Promise.all(preloadImageSet(secondaryImages, 'low'));
           
           // 3. PRIORIDADE BAIXA: Decorações (carrega por último)
           setTimeout(async () => {
-            console.log('🔄 Preloading tertiary images...');
             await Promise.all(preloadImageSet(tertiaryImages, 'low'));
-            console.log('✅ All images preloaded');
           }, 1000);
         }, 500);
       } catch (error) {

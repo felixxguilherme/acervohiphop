@@ -122,7 +122,7 @@ const FullscreenMapLayout = ({
             ref={mapRef}
             {...viewState}
             onLoad={(evt) => {
-              console.log('Map loaded successfully');
+              console.log('Mapa carregado.');
             }}
             onMove={evt => {
               setViewState(evt.viewState);

@@ -73,17 +73,23 @@ export default function RootLayout({ children }) {
         <link rel="preload" as="image" href="/fundo_base.webp" fetchPriority="high" />
         <link rel="preload" as="image" href="/fundo_base_preto.webp" fetchPriority="high" />
         
-    
-
         {/* Preload essential UI images */}
-        <link rel="preload" as="image" href="/marca-texto-amarelo.webp" fetchPriority="low" />
-        <link rel="preload" as="image" href="/marca-texto-vermelho.webp" fetchPriority="low" />
+        <link rel="preload" as="image" href="/marca-texto-verde.webp" fetchPriority="high" />
+        <link rel="preload" as="image" href="/marca-texto-amarelo.webp" fetchPriority="high" />
+        <link rel="preload" as="image" href="/marca-texto-vermelho.webp" fetchPriority="high" />
         <link rel="preload" as="image" href="/marca-texto-azul.webp" fetchPriority="low" />
-        <link rel="preload" as="image" href="/marca-texto-verde.webp" fetchPriority="low" />
+        <link rel="preload" as="image" href="/marca-texto-vermelho.webp" fetchPriority="low" />
+        
+        {/* Preload common tape assets */}
+        <link rel="preload" as="image" href="/silvertape01.webp" fetchPriority="low" />
+        <link rel="preload" as="image" href="/silvertape02.webp" fetchPriority="low" />
         
         {/* Resource hints para otimização */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//base.acervodistritohiphop.com.br" />
+        <link rel="dns-prefetch" href="//acervodistritohiphop.com.br" />
         <link rel="preconnect" href="//fonts.gstatic.com" crossOrigin="" />
+        <link rel="preconnect" href="//base.acervodistritohiphop.com.br" crossOrigin="" />
       </head>
       <body
         className={`${scratchyFont.variable} ${sometypeMonoFont.variable} ${dirtyStainsFont.variable} antialiased`}

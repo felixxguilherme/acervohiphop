@@ -150,6 +150,8 @@ const PolaroidCard = ({
               src={imageSrc} 
               alt={caption} 
               className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
             </>
           )}

@@ -44,7 +44,6 @@ const GlobalLoader = ({ children }) => {
             img.onload = () => {
               // Verificar se a imagem foi realmente carregada completamente
               if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
-                console.log(`✅ Asset carregado: ${src}`);
                 resolve(src);
               } else {
                 console.warn(`⚠️ Asset incompleto: ${src}`);
@@ -61,17 +60,12 @@ const GlobalLoader = ({ children }) => {
             img.src = src;
           });
         });
-
-        console.log('🔄 Iniciando carregamento de assets...');
         
         // Aguardar TODAS as imagens carregarem completamente
         await Promise.allSettled(imagePromises);
-        
-        console.log('✅ Todos os assets processados');
 
         // Aguardar que o DOM esteja completamente carregado
         if (document.readyState !== 'complete') {
-          console.log('⏳ Aguardando DOM...');
           await new Promise(resolve => {
             window.addEventListener('load', resolve, { once: true });
           });
@@ -80,14 +74,12 @@ const GlobalLoader = ({ children }) => {
         // Aguardar um tempo mínimo para o loader ser visível (UX)
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        console.log('🎯 Loader finalizado - exibindo conteúdo');
         setIsLoading(false);
         
       } catch (error) {
         console.error('Erro crítico no carregamento:', error);
         // Timeout de segurança mais longo para garantir carregamento
         setTimeout(() => {
-          console.log('⏰ Timeout de segurança - removendo loader');
           setIsLoading(false);
         }, 3000);
       }
