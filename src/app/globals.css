@@ -224,6 +224,7 @@ html {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
   border-radius: 8px !important;
   padding: 0 !important;
+  overflow: hidden !important;
 }
 
 .maplibregl-popup-close-button {
@@ -240,6 +241,7 @@ html {
   border: 2px solid #000 !important;
   right: 8px !important;
   top: 8px !important;
+  z-index: 1001 !important;
 }
 
 .maplibregl-popup-close-button:hover {
@@ -247,12 +249,33 @@ html {
   color: #fae523 !important;
 }
 
+/* Cor da ponta do popup sempre preta para folha pautada */
 .maplibregl-popup-tip {
   border-top-color: #000 !important;
 }
 
 .maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
   border-top-color: #000 !important;
+}
+
+/* Hover popups específicos - sem botão de fechar */
+.maplibregl-popup.hover-popup .maplibregl-popup-close-button {
+  display: none !important;
+}
+
+/* Popups ativos - com botão de fechar visível */
+.maplibregl-popup.active-popup .maplibregl-popup-close-button {
+  display: flex !important;
+}
+
+/* Fundo de folha pautada para popups do mapa */
+.popup-folha-pauta {
+  background-image: url('/folha-pauta-1.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #FFFCF2; /* Fallback */
+  color: #000000; /* Texto sempre preto em folha pautada */
 }
 
 
@@ -552,6 +575,56 @@ body.theme-dark .border-theme-soft {
   }
 }
 
+
+/* Polaroid caption sempre escura independente do tema */
+.polaroid-caption {
+  color: #000000 !important;
+}
+
+/* Para polaroids com fundo amarelado, usar amber-800 */
+.bg-amber-50 .polaroid-caption,
+.bg-amber-100 .polaroid-caption {
+  color: #92400e !important;
+}
+
+/* Títulos e textos de seção com fundos coloridos sempre pretos */
+.bg-hip-verde-claro h1,
+.bg-hip-verde-claro h2,
+.bg-hip-verde-claro h3,
+.bg-hip-verde-claro p,
+.bg-hip-verde-escuro h1,
+.bg-hip-verde-escuro h2,
+.bg-hip-verde-escuro h3,
+.bg-hip-verde-escuro p,
+.bg-hip-amarelo-claro h1,
+.bg-hip-amarelo-claro h2,
+.bg-hip-amarelo-claro h3,
+.bg-hip-amarelo-claro p,
+.bg-hip-amarelo-escuro h1,
+.bg-hip-amarelo-escuro h2,
+.bg-hip-amarelo-escuro h3,
+.bg-hip-amarelo-escuro p,
+.bg-hip-vermelho-claro h1,
+.bg-hip-vermelho-claro h2,
+.bg-hip-vermelho-claro h3,
+.bg-hip-vermelho-claro p,
+.bg-hip-vermelho-escuro h1,
+.bg-hip-vermelho-escuro h2,
+.bg-hip-vermelho-escuro h3,
+.bg-hip-vermelho-escuro p {
+  color: #000000 !important;
+  font-family: var(--font-sometype-mono-italic) !important;
+}
+
+/* Override específico para classes text-theme-primary em fundos coloridos */
+.bg-hip-verde-claro .text-theme-primary,
+.bg-hip-verde-escuro .text-theme-primary,
+.bg-hip-amarelo-claro .text-theme-primary,
+.bg-hip-amarelo-escuro .text-theme-primary,
+.bg-hip-vermelho-claro .text-theme-primary,
+.bg-hip-vermelho-escuro .text-theme-primary {
+  color: #000000 !important;
+}
 
 /* Background classes for marca-texto images */
 .marca-texto-vermelho {
