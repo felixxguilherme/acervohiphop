@@ -241,6 +241,162 @@ function extractCoordinatesFromNotes(notes) {
   return null;
 }
 
+// Mapeamento de locais conhecidos do DF para coordenadas aproximadas
+const DF_PLACES_COORDINATES = {
+  // Regiões Administrativas principais
+  'brasília': [-47.8825, -15.7942],
+  'brasilia': [-47.8825, -15.7942],
+  'plano piloto': [-47.8825, -15.7942],
+  'asa norte': [-47.8814, -15.7626],
+  'asa sul': [-47.8814, -15.8267],
+  
+  // Cidades satélites
+  'ceilândia': [-48.1137, -15.8181],
+  'ceilandia': [-48.1137, -15.8181],
+  'taguatinga': [-48.0739, -15.8316],
+  'águas claras': [-48.0264, -15.8344],
+  'aguas claras': [-48.0264, -15.8344],
+  'samambaia': [-48.1044, -15.8758],
+  'santa maria': [-48.0219, -16.0006],
+  'gama': [-48.0653, -15.9989],
+  'sobradinho': [-47.7867, -15.6533],
+  'planaltina': [-47.6511, -15.4522],
+  'paranoá': [-47.7792, -15.7669],
+  'paranoa': [-47.7792, -15.7669],
+  'núcleo bandeirante': [-47.9658, -15.8631],
+  'nucleo bandeirante': [-47.9658, -15.8631],
+  'candangolândia': [-47.9419, -15.8531],
+  'candangolandia': [-47.9419, -15.8531],
+  'guará': [-47.9667, -15.8072],
+  'guara': [-47.9667, -15.8072],
+  'cruzeiro': [-47.9583, -15.7933],
+  'riacho fundo': [-48.0167, -15.8833],
+  'lago sul': [-47.8333, -15.8167],
+  'lago norte': [-47.8167, -15.7333],
+  'sudoeste': [-47.9167, -15.7833],
+  'octogonal': [-47.9333, -15.7833],
+  'jardim botânico': [-47.8333, -15.8667],
+  'jardim botanico': [-47.8333, -15.8667],
+  'são sebastião': [-47.7833, -15.9],
+  'sao sebastiao': [-47.7833, -15.9],
+  'recanto das emas': [-48.0667, -15.9],
+  'vicente pires': [-48.0333, -15.8],
+  'estrutural': [-47.9833, -15.7833],
+  'sobradinho ii': [-47.8, -15.65],
+  'fercal': [-47.8833, -15.6],
+  'varjão': [-47.8, -15.7833],
+  'varjao': [-47.8, -15.7833],
+  'park way': [-47.9833, -15.8833],
+  'brazlândia': [-48.2, -15.6667],
+  'brazlandia': [-48.2, -15.6667],
+  'itapoã': [-47.7667, -15.75],
+  'itapoa': [-47.7667, -15.75],
+  
+  // Pontos de referência específicos
+  'esplanada dos ministérios': [-47.8597, -15.7975],
+  'esplanada dos ministerios': [-47.8597, -15.7975],
+  'congresso nacional': [-47.8636, -15.7998],
+  'palácio do planalto': [-47.8611, -15.7992],
+  'palacio do planalto': [-47.8611, -15.7992],
+  'supremo tribunal federal': [-47.8619, -15.8008],
+  'stf': [-47.8619, -15.8008],
+  'catedral de brasília': [-47.8747, -15.7975],
+  'catedral de brasilia': [-47.8747, -15.7975],
+  'torre de tv': [-47.8922, -15.7903],
+  'torre de televisão': [-47.8922, -15.7903],
+  'torre de televisao': [-47.8922, -15.7903],
+  'memorial jk': [-47.8631, -15.7889],
+  'ponte jk': [-47.8308, -15.8372],
+  'estádio nacional': [-47.8992, -15.7836],
+  'estadio nacional': [-47.8992, -15.7836],
+  'mané garrincha': [-47.8992, -15.7836],
+  'mane garrincha': [-47.8992, -15.7836],
+  'setor comercial sul': [-47.8831, -15.7975],
+  'setor comercial norte': [-47.8831, -15.7825],
+  'setor bancário sul': [-47.8775, -15.8025],
+  'setor bancario sul': [-47.8775, -15.8025],
+  'setor bancário norte': [-47.8775, -15.7875],
+  'setor bancario norte': [-47.8775, -15.7875],
+  'w3 sul': [-47.8992, -15.8197],
+  'w3 norte': [-47.8992, -15.7653],
+  'l2 sul': [-47.8717, -15.8197],
+  'l2 norte': [-47.8717, -15.7653],
+  
+  // Universidades
+  'unb': [-47.8678, -15.7619],
+  'universidade de brasília': [-47.8678, -15.7619],
+  'universidade de brasilia': [-47.8678, -15.7619],
+  'campus darcy ribeiro': [-47.8678, -15.7619],
+  'unieuro': [-47.9167, -15.8167],
+  'ceub': [-47.9167, -15.8],
+  'iesb': [-48.0167, -15.8333],
+  
+  // Shopping centers e pontos comerciais
+  'shopping brasília': [-47.8897, -15.7919],
+  'shopping brasilia': [-47.8897, -15.7919],
+  'conjunto nacional': [-47.8831, -15.7942],
+  'shopping iguatemi': [-47.8897, -15.7919],
+  'shopping pátio brasil': [-47.8831, -15.7942],
+  'shopping patio brasil': [-47.8831, -15.7942],
+  'shopping pier 21': [-48.0739, -15.8316],
+  'taguatinga shopping': [-48.0739, -15.8316],
+  'águas claras shopping': [-48.0264, -15.8344],
+  'aguas claras shopping': [-48.0264, -15.8344],
+  
+  // Terminais e estações
+  'rodoviária': [-47.8831, -15.7942],
+  'rodoviaria': [-47.8831, -15.7942],
+  'terminal rodoviário': [-47.8831, -15.7942],
+  'terminal rodoviario': [-47.8831, -15.7942],
+  'aeroporto': [-47.9167, -15.8667],
+  'aeroporto de brasília': [-47.9167, -15.8667],
+  'aeroporto de brasilia': [-47.9167, -15.8667],
+  'aeroporto juscelino kubitschek': [-47.9167, -15.8667],
+  
+  // Default para DF como um todo
+  'distrito federal': [-47.8825, -15.7942],
+  'df': [-47.8825, -15.7942]
+};
+
+function estimateCoordinatesFromPlaces(place_access_points) {
+  if (!place_access_points || !Array.isArray(place_access_points) || place_access_points.length === 0) {
+    return null;
+  }
+  
+  // Procurar por correspondências exatas primeiro, depois parciais
+  for (const place of place_access_points) {
+    if (!place || typeof place !== 'string') continue;
+    
+    const normalizedPlace = place.toLowerCase()
+      .trim()
+      .replace(/[àáâãä]/g, 'a')
+      .replace(/[èéêë]/g, 'e')
+      .replace(/[ìíîï]/g, 'i')
+      .replace(/[òóôõö]/g, 'o')
+      .replace(/[ùúûü]/g, 'u')
+      .replace(/ç/g, 'c')
+      .replace(/ñ/g, 'n');
+    
+    // Correspondência exata
+    if (DF_PLACES_COORDINATES[normalizedPlace]) {
+      console.info(`[Coordinates] 📍 Correspondência exata encontrada: "${place}" -> ${DF_PLACES_COORDINATES[normalizedPlace]}`);
+      return DF_PLACES_COORDINATES[normalizedPlace];
+    }
+    
+    // Correspondência parcial - procurar por palavras-chave
+    for (const [key, coords] of Object.entries(DF_PLACES_COORDINATES)) {
+      if (normalizedPlace.includes(key) || key.includes(normalizedPlace)) {
+        console.info(`[Coordinates] 📍 Correspondência parcial encontrada: "${place}" contém "${key}" -> ${coords}`);
+        return coords;
+      }
+    }
+  }
+  
+  // Se chegou aqui, não encontrou correspondência
+  console.warn(`[Coordinates] ⚠️ Nenhuma correspondência encontrada para: ${place_access_points.join(', ')}`);
+  return null;
+}
+
 // Provider
 export function AcervoProvider({ children }) {
   const [state, dispatch] = useReducer(acervoReducer, initialState);
@@ -692,17 +848,33 @@ export function AcervoProvider({ children }) {
     let itemsWithoutCoordinates = 0;
     
     for (const item of items) {
-      // Extrair coordenadas do campo 'notes'
-      const coordinates = extractCoordinatesFromNotes(item.notes);
-      
-      // Se não conseguiu extrair coordenadas, usar coordenadas padrão de Brasília
-      const finalCoordinates = coordinates || [-47.8825, -15.7942];
+      // 1. Tentar extrair coordenadas exatas do campo 'notes'
+      let coordinates = extractCoordinatesFromNotes(item.notes);
+      let coordinateSource = 'default_brasilia';
+      let hasRealCoordinates = false;
       
       if (coordinates) {
+        coordinateSource = 'extracted_from_notes';
+        hasRealCoordinates = true;
         itemsWithCoordinates++;
       } else {
-        itemsWithoutCoordinates++;
+        // 2. Se não tem coordenadas em notes, tentar estimar baseado em place_access_points
+        coordinates = estimateCoordinatesFromPlaces(item.place_access_points);
+        
+        if (coordinates) {
+          coordinateSource = 'estimated_from_places';
+          hasRealCoordinates = false; // Estimada, não real
+          itemsWithCoordinates++; // Conta como "tem coordenadas" mas não "real"
+        } else {
+          // 3. Último recurso: coordenadas padrão de Brasília
+          coordinates = [-47.8825, -15.7942];
+          coordinateSource = 'default_brasilia';
+          hasRealCoordinates = false;
+          itemsWithoutCoordinates++;
+        }
       }
+      
+      const finalCoordinates = coordinates;
       
       const feature = {
         type: "Feature",
@@ -720,8 +892,8 @@ export function AcervoProvider({ children }) {
           notes: item.notes,
           
           // Metadados sobre coordenadas
-          has_real_coordinates: !!coordinates,
-          coordinate_source: coordinates ? "extracted_from_notes" : "default_brasilia",
+          has_real_coordinates: hasRealCoordinates,
+          coordinate_source: coordinateSource,
           
           // URLs para detalhes completos
           detail_url: `https://base.acervodistritohiphop.com.br/index.php/${item.slug}`,
@@ -740,19 +912,27 @@ export function AcervoProvider({ children }) {
       features.push(feature);
     }
     
+    // Contar tipos de coordenadas para estatísticas mais detalhadas
+    const realCoords = features.filter(f => f.properties.coordinate_source === 'extracted_from_notes').length;
+    const estimatedCoords = features.filter(f => f.properties.coordinate_source === 'estimated_from_places').length;
+    const defaultCoords = features.filter(f => f.properties.coordinate_source === 'default_brasilia').length;
+
     const geoJson = {
       type: "FeatureCollection",
       metadata: {
-        title: "Acervo Hip-Hop DF - Creator 3312",
+        title: "Acervo Hip-Hop DF - Creator 8337",
         description: "Itens do acervo com informações geográficas para exibição no mapa",
         total_features: features.length,
         coordinate_statistics: {
-          items_with_real_coordinates: itemsWithCoordinates,
-          items_with_default_coordinates: itemsWithoutCoordinates,
-          extraction_success_rate: `${((itemsWithCoordinates / features.length) * 100).toFixed(1)}%`
+          items_with_real_coordinates: realCoords,
+          items_with_estimated_coordinates: estimatedCoords,
+          items_with_default_coordinates: defaultCoords,
+          real_coordinates_rate: `${((realCoords / features.length) * 100).toFixed(1)}%`,
+          estimated_coordinates_rate: `${((estimatedCoords / features.length) * 100).toFixed(1)}%`,
+          extraction_success_rate: `${(((realCoords + estimatedCoords) / features.length) * 100).toFixed(1)}%`
         },
         source: "AtoM API",
-        creator_id: "3312",
+        creator_id: "8337",
         generated_at: new Date().toISOString()
       },
       features: features
@@ -761,9 +941,12 @@ export function AcervoProvider({ children }) {
     // Atualizar estatísticas
     const statistics = {
       totalItems: features.length,
-      itemsWithCoordinates,
-      itemsWithoutCoordinates,
-      extractionSuccessRate: `${((itemsWithCoordinates / features.length) * 100).toFixed(1)}%`
+      itemsWithRealCoordinates: realCoords,
+      itemsWithEstimatedCoordinates: estimatedCoords,
+      itemsWithDefaultCoordinates: defaultCoords,
+      realCoordinatesRate: `${((realCoords / features.length) * 100).toFixed(1)}%`,
+      estimatedCoordinatesRate: `${((estimatedCoords / features.length) * 100).toFixed(1)}%`,
+      extractionSuccessRate: `${(((realCoords + estimatedCoords) / features.length) * 100).toFixed(1)}%`
     };
     
     dispatch({
@@ -777,7 +960,10 @@ export function AcervoProvider({ children }) {
       geoJson
     });
     
-    console.info(`[AcervoContext] ✅ GeoJSON gerado: ${features.length} features, ${itemsWithCoordinates} com coordenadas reais`);
+    console.info(`[AcervoContext] ✅ GeoJSON gerado: ${features.length} features`);
+    console.info(`[AcervoContext] 📍 ${realCoords} com coordenadas reais (notes)`);
+    console.info(`[AcervoContext] 📍 ${estimatedCoords} com coordenadas estimadas (places)`);
+    console.info(`[AcervoContext] 📍 ${defaultCoords} com coordenadas padrão (Brasília)`);
     
     return geoJson;
   }, []);
