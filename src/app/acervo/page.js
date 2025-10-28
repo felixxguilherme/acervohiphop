@@ -351,7 +351,7 @@ const Acervo = () => {
           <div
             className={`${currentTheme === 'light' ? 'bg-hip-verde-claro' : 'bg-hip-verde-escuro'} text-left mb-16 text-black border-theme w-full pb-10`}
           >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
+            <h2 className="text-black font-sometype-mono text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
                ARTISTAS EM DESTAQUE
             </h2>
             <p className="border-theme border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-black max-w-4xl leading-relaxed">
