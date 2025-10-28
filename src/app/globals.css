@@ -543,6 +543,7 @@ body.theme-dark .border-theme-soft {
   min-height: 100vh;
 }
 
+
 /* Mobile: attachment fixed pode causar problemas */
 @media (max-width: 768px) {
   .body-theme-light,
@@ -550,6 +551,7 @@ body.theme-dark .border-theme-soft {
     background-attachment: local;
   }
 }
+
 
 /* Background classes for marca-texto images */
 .marca-texto-vermelho {
@@ -895,6 +897,25 @@ body.theme-dark .border-theme-soft {
   .logo-tagline-desktop { height: 450px; }
 }
 
+/* Texto responsivo específico para mobile - home page */
+@media (max-width: 640px) {
+  .responsive-home-text {
+    font-size: 0.875rem !important;
+    line-height: 1.6 !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    margin-top: 1rem !important;
+  }
+  
+  .responsive-home-text .marca-texto-verde,
+  .responsive-home-text .marca-texto-amarelo {
+    font-size: 0.8rem !important;
+    padding: 0.1rem 0.25rem !important;
+    display: inline !important;
+    line-height: 1.4 !important;
+  }
+}
+
 /* Responsividade para braços do projeto (2x maior) */
 .logo-branch-mobile { height: 100px; }
 .logo-branch-tablet { height: 150px; }
@@ -1141,7 +1162,6 @@ body.theme-dark .border-theme-soft {
 .marca-texto-verde,
 .marca-texto-vermelho,
 .marca-texto-vermelho {
-  color: #000000 !important; /* Texto preto em marca-texto clara */
   font-weight: bold;
 }
 
@@ -1150,7 +1170,6 @@ body.theme-dark .border-theme-soft {
 .marca-texto-css-verde,
 .marca-texto-css-laranja,
 .marca-texto-css-vermelho {
-  color: #000000 !important;
   font-weight: bold;
 }
 
