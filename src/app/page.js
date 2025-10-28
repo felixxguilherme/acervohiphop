@@ -5,6 +5,7 @@ import { useScroll, useMotionValueEvent } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import Lenis from 'lenis';
 import { useAcervo } from '@/contexts/AcervoContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 import HeaderApp from '@/components/html/HeaderApp';
 import PolaroidCard from '@/components/PolaroidPhoto';
@@ -21,15 +22,11 @@ import { motion, AnimatePresence } from 'motion/react';
 export default function Home() {
   // Hooks do contexto
   const { loadStatistics, statistics, loadAllItems, allItems } = useAcervo();
+  const { theme: currentTheme } = useTheme();
 
-  const [currentTheme, setCurrentTheme] = useState('light');
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // Carrega o tema do localStorage no primeiro render
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    setCurrentTheme(savedTheme);
-    
     // Delay para evitar conflitos com animações da página
     setTimeout(() => {
       setIsInitialized(true);
@@ -462,7 +459,7 @@ export default function Home() {
           <div
             className={`${currentTheme === 'light' ? 'bg-hip-vermelho-escuro' : 'bg-hip-vermelho-escuro'} text-left mb-16 text-theme border-theme w-full pb-10 pt-10 px-6`}
           >
-            <h2 className="text-8xl pl-6 md:text-5xl mb-6 text-bold">
+            <h2 className="text-4xl text-bold sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
               DESTAQUES
             </h2>
             <p className="border-theme border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-theme max-w-4xl leading-relaxed">
@@ -756,17 +753,33 @@ export default function Home() {
         </div>
 
         {/* Main content */}
-        <div className="relative z-20 text-center max-w-6xl mx-auto px-6">
-          {/* Subtitle */}
+        <div className="relative z-20 text-center max-w-6xl mx-auto">
+          {/* Texto principal dividido em parágrafos */}
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-15 text-2xl md:text-2xl font-sometype-mono text-theme-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
+            className="responsive-home-text mt-8 sm:text-base md:text-lg lg:text-xl xl:text-2xl font-sometype-mono text-theme-secondary mb-6 max-w-5xl mx-auto leading-relaxed px-4 sm:px-6 md:px-8"
           >
-            <span className="marca-texto-verde px-2 py-1">O arquivo</span> é muito mais que um depósito de papel ou um monólito de verdade única; é trincheira. É onde agora lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios, exclusão e invisibilidade. <span className="marca-texto-verde px-2 py-1">O arquivo</span> bruto, direto e factual. Sem filtros, sem medo. Porque a verdade não precisa de retoques; ela precisa chegar e ser ouvida. <span className="marca-texto-verde px-2 py-1">O acervo</span> pretende refletir essa vitalidade, capturando a evolução das expressões artísticas e das narrativas desse movimento. Essa potente fonte que é o Hip Hop, se abastece com nossos percursos, fazendo com que o fluxo nunca seque.
-Não tem como falar de <span className="marca-texto-verde px-2 py-1">memória</span> sem falar de quem a construiu, corporificam nossa pesquisa grandes pilares desta cultura no <span className="marca-texto-amarelo px-2 py-1">Distrito Federal</span> que apoiam o Projeto. <span className="marca-texto-verde px-2 py-1">Memória</span> não é passado morto; são vidas que ecoam no presente e avançam para quem vem depois. É o legado vivo que inspira e transforma. <span className="marca-texto-verde px-2 py-1">Arquivos</span> não mais encarnados, mas a arte não morre; ela nos consome, sobrevive e se expande. A <span className="marca-texto-verde px-2 py-1">memória cultural</span> não é um registro estático do passado, mas uma entidade dinâmica que ressoa no presente e influencia o futuro. Cada <span className="marca-texto-verde px-2 py-1">história compartilhada</span>, cada som, <span className="marca-texto-verde px-2 py-1">fotografia</span>, baile e parede são o Hip Hop. Porque, no fim, o que a gente faz é simples: a gente compra a briga.
-Se você está na mesma luta, <span className="marca-texto-verde px-2 py-1">o Acervo</span> te espera. 
+            <span className="marca-texto-verde px-1 py-0.5 sm:px-2 sm:py-1">O arquivo</span> é muito mais que um depósito de papel ou um monólito de verdade única; é trincheira. É onde agora lutamos para imortalizar uma cultura que sobreviveu a tiros, silêncios, exclusão e invisibilidade. <span className="marca-texto-verde px-1 py-0.5 sm:px-2 sm:py-1">O arquivo</span> bruto, direto e factual. Sem filtros, sem medo. Porque a verdade não precisa de retoques; ela precisa chegar e ser ouvida. <span className="marca-texto-verde px-1 py-0.5 sm:px-2 sm:py-1">O acervo</span> pretende refletir essa vitalidade, capturando a evolução das expressões artísticas e das narrativas desse movimento. Essa potente fonte que é o Hip Hop, se abastece com nossos percursos, fazendo com que o fluxo nunca seque.
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="responsive-home-text sm:text-base md:text-lg lg:text-xl xl:text-2xl font-sometype-mono text-theme-secondary mb-6 max-w-5xl mx-auto leading-relaxed px-4 sm:px-6 md:px-8"
+          >
+            Não tem como falar de <span className="marca-texto-verde px-1 py-0.5 sm:px-2 sm:py-1">memória</span> sem falar de quem a construiu, corporificam nossa pesquisa grandes pilares desta cultura no <span className="marca-texto-amarelo px-1 py-0.5 sm:px-2 sm:py-1">Distrito Federal</span> que apoiam o Projeto. <span className="marca-texto-verde px-1 py-0.5 sm:px-2 sm:py-1">Memória</span> não é passado morto; são vidas que ecoam no presente e avançam para quem vem depois. É o legado vivo que inspira e transforma. <span className="marca-texto-verde px-1 py-0.5 sm:px-2 sm:py-1">Arquivos</span> não mais encarnados, mas a arte não morre; ela nos consome, sobrevive e se expande. A <span className="marca-texto-verde px-1 py-0.5 sm:px-2 sm:py-1">memória cultural</span> não é um registro estático do passado, mas uma entidade dinâmica que ressoa no presente e influencia o futuro. Cada <span className="marca-texto-verde px-1 py-0.5 sm:px-2 sm:py-1">história compartilhada</span>, cada som, <span className="marca-texto-verde px-1 py-0.5 sm:px-2 sm:py-1">fotografia</span>, baile e parede são o Hip Hop. Porque, no fim, o que a gente faz é simples: a gente compra a briga.
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            className="responsive-home-text sm:text-base md:text-lg lg:text-xl xl:text-2xl font-sometype-mono text-theme-secondary mb-12 max-w-5xl mx-auto leading-relaxed px-4 sm:px-6 md:px-8"
+          >
+            Se você está na mesma luta, <span className="marca-texto-verde px-1 py-0.5 sm:px-2 sm:py-1">o Acervo</span> te espera. 
           </motion.p>
 
 
