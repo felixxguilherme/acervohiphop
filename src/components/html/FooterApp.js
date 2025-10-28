@@ -38,7 +38,7 @@ export default function FooterApp() {
           Este projeto é realizado com recursos do Fundo de Apoio à Cultura do Distrito Federal
         </p>
 
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-10">
+        <div className={`${currentTheme === 'light' ? '' : 'fundo-base'} flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-10`}>
           <div className="w-52 h-20 relative">
             <Image
               src={facImage}

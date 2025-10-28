@@ -343,7 +343,7 @@ const Acervo = () => {
         
         {/* Seção de Artistas em Destaque */}
         <motion.section 
-          className="mb-12"
+          className="mb-12 h-min-screen"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -351,7 +351,7 @@ const Acervo = () => {
           <div
             className={`${currentTheme === 'light' ? 'bg-hip-verde-claro' : 'bg-hip-verde-escuro'} text-left mb-16 text-black border-theme w-full pb-10`}
           >
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
                ARTISTAS EM DESTAQUE
             </h2>
             <p className="border-theme border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-black max-w-4xl leading-relaxed">
@@ -359,15 +359,6 @@ const Acervo = () => {
             </p>
 
           </div>
-          <div className={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'} text-center mb-8 px-6`}>
-            <h2 className="text-4xl font-dirty-stains text-theme-primary mb-4 text-left">
-             
-            </h2>
-            <p className="text-lg text-left font-sometype-mono text-gray-600">
-             
-            </p>
-          </div>
-
 
           {loadingArtists ? (
             <div className="text-center py-12">
@@ -490,14 +481,13 @@ const Acervo = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   placeholder="Digite sua busca... (ex: vera, dino, 1994)"
-                  className="flex-1 px-4 py-3 border-2 border-theme font-sometype-mono text-base focus:outline-none focus:border-yellow-400 text-black"
+                  className={`flex-1 px-4 py-3 border-2 border-theme font-sometype-mono text-base focus:outline-none focus:border-yellow-400 text-white`}
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleSearch()}
-                    className="hover:bg-black hover:text-theme px-4 sm:px-6 py-3 bg-white text-theme cursor-pointer border-2 border-theme font-dirty-stains transition-colors whitespace-nowrap"
+                    className={`marca-texto-verde hover:bg-black hover:text-theme px-4 sm:px-6 py-3 text-theme cursor-pointer font-dirty-stains transition-colors whitespace-nowrap`}
                   >
                     Buscar
                   </button>

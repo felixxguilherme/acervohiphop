@@ -16,6 +16,18 @@ const CreatorDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [creatorItems, setCreatorItems] = useState([]);
+
+  const [currentTheme, setCurrentTheme] = useState('light');
+    const [isInitialized, setIsInitialized] = useState(false);
+  
+    useEffect(() => {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      setCurrentTheme(savedTheme);
+      
+      setTimeout(() => {
+        setIsInitialized(true);
+      }, 100);
+    }, []);
   
   // Estados para paginação
   const [currentPage, setCurrentPage] = useState(1);
@@ -275,7 +287,7 @@ const CreatorDetailPage = () => {
         <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
           <div className="flex items-center justify-center h-96">
             <div className="text-center">
-              <div className="bg-theme-background border-2 border-theme p-6">
+              <div className="border-2 border-theme p-6">
                 <p className="font-dirty-stains text-xl mb-2">Erro ao carregar artista</p>
                 <p className="font-sometype-mono mb-4">{error}</p>
                 <button 
@@ -296,16 +308,16 @@ const CreatorDetailPage = () => {
     <div>
       <HeaderApp title="ACERVO DIGITAL" showTitle={true} />
       
-      <div className="relative max-w-7xl mx-auto px-6 py-10 min-h-screen border-theme border-l-3 border-r-3 border-b-3">
+      <div className="relative mx-auto border-theme border-l-3 border-r-3 border-b-3">
         <main>
         {/* Hero Section com Imagem e Nome */}
         <motion.section 
-          className="mb-12 px-6"
+          className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="bg-theme-background">
+          <div className="py-10 px-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-1">
                 <img 
@@ -330,43 +342,33 @@ const CreatorDetailPage = () => {
               </div>
             </div>
           </div>
-        </motion.section>
 
-        {/* Biografia */}
-        <motion.section 
-          className="px-6"
-          initial={{ y: 50, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <div className="bg-theme-background">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-dirty-stains text-theme-primary mb-8 text-left border-theme border-b-2 border-t-8 py-8">BIOGRAFIA</h2>
-            <div className="border-theme border-b-8 pb-6">
+          <h2 className={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'} text-2xl sm:text-3xl md:text-4xl font-dirty-stains text-theme-primary text-left border-theme p-6 border-t-2 border-b-2`}>BIOGRAFIA</h2>
+            <div className="border-theme border-b-2 pb-6 pl-6 mt-6">
               <p className="text-lg leading-relaxed font-sometype-mono text-gray-700">
                 {creatorData.biography}
               </p>
             </div>
-          </div>
         </motion.section>
 
         {/* Todos os Itens do Acervo */}
         <motion.section 
           id="all-items-section"
-          className="px-6 py-8"
+          className={`${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'} border-theme border-b-2 pb-8`}
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="bg-theme-background">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-dirty-stains text-theme-primary py-8 border-theme border-b-2 text-left">TODOS OS ITENS DO ACERVO</h2>
+          <div className="">
+            <h2 className={`p-6 text-2xl sm:text-3xl md:text-4xl font-dirty-stains text-theme-primary py-8 border-theme text-left`}>TODOS OS ITENS DO ACERVO</h2>
             
             {/* Contador e paginação */}
-            <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-8 mt-6 px-6">
               <p className="text-lg font-sometype-mono mb-4 md:mb-0 text-left">
                 {creatorItems.length} {creatorItems.length === 1 ? 'item encontrado' : 'itens encontrados'}
               </p>
+
               
               {totalPages > 1 && (
                 <div className="flex items-center gap-2">
@@ -421,7 +423,7 @@ const CreatorDetailPage = () => {
             </div>
             
             {/* Grid de itens atuais */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {currentItems.map((item, index) => (
                 <motion.div 
                   key={item.slug || index}
@@ -503,15 +505,15 @@ const CreatorDetailPage = () => {
         {/* Discografia */}
         {discografia.length > 0 && (
           <motion.section 
-            className="mb-12 px-6"
+            className={`mb-12 ${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'}`}
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="bg-theme-background">
-              <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">DISCOGRAFIA</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+              <h2 className={`text-4xl font-dirty-stains text-theme-primary mb-8 text-left p-6 ${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'}`}>DISCOGRAFIA</h2>
+              <div className="px-6 pb-8 border-theme border-b-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {discografia.map((item, index) => (
                   <motion.div 
                     key={item.slug || index}
@@ -540,7 +542,7 @@ const CreatorDetailPage = () => {
                   </motion.div>
                 ))}
               </div>
-            </div>
+         
           </motion.section>
         )}
 
@@ -553,7 +555,7 @@ const CreatorDetailPage = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="bg-theme-background border-2 border-theme p-6">
+            <div className="border-2 border-theme p-6">
               <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">VIDEOGRAFIA</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {videografia.map((item, index) => (
@@ -597,7 +599,7 @@ const CreatorDetailPage = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="bg-theme-background border-2 border-theme p-6">
+            <div className="border-2 border-theme p-6">
               <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">COLABORAÇÕES PARA O MAPA</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {colaboracoesMapa.map((item, index) => (
@@ -638,7 +640,7 @@ const CreatorDetailPage = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="bg-theme-background">
+            <div className="">
               <h2 className="text-4xl font-dirty-stains text-theme-primary mb-8 text-left">LINHA DO TEMPO</h2>
               <div>
                 <div className="relative">
