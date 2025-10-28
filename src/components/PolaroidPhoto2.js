@@ -62,10 +62,10 @@ const PolaroidCard2 = ({
           {/* Área amarelada abaixo da foto típica de polaroid */}
           <div className="h-1/6 flex items-center justify-center">
             <motion.p 
-              className="text-amber-800 text-lg italic opacity-80" 
+              className="polaroid-caption text-lg italic opacity-80" 
               animate={{ scale: isHovered ? 1.05 : 1 }}
               transition={{ duration: 0.3 }}
-              style={{ fontFamily: "cursive" }}
+              style={{ fontFamily: "cursive", color: "#92400e" }}
             >
               {caption}
             </motion.p>

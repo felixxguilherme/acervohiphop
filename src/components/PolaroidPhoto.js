@@ -159,7 +159,7 @@ const PolaroidCard = ({
         
         {/* Área branca abaixo da foto */}
         <div className="h-2/6 flex items-center justify-center">
-          <p className="text-black text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-sometype-mono font-bold px-1 sm:px-2 text-center leading-tight" style={{ color: '#000000 !important' }}>{caption}</p>
+          <p className="polaroid-caption text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-sometype-mono font-bold px-1 sm:px-2 text-center leading-tight">{caption}</p>
         </div>
         
       </motion.div>
