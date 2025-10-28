@@ -343,7 +343,7 @@ const CreatorDetailPage = () => {
             </div>
           </div>
 
-          <h2 className={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'} text-2xl sm:text-3xl md:text-4xl font-dirty-stains text-theme-primary text-left border-theme p-6 border-t-2 border-b-2`}>BIOGRAFIA</h2>
+          <h2 className={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'} text-2xl sm:text-3xl md:text-4xl font-sometype-mono text-black text-left border-theme p-6 border-t-2 border-b-2`}>BIOGRAFIA</h2>
             <div className="border-theme border-b-2 pb-6 pl-6 mt-6">
               <p className="text-lg leading-relaxed font-sometype-mono text-gray-700">
                 {creatorData.biography}
@@ -512,7 +512,7 @@ const CreatorDetailPage = () => {
             viewport={{ once: true }}
           >
             
-              <h2 className={`text-4xl font-dirty-stains text-theme-primary mb-8 text-left p-6 ${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'}`}>DISCOGRAFIA</h2>
+              <h2 className={`text-4xl font-sometype-mono text-black mb-8 text-left p-6 ${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'}`}>DISCOGRAFIA</h2>
               <div className="px-6 pb-8 border-theme border-b-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {discografia.map((item, index) => (
                   <motion.div 
