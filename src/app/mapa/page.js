@@ -166,6 +166,53 @@ const MapaContent = () => {
   // Set filtered locations state for search functionality
   const [filteredLocations, setFilteredLocations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // State for DF localities
+  const [dfLocalities, setDfLocalities] = useState([]);
+  const [allSearchableLocations, setAllSearchableLocations] = useState([]);
+
+  // Load DF localities from government service
+  useEffect(() => {
+    const loadDfLocalities = async () => {
+      try {
+        const response = await fetch(
+          'https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/LOCALIDADES/MapServer/0/query?where=1%3D1&outFields=objectid,nome,tipo&outSR=4326&f=geojson&returnGeometry=true'
+        );
+        const data = await response.json();
+        
+        if (data.features) {
+          const localities = data.features.map(feature => ({
+            id: `df-locality-${feature.properties.objectid}`,
+            name: feature.properties.nome,
+            description: feature.properties.tipo === 1 ? 'Região Administrativa do DF' : 
+                        feature.properties.tipo === 2 ? 'Localidade do DF' : 'Localidade não classificada',
+            coordinates: {
+              lng: feature.geometry.coordinates[0],
+              lat: feature.geometry.coordinates[1]
+            },
+            itemCount: 0,
+            items: [],
+            slug: `df-locality-${feature.properties.objectid}`,
+            reference_code: `DF-LOC-${feature.properties.objectid}`,
+            place_access_points: [feature.properties.nome],
+            has_real_coordinates: true,
+            isRandomPoint: false,
+            coordinateType: 'government_source',
+            sourceType: 'df_locality',
+            locality_type: feature.properties.tipo,
+            locality_type_name: feature.properties.tipo === 1 ? 'Região Administrativa' : 
+                               feature.properties.tipo === 2 ? 'Localidade' : 'Não Informado'
+          }));
+          
+          setDfLocalities(localities);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar localidades do DF:', error);
+      }
+    };
+
+    loadDfLocalities();
+  }, []);
 
   // Enhanced search function that searches across multiple fields
   const performSearch = (term, locationsData) => {
@@ -252,11 +299,17 @@ const MapaContent = () => {
     return matches;
   };
 
-  // Update filtered locations when locations or search term change
+  // Combine all searchable locations (Hip Hop + DF localities)
   useEffect(() => {
-    const filtered = performSearch(searchTerm, locations);
+    const combined = [...locations, ...dfLocalities];
+    setAllSearchableLocations(combined);
+  }, [locations, dfLocalities]);
+
+  // Update filtered locations when search term changes
+  useEffect(() => {
+    const filtered = performSearch(searchTerm, allSearchableLocations);
     setFilteredLocations(filtered);
-  }, [locations, searchTerm]);
+  }, [allSearchableLocations, searchTerm]);
 
   // Set viewState for map with default center
   const [viewState, setViewState] = useState({
@@ -664,14 +717,25 @@ const MapaContent = () => {
                                               {location.name}
                                             </h4>
                                             <div className="flex gap-1">
-                                              {location.coordinateType === 'extracted_from_notes' && (
+                                              {/* Source type indicators */}
+                                              {location.sourceType === 'df_locality' && (
+                                                <span className="bg-purple-500 text-white px-1 py-0.5 text-xs font-sometype-mono">
+                                                  {location.locality_type === 1 ? 'RA' : 'LOC'}
+                                                </span>
+                                              )}
+                                              
+                                              {/* Coordinate type indicators for Hip Hop locations */}
+                                              {!location.sourceType && location.coordinateType === 'extracted_from_notes' && (
                                                 <span className="bg-green-500 text-white px-1 py-0.5 text-xs font-sometype-mono">GPS</span>
                                               )}
-                                              {location.coordinateType === 'estimated_from_places' && (
+                                              {!location.sourceType && location.coordinateType === 'estimated_from_places' && (
                                                 <span className="bg-blue-500 text-white px-1 py-0.5 text-xs font-sometype-mono">EST</span>
                                               )}
-                                              {location.coordinateType === 'default_brasilia' && (
+                                              {!location.sourceType && location.coordinateType === 'default_brasilia' && (
                                                 <span className="bg-gray-500 text-white px-1 py-0.5 text-xs font-sometype-mono">DEF</span>
+                                              )}
+                                              {location.sourceType === 'df_locality' && (
+                                                <span className="bg-indigo-500 text-white px-1 py-0.5 text-xs font-sometype-mono">GOV</span>
                                               )}
                                             </div>
                                           </div>
@@ -734,20 +798,30 @@ const MapaContent = () => {
                                   </h3>
                                   <div className="space-y-1 text-xs font-sometype-mono text-black">
                                     <div className="flex justify-between">
-                                      <span>Total de locais:</span>
-                                      <span className="font-bold">{locations.length}</span>
+                                      <span>Locais Hip Hop:</span>
+                                      <span className="font-bold text-yellow-600">{locations.length}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                      <span>Com GPS:</span>
-                                      <span className="font-bold text-green-600">
-                                        {locations.filter(l => l.coordinateType === 'extracted_from_notes').length}
-                                      </span>
+                                      <span>Localidades DF:</span>
+                                      <span className="font-bold text-purple-600">{dfLocalities.length}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                      <span>Estimados:</span>
-                                      <span className="font-bold text-blue-600">
-                                        {locations.filter(l => l.coordinateType === 'estimated_from_places').length}
-                                      </span>
+                                      <span>Total geral:</span>
+                                      <span className="font-bold">{allSearchableLocations.length}</span>
+                                    </div>
+                                    <div className="border-t border-gray-300 pt-2 mt-2">
+                                      <div className="flex justify-between">
+                                        <span>RAs do DF:</span>
+                                        <span className="font-bold text-red-600">
+                                          {dfLocalities.filter(l => l.locality_type === 1).length}
+                                        </span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span>Localidades DF:</span>
+                                        <span className="font-bold text-blue-600">
+                                          {dfLocalities.filter(l => l.locality_type === 2).length}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>

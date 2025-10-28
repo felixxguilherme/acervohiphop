@@ -11,6 +11,34 @@ export const useMapLayers = () => {
   const initializeDefaultLayers = useCallback(() => {
     const defaultLayers = [
       {
+        id: 'localidades-df',
+        name: 'Localidades do DF',
+        type: 'circle',
+        visible: true,
+        source: {
+          type: 'geojson',
+          data: 'https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/LOCALIDADES/MapServer/0/query?where=1%3D1&outFields=objectid,nome,tipo&outSR=4326&f=geojson&returnGeometry=true'
+        },
+        paint: {
+          'circle-radius': [
+            'case',
+            ['==', ['get', 'tipo'], 1], 8,  // RAs maiores
+            ['==', ['get', 'tipo'], 2], 5,  // Localidades menores
+            4  // Default para NÃO INFORMADO
+          ],
+          'circle-color': [
+            'case',
+            ['==', ['get', 'tipo'], 1], '#e74c3c',  // RAs em vermelho
+            ['==', ['get', 'tipo'], 2], '#3498db',  // Localidades em azul
+            '#95a5a6'  // Default cinza para NÃO INFORMADO
+          ],
+          'circle-stroke-color': '#2c3e50',
+          'circle-stroke-width': 1,
+          'circle-opacity': 0.8,
+          'circle-stroke-opacity': 0.9
+        }
+      },
+      {
         id: 'hip-hop-locations',
         name: 'Locais do Hip Hop',
         type: 'circle',
