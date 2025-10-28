@@ -165,11 +165,98 @@ const MapaContent = () => {
 
   // Set filtered locations state for search functionality
   const [filteredLocations, setFilteredLocations] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Update filtered locations when locations change
+  // Enhanced search function that searches across multiple fields
+  const performSearch = (term, locationsData) => {
+    if (!term || term.trim() === '') {
+      return locationsData;
+    }
+    
+    const searchLower = term.toLowerCase().trim();
+    
+    return locationsData.filter(location => {
+      // Search in name
+      if (location.name && location.name.toLowerCase().includes(searchLower)) {
+        return true;
+      }
+      
+      // Search in description
+      if (location.description && location.description.toLowerCase().includes(searchLower)) {
+        return true;
+      }
+      
+      // Search in place_access_points (array of access points)
+      if (location.place_access_points && Array.isArray(location.place_access_points)) {
+        const accessPointsMatch = location.place_access_points.some(point => 
+          point && point.toLowerCase().includes(searchLower)
+        );
+        if (accessPointsMatch) return true;
+      }
+      
+      // Search in reference_code
+      if (location.reference_code && location.reference_code.toLowerCase().includes(searchLower)) {
+        return true;
+      }
+      
+      // Search in items titles (if items exist)
+      if (location.items && Array.isArray(location.items)) {
+        const itemsMatch = location.items.some(item => 
+          item.title && item.title.toLowerCase().includes(searchLower)
+        );
+        if (itemsMatch) return true;
+      }
+      
+      return false;
+    });
+  };
+
+  // Function to get search match details for a location
+  const getSearchMatches = (location, term) => {
+    if (!term || term.trim() === '') return [];
+    
+    const searchLower = term.toLowerCase().trim();
+    const matches = [];
+    
+    // Check name
+    if (location.name && location.name.toLowerCase().includes(searchLower)) {
+      matches.push('Nome');
+    }
+    
+    // Check description
+    if (location.description && location.description.toLowerCase().includes(searchLower)) {
+      matches.push('Descrição');
+    }
+    
+    // Check place_access_points
+    if (location.place_access_points && Array.isArray(location.place_access_points)) {
+      const accessPointsMatch = location.place_access_points.some(point => 
+        point && point.toLowerCase().includes(searchLower)
+      );
+      if (accessPointsMatch) matches.push('Pontos de Acesso');
+    }
+    
+    // Check reference_code
+    if (location.reference_code && location.reference_code.toLowerCase().includes(searchLower)) {
+      matches.push('Código de Referência');
+    }
+    
+    // Check items titles
+    if (location.items && Array.isArray(location.items)) {
+      const itemsMatch = location.items.some(item => 
+        item.title && item.title.toLowerCase().includes(searchLower)
+      );
+      if (itemsMatch) matches.push('Itens');
+    }
+    
+    return matches;
+  };
+
+  // Update filtered locations when locations or search term change
   useEffect(() => {
-    setFilteredLocations(locations);
-  }, [locations]);
+    const filtered = performSearch(searchTerm, locations);
+    setFilteredLocations(filtered);
+  }, [locations, searchTerm]);
 
   // Set viewState for map with default center
   const [viewState, setViewState] = useState({
@@ -523,26 +610,38 @@ const MapaContent = () => {
                                     BUSCAR LOCAIS
                                   </h3>
                                   <div className="space-y-3">
-                                    <input
-                                      type="text"
-                                      placeholder="Digite o nome do local..."
-                                      className="w-full p-3 border-2 border-black font-sometype-mono text-sm"
-                                      onChange={(e) => {
-                                        const searchTerm = e.target.value.toLowerCase();
-                                        if (searchTerm.trim() === '') {
-                                          setFilteredLocations(locations);
-                                        } else {
-                                          const filtered = locations.filter(location =>
-                                            location.name.toLowerCase().includes(searchTerm) ||
-                                            location.description.toLowerCase().includes(searchTerm)
-                                          );
-                                          setFilteredLocations(filtered);
-                                        }
-                                      }}
-                                    />
-                                    <p className="text-xs font-sometype-mono text-black/70">
-                                      {filteredLocations.length} de {locations.length} locais
-                                    </p>
+                                    <div className="relative">
+                                      <input
+                                        type="text"
+                                        placeholder="Buscar em locais, descrições, pontos de acesso..."
+                                        className="w-full p-3 pr-10 border-2 border-black font-sometype-mono text-sm"
+                                        value={searchTerm}
+                                        onChange={(e) => {
+                                          setSearchTerm(e.target.value);
+                                        }}
+                                      />
+                                      {searchTerm && (
+                                        <button
+                                          onClick={() => setSearchTerm('')}
+                                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black hover:text-gray-600 p-1"
+                                          title="Limpar busca"
+                                        >
+                                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                          </svg>
+                                        </button>
+                                      )}
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <p className="text-xs font-sometype-mono text-black/70">
+                                        {filteredLocations.length} de {locations.length} locais
+                                      </p>
+                                      {searchTerm && (
+                                        <p className="text-xs font-sometype-mono text-blue-600">
+                                          Buscando: "{searchTerm}"
+                                        </p>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
 
@@ -552,41 +651,74 @@ const MapaContent = () => {
                                     LOCAIS ENCONTRADOS
                                   </h3>
                                   <div className="space-y-2 max-h-96 overflow-y-auto">
-                                    {filteredLocations.slice(0, 10).map((location) => (
-                                      <div
-                                        key={location.id}
-                                        onClick={() => handleMarkerClick(location)}
-                                        className="border border-black p-3 cursor-pointer hover:bg-hip-amarelo-claro transition-colors"
-                                      >
-                                        <div className="flex items-start justify-between mb-2">
-                                          <h4 className="font-dirty-stains text-sm text-black font-bold">
-                                            {location.name}
-                                          </h4>
-                                          <div className="flex gap-1">
-                                            {location.coordinateType === 'extracted_from_notes' && (
-                                              <span className="bg-green-500 text-white px-1 py-0.5 text-xs font-sometype-mono">GPS</span>
-                                            )}
-                                            {location.coordinateType === 'estimated_from_places' && (
-                                              <span className="bg-blue-500 text-white px-1 py-0.5 text-xs font-sometype-mono">EST</span>
-                                            )}
-                                            {location.coordinateType === 'default_brasilia' && (
-                                              <span className="bg-gray-500 text-white px-1 py-0.5 text-xs font-sometype-mono">DEF</span>
-                                            )}
+                                    {filteredLocations.slice(0, 10).map((location) => {
+                                      const searchMatches = getSearchMatches(location, searchTerm);
+                                      return (
+                                        <div
+                                          key={location.id}
+                                          onClick={() => handleMarkerClick(location)}
+                                          className="border border-black p-3 cursor-pointer hover:bg-hip-amarelo-claro transition-colors"
+                                        >
+                                          <div className="flex items-start justify-between mb-2">
+                                            <h4 className="font-dirty-stains text-sm text-black font-bold">
+                                              {location.name}
+                                            </h4>
+                                            <div className="flex gap-1">
+                                              {location.coordinateType === 'extracted_from_notes' && (
+                                                <span className="bg-green-500 text-white px-1 py-0.5 text-xs font-sometype-mono">GPS</span>
+                                              )}
+                                              {location.coordinateType === 'estimated_from_places' && (
+                                                <span className="bg-blue-500 text-white px-1 py-0.5 text-xs font-sometype-mono">EST</span>
+                                              )}
+                                              {location.coordinateType === 'default_brasilia' && (
+                                                <span className="bg-gray-500 text-white px-1 py-0.5 text-xs font-sometype-mono">DEF</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Show search matches */}
+                                          {searchTerm && searchMatches.length > 0 && (
+                                            <div className="mb-2">
+                                              <div className="flex flex-wrap gap-1">
+                                                {searchMatches.map((match, index) => (
+                                                  <span 
+                                                    key={index}
+                                                    className="bg-yellow-200 text-black px-1 py-0.5 text-xs font-sometype-mono border border-yellow-400"
+                                                  >
+                                                    ✓ {match}
+                                                  </span>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+                                          
+                                          <p className="font-sometype-mono text-xs text-black/70 line-clamp-2">
+                                            {location.description}
+                                          </p>
+                                          
+                                          {/* Show place access points if matched */}
+                                          {searchTerm && location.place_access_points && Array.isArray(location.place_access_points) && 
+                                           location.place_access_points.some(point => point && point.toLowerCase().includes(searchTerm.toLowerCase())) && (
+                                            <div className="mt-1">
+                                              <p className="font-sometype-mono text-xs text-blue-600">
+                                                <strong>Pontos de acesso:</strong> {location.place_access_points.filter(point => 
+                                                  point && point.toLowerCase().includes(searchTerm.toLowerCase())
+                                                ).join(', ')}
+                                              </p>
+                                            </div>
+                                          )}
+                                          
+                                          <div className="mt-2 flex justify-between items-center">
+                                            <span className="font-sometype-mono text-xs text-black/50">
+                                              {location.itemCount} item(s)
+                                            </span>
+                                            <button className="font-sometype-mono text-xs text-black underline hover:no-underline">
+                                              Ver no mapa →
+                                            </button>
                                           </div>
                                         </div>
-                                        <p className="font-sometype-mono text-xs text-black/70 line-clamp-2">
-                                          {location.description}
-                                        </p>
-                                        <div className="mt-2 flex justify-between items-center">
-                                          <span className="font-sometype-mono text-xs text-black/50">
-                                            {location.itemCount} item(s)
-                                          </span>
-                                          <button className="font-sometype-mono text-xs text-black underline hover:no-underline">
-                                            Ver no mapa →
-                                          </button>
-                                        </div>
-                                      </div>
-                                    ))}
+                                      );
+                                    })}
                                     {filteredLocations.length > 10 && (
                                       <p className="text-center font-sometype-mono text-xs text-black/70 py-2">
                                         Mostrando 10 de {filteredLocations.length} resultados
