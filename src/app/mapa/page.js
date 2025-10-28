@@ -101,6 +101,14 @@ const MapaContent = () => {
   // Estado local para controlar carregamento das regiões separadamente
   const [regionsLoading, setRegionsLoading] = useState(false);
 
+  // Estado para controlar hover nos markers
+  const [hoveredLocation, setHoveredLocation] = useState(null);
+  const [showHoverPopup, setShowHoverPopup] = useState(false);
+
+  // Estado para controlar interatividade do mapa com Ctrl
+  const [isCtrlPressed, setIsCtrlPressed] = useState(false);
+  const [isMapInteractive, setIsMapInteractive] = useState(false);
+
   // Load map data de forma assíncrona (não bloqueia a página) - COM CACHE
   useEffect(() => {
     // Verificar se já temos dados carregados
@@ -150,7 +158,8 @@ const MapaContent = () => {
       reference_code: feature.properties.reference_code,
       place_access_points: feature.properties.place_access_points,
       has_real_coordinates: feature.properties.has_real_coordinates,
-      isRandomPoint: !feature.properties.has_real_coordinates
+      isRandomPoint: !feature.properties.has_real_coordinates,
+      coordinateType: feature.properties.coordinate_source
     }));
   }, [geoJson]);
 
@@ -179,11 +188,26 @@ const MapaContent = () => {
 
   const handleMarkerClick = (location) => {
     setSelectedLocation(location);
+    
+    // Scroll para o mapa suavemente
+    const mapSection = document.querySelector('[ref="mapContainerRef"]') || mapContainerRef.current;
+    if (mapSection) {
+      const sectionTop = mapSection.offsetTop;
+      const offset = 100; // Offset para header
+      const targetPosition = Math.max(0, sectionTop - offset);
+      
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+    }
+    
+    // Enquadrar o mapa na região selecionada
     setViewState({
       ...viewState,
       longitude: location.coordinates.lng,
       latitude: location.coordinates.lat,
-      zoom: 12
+      zoom: 14 // Zoom mais próximo para melhor enquadramento
     });
   };
 
@@ -319,6 +343,39 @@ const MapaContent = () => {
     };
   }, []);
 
+  // Listener para tecla Ctrl - controla interatividade do mapa
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && !isCtrlPressed) {
+        setIsCtrlPressed(true);
+        setIsMapInteractive(true);
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      if (!event.ctrlKey && isCtrlPressed) {
+        setIsCtrlPressed(false);
+        setIsMapInteractive(false);
+      }
+    };
+
+    // Listener para quando a janela perde o foco (garante que Ctrl seja "solto")
+    const handleWindowBlur = () => {
+      setIsCtrlPressed(false);
+      setIsMapInteractive(false);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleWindowBlur);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleWindowBlur);
+    };
+  }, [isCtrlPressed]);
+
   // Separar loading da página geral do loading das regiões
   const isPageLoading = isMapLoading; // Apenas loading inicial da página
   const isRegionsLoading = regionsLoading || isLoading('map');
@@ -402,18 +459,18 @@ const MapaContent = () => {
               >
 
                 <div
-                  className={`${currentTheme === 'light' ? 'bg-hip-amarelo-escuro' : 'bg-hip-amarelo-claro'} text-left mb-16 text-theme border-theme w-full pb-10 pt-10 px-6`}
+                  className={`${currentTheme === 'light' ? 'bg-hip-amarelo-escuro' : 'bg-hip-amarelo-claro'} text-left border-theme w-full pb-10 pt-10 px-6`}
                 >
-                  <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl pl-6 mb-6 text-bold">
+                  <h2 className="text-black font-sometype-mono text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl pl-6 mb-6 text-bold">
                     MAPA INTERATIVO
                   </h2>
-                  <p className="border-theme border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-theme max-w-4xl leading-relaxed">
-                    Explore <span className="marca-texto-amarelo px-2 py-1">locais históricos</span>, eventos marcantes e a <span className="marca-texto-amarelo px-2 py-1">geografia do movimento</span> Hip Hop brasiliense
+                  <p className="border-black border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-black max-w-4xl leading-relaxed">
+                    Explore locais históricos, eventos marcantes e a geografia do movimento Hip Hop brasiliense
                   </p>
 
                 </div>
 
-                <div className="px-6">
+                <div className="">
                   <div
                     ref={mapContainerRef}
                     className={`border-2 border-theme overflow-hidden bg-gray-200 relative ${isFullscreen ? 'fullscreen-map' : ''
@@ -436,11 +493,224 @@ const MapaContent = () => {
                       )}
                     </button>
 
+                    {/* Indicador de Ctrl - apenas no modo normal (não fullscreen) */}
+                    {!isFullscreen && !isCtrlPressed && (
+                      <div className="border border-3 border-black bg-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 transition-all duration-300 px-4 py-3 font-sometype-mono text-sm">
+                        <div className="flex items-center gap-2 bg-white text-white p-2">                          
+                          <span className="">Pressione <kbd className="border border-black px-2 py-1 text-xs">Ctrl</kbd> para navegar.</span>
+                        </div>
+                      </div>
+                    )}
+
                     <div style={{ height: isFullscreen ? '100vh' : '600px', position: isFullscreen ? 'fixed' : 'relative', top: isFullscreen ? 0 : 'auto', left: isFullscreen ? 0 : 'auto', width: isFullscreen ? '100vw' : '100%', zIndex: isFullscreen ? 9999 : 'auto' }}>
                       {isFullscreen ? (
-                        /* Layout fullscreen - mapa tela inteira com menus flutuantes */
-                        <div className="h-full relative">
-                          {/* Mapa ocupando toda a tela */}
+                        /* Layout fullscreen - grid com sidebar esquerda + mapa */
+                        <div className="h-full flex">
+                          {/* Sidebar esquerda */}
+                          <div className="w-80 fundo-base border-r-2 border-black flex flex-col overflow-hidden">
+                            
+                            {/* Header da Sidebar */}
+                            <div className="bg-hip-amarelo-escuro border-b-2 border-black p-4">
+                              <h2 className="font-dirty-stains text-2xl text-black">EXPLORAR MAPA</h2>
+                            </div>
+
+                            {/* Busca e Filtros - quando não há tour ativo */}
+                            {!selectedTour && (
+                              <div className="flex-1 overflow-y-auto p-4">
+                                {/* Seção de Busca */}
+                                <div className="mb-6">
+                                  <h3 className="font-sometype-mono text-lg font-bold text-black mb-3 border-b border-black pb-1">
+                                    BUSCAR LOCAIS
+                                  </h3>
+                                  <div className="space-y-3">
+                                    <input
+                                      type="text"
+                                      placeholder="Digite o nome do local..."
+                                      className="w-full p-3 border-2 border-black font-sometype-mono text-sm"
+                                      onChange={(e) => {
+                                        const searchTerm = e.target.value.toLowerCase();
+                                        if (searchTerm.trim() === '') {
+                                          setFilteredLocations(locations);
+                                        } else {
+                                          const filtered = locations.filter(location =>
+                                            location.name.toLowerCase().includes(searchTerm) ||
+                                            location.description.toLowerCase().includes(searchTerm)
+                                          );
+                                          setFilteredLocations(filtered);
+                                        }
+                                      }}
+                                    />
+                                    <p className="text-xs font-sometype-mono text-black/70">
+                                      {filteredLocations.length} de {locations.length} locais
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Lista de Locais */}
+                                <div className="mb-6">
+                                  <h3 className="font-sometype-mono text-lg font-bold text-black mb-3 border-b border-black pb-1">
+                                    LOCAIS ENCONTRADOS
+                                  </h3>
+                                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                                    {filteredLocations.slice(0, 10).map((location) => (
+                                      <div
+                                        key={location.id}
+                                        onClick={() => handleMarkerClick(location)}
+                                        className="border border-black p-3 cursor-pointer hover:bg-hip-amarelo-claro transition-colors"
+                                      >
+                                        <div className="flex items-start justify-between mb-2">
+                                          <h4 className="font-dirty-stains text-sm text-black font-bold">
+                                            {location.name}
+                                          </h4>
+                                          <div className="flex gap-1">
+                                            {location.coordinateType === 'extracted_from_notes' && (
+                                              <span className="bg-green-500 text-white px-1 py-0.5 text-xs font-sometype-mono">GPS</span>
+                                            )}
+                                            {location.coordinateType === 'estimated_from_places' && (
+                                              <span className="bg-blue-500 text-white px-1 py-0.5 text-xs font-sometype-mono">EST</span>
+                                            )}
+                                            {location.coordinateType === 'default_brasilia' && (
+                                              <span className="bg-gray-500 text-white px-1 py-0.5 text-xs font-sometype-mono">DEF</span>
+                                            )}
+                                          </div>
+                                        </div>
+                                        <p className="font-sometype-mono text-xs text-black/70 line-clamp-2">
+                                          {location.description}
+                                        </p>
+                                        <div className="mt-2 flex justify-between items-center">
+                                          <span className="font-sometype-mono text-xs text-black/50">
+                                            {location.itemCount} item(s)
+                                          </span>
+                                          <button className="font-sometype-mono text-xs text-black underline hover:no-underline">
+                                            Ver no mapa →
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ))}
+                                    {filteredLocations.length > 10 && (
+                                      <p className="text-center font-sometype-mono text-xs text-black/70 py-2">
+                                        Mostrando 10 de {filteredLocations.length} resultados
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Estatísticas */}
+                                <div className="border-t border-black pt-4">
+                                  <h3 className="font-sometype-mono text-lg font-bold text-black mb-3">
+                                    ESTATÍSTICAS
+                                  </h3>
+                                  <div className="space-y-1 text-xs font-sometype-mono text-black">
+                                    <div className="flex justify-between">
+                                      <span>Total de locais:</span>
+                                      <span className="font-bold">{locations.length}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>Com GPS:</span>
+                                      <span className="font-bold text-green-600">
+                                        {locations.filter(l => l.coordinateType === 'extracted_from_notes').length}
+                                      </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>Estimados:</span>
+                                      <span className="font-bold text-blue-600">
+                                        {locations.filter(l => l.coordinateType === 'estimated_from_places').length}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Tour Ativo - quando há tour selecionado */}
+                            {selectedTour && (
+                              <div className="flex-1 overflow-y-auto p-4">
+                                <div className="mb-4">
+                                  <h3 className="font-sometype-mono text-lg font-bold text-black mb-2 border-b border-black pb-1">
+                                    TOUR: {selectedTour.title}
+                                  </h3>
+                                  <p className="font-sometype-mono text-sm text-black/70 mb-4">
+                                    {selectedTour.description}
+                                  </p>
+                                  <button
+                                    onClick={() => handleTourSelect(null)}
+                                    className="w-full p-2 border border-black bg-white hover:bg-red-100 font-sometype-mono text-sm transition-colors"
+                                  >
+                                    ✕ Sair do Tour
+                                  </button>
+                                </div>
+
+                                {/* Capítulos do Tour */}
+                                <div>
+                                  <h4 className="font-sometype-mono text-md font-bold text-black mb-3">
+                                    CAPÍTULOS ({selectedTour.chapters?.length || 0})
+                                  </h4>
+                                  <div className="space-y-2">
+                                    {selectedTour.chapters?.map((chapter, index) => (
+                                      <div
+                                        key={index}
+                                        onClick={() => {
+                                          setCurrentChapter(index);
+                                          handleMapFlyTo({
+                                            longitude: chapter.location.center[0],
+                                            latitude: chapter.location.center[1],
+                                            zoom: chapter.location.zoom || 13,
+                                            bearing: chapter.location.bearing || 0,
+                                            pitch: chapter.location.pitch || 0,
+                                            speed: chapter.location.speed || 2
+                                          });
+                                        }}
+                                        className={`border border-black p-3 cursor-pointer transition-colors ${
+                                          currentChapter === index 
+                                            ? 'bg-hip-amarelo-escuro' 
+                                            : 'bg-white hover:bg-hip-amarelo-claro'
+                                        }`}
+                                      >
+                                        <div className="flex items-start justify-between mb-2">
+                                          <h5 className="font-dirty-stains text-sm text-black font-bold">
+                                            {index + 1}. {chapter.title}
+                                          </h5>
+                                          {currentChapter === index && (
+                                            <span className="bg-black text-white px-2 py-1 text-xs font-sometype-mono">
+                                              ATUAL
+                                            </span>
+                                          )}
+                                        </div>
+                                        <p className="font-sometype-mono text-xs text-black/70 line-clamp-3">
+                                          {chapter.description}
+                                        </p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Menu de Tours - sempre visível na parte inferior */}
+                            <div className="border-t-2 border-black bg-hip-amarelo-claro p-4">
+                              <h3 className="font-sometype-mono text-md font-bold text-black mb-3">
+                                TOURS DISPONÍVEIS
+                              </h3>
+                              <div className="space-y-2">
+                                {(storiesMapboxFormat || []).slice(0, 3).map((story, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={() => handleTourSelect(story)}
+                                    className={`w-full p-2 border border-black text-left font-sometype-mono text-sm transition-colors ${
+                                      selectedTour?.title === story.title
+                                        ? 'bg-black text-white'
+                                        : 'bg-white hover:bg-gray-100'
+                                    }`}
+                                  >
+                                    🎯 {story.title}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Mapa ocupando o restante da tela */}
+                          <div className="flex-1 relative">
                           <MapRenderer
                             ref={mapRef}
                             {...viewState}
@@ -457,6 +727,15 @@ const MapaContent = () => {
                             }}
                             mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
                             attributionControl={false}
+                            // Controles de interatividade - sempre ativo no fullscreen
+                            dragPan={true}
+                            dragRotate={true}
+                            scrollZoom={true}
+                            boxZoom={true}
+                            doubleClickZoom={true}
+                            touchZoom={true}
+                            touchRotate={true}
+                            keyboard={true}
                           >
                             {filteredLocations.map((location) => (
                               <Marker
@@ -471,6 +750,18 @@ const MapaContent = () => {
                                 <motion.div
                                   whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
                                   whileTap={{ scale: 0.9 }}
+                                  onMouseEnter={() => {
+                                    if (!selectedTour) {
+                                      setHoveredLocation(location);
+                                      setShowHoverPopup(true);
+                                    }
+                                  }}
+                                  onMouseLeave={() => {
+                                    if (!selectedLocation || selectedLocation.id !== location.id) {
+                                      setHoveredLocation(null);
+                                      setShowHoverPopup(false);
+                                    }
+                                  }}
                                   animate={{
                                     scale: (selectedTour &&
                                       checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
@@ -524,30 +815,10 @@ const MapaContent = () => {
                             ))}
                           </MapRenderer>
 
-                          {/* Menus flutuantes preservados */}
-                          <TourMenu
-                            isFullscreen={isFullscreen}
-                            onTourSelect={handleTourSelect}
-                            selectedTour={selectedTour}
-                          />
+                          {/* LayerControl agora flutua sobre o mapa */}
+                          <LayerControl isVisible={!selectedTour} />
 
-                          <LayerControl isVisible={isFullscreen && !selectedTour} />
-
-                          <MapboxStorytellingOverlay
-                            selectedTour={selectedTour}
-                            onMapMove={handleMapFlyTo}
-                            onChapterChange={handleChapterChange}
-                            isVisible={isFullscreen && !!selectedTour}
-                          />
-
-                          {!selectedTour && (
-                            <MapSearchComponent
-                              isFullscreen={isFullscreen}
-                              onLocationFilter={handleLocationFilter}
-                              onMarkerClick={handleMarkerClick}
-                              selectedLocation={selectedLocation}
-                            />
-                          )}
+                          </div>
                         </div>
                       ) : (
                         /* Layout normal */
@@ -593,10 +864,19 @@ const MapaContent = () => {
                             style={{
                               width: '100%',
                               height: '100%',
-                              cursor: 'grab'
+                              cursor: isMapInteractive ? 'grab' : 'default'
                             }}
                             mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
                             attributionControl={false}
+                            // Controles de interatividade baseados em Ctrl
+                            dragPan={isMapInteractive}
+                            dragRotate={isMapInteractive}
+                            scrollZoom={isMapInteractive}
+                            boxZoom={isMapInteractive}
+                            doubleClickZoom={isMapInteractive}
+                            touchZoom={isMapInteractive}
+                            touchRotate={isMapInteractive}
+                            keyboard={isMapInteractive}
                           >
                             {filteredLocations.map((location) => (
                               <Marker
@@ -611,6 +891,18 @@ const MapaContent = () => {
                                 <motion.div
                                   whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
                                   whileTap={{ scale: 0.9 }}
+                                  onMouseEnter={() => {
+                                    if (!selectedTour) {
+                                      setHoveredLocation(location);
+                                      setShowHoverPopup(true);
+                                    }
+                                  }}
+                                  onMouseLeave={() => {
+                                    if (!selectedLocation || selectedLocation.id !== location.id) {
+                                      setHoveredLocation(null);
+                                      setShowHoverPopup(false);
+                                    }
+                                  }}
                                   animate={{
                                     scale: (selectedTour &&
                                       checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
@@ -665,42 +957,88 @@ const MapaContent = () => {
                               </Marker>
                             ))}
 
+                            {/* Popup para hover */}
+                            {hoveredLocation && showHoverPopup && !selectedLocation && !selectedTour && (
+                              <Popup
+                                longitude={hoveredLocation.coordinates.lng}
+                                latitude={hoveredLocation.coordinates.lat}
+                                anchor="bottom"
+                                closeButton={false}
+                                className="hover-popup"
+                                closeOnClick={false}
+                                closeOnMove={false}
+                              >
+                                <div className="popup-folha-pauta px-6 py-3 min-w-[200px]">
+                                  <p className="font-scratchy text-4xl mb-1 text-black">{hoveredLocation.name}</p>
+                                  <p className="font-sometype-mono text-xs mb-2 line-clamp-2 text-black">{hoveredLocation.description}</p>
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-black px-2 py-1 text-xl font-scratchy border border-black">
+                                      {hoveredLocation.itemCount} item
+                                    </span>
+                                    {hoveredLocation.coordinateType === 'extracted_from_notes' && (
+                                      <span className="text-white px-1 py-1 text-xl font-scratchy border border-black">GPS</span>
+                                    )}
+                                    {hoveredLocation.coordinateType === 'estimated_from_places' && (
+                                      <span className="bg-blue-500 text-white px-1 py-1 text-xl font-scratchy border border-black">EST</span>
+                                    )}
+                                    {hoveredLocation.coordinateType === 'default_brasilia' && (
+                                      <span className="bg-gray-500 text-white px-1 py-1 text-xl font-scratchy border border-black">DEF</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </Popup>
+                            )}
+
+                            {/* Popup para click (ativo/persistente) */}
                             {selectedLocation && !selectedTour && (
                               <Popup
                                 longitude={selectedLocation.coordinates.lng}
                                 latitude={selectedLocation.coordinates.lat}
                                 anchor="bottom"
-                                onClose={() => setSelectedLocation(null)}
+                                onClose={() => {
+                                  setSelectedLocation(null);
+                                  setShowHoverPopup(false);
+                                }}
                                 closeButton={true}
-                                className="custom-popup"
+                                className="active-popup"
                               >
-                                <div className="bg-white border-2 border-theme p-4 min-w-[250px]">
-                                  <h3 className="font-dirty-stains text-2xl mb-2 text-theme">{selectedLocation.name}</h3>
-                                  <p className="font-sometype-mono text-sm text-theme/80 mb-3">{selectedLocation.description}</p>
+                                <div className="popup-folha-pauta px-7 py-4 min-w-[280px]">
+                                  <p className="font-scratchy text-4xl mb-2 text-black">{selectedLocation.name}</p>
+                                  <p className="font-scratchy text-2xl mb-3 text-black opacity-80">{selectedLocation.description}</p>
                                   <div className="flex items-center gap-2 mb-3">
-                                    <span className="bg-blue-100 text-blue-800 px-2 py-1 border border-blue-300 text-xs font-sometype-mono">
+                                    <span className="text-black px-2 py-1 border border-black text-xl font-scratchy">
                                       {selectedLocation.itemCount} itens
                                     </span>
-                                    {selectedLocation.has_real_coordinates && (
-                                      <span className="bg-green-100 text-green-800 px-2 py-1 border border-green-300 text-xs font-sometype-mono">
+                                    {selectedLocation.coordinateType === 'extracted_from_notes' && (
+                                      <span className="bg-green-500 text-white px-2 py-1 border border-black text-xl font-scratchy">
                                         GPS
+                                      </span>
+                                    )}
+                                    {selectedLocation.coordinateType === 'estimated_from_places' && (
+                                      <span className="bg-blue-500 text-white px-2 py-1 border border-black text-xl font-scratchy">
+                                        EST
+                                      </span>
+                                    )}
+                                    {selectedLocation.coordinateType === 'default_brasilia' && (
+                                      <span className="bg-gray-500 text-white px-2 py-1 border border-black text-xl font-scratchy">
+                                        DEF
                                       </span>
                                     )}
                                   </div>
                                   {selectedLocation.items && selectedLocation.items.length > 0 && (
-                                    <div className="border-t border-theme/20 pt-3">
-                                      <h4 className="font-sometype-mono text-sm font-bold mb-2">Item em destaque:</h4>
+                                    <div className="pt-3">
+                                      <p className="font-scratchy text-2xl font-bold mb-2 text-black">Item em destaque:</p>
                                       <div className="flex gap-3">
                                         {selectedLocation.items[0].thumbnail && (
                                           <img
                                             src={selectedLocation.items[0].thumbnail}
                                             alt={selectedLocation.items[0].title}
-                                            className="w-12 h-12 object-cover border border-theme"
+                                            className="w-12 h-12 object-cover border border-black"
                                           />
                                         )}
                                         <div>
-                                          <p className="font-sometype-mono text-xs font-semibold text-theme">{selectedLocation.items[0].title}</p>
-                                          <p className="font-sometype-mono text-xs text-theme/60">{selectedLocation.items[0].date}</p>
+                                          <p className="font-scratchy text-xl font-semibold text-black">{selectedLocation.items[0].title}</p>
+                                          <p className="font-scratchy text-xl text-black opacity-60">{selectedLocation.items[0].date}</p>
                                         </div>
                                       </div>
                                     </div>
@@ -731,8 +1069,8 @@ const MapaContent = () => {
               >
                 <div>
                   <div className="mb-8">
-                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-dirty-stains text-theme-primary mb-4 text-left">REGIÕES MAPEADAS</h3>
-                    <p className="font-sometype-mono text-lg text-gray-600 text-left">
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-sometype-mono text-black mb-4 text-left">REGIÕES MAPEADAS</h3>
+                    <p className="font-sometype-mono text-lg text-black text-left">
                       {locations.length} {locations.length === 1 ? 'região mapeada' : 'regiões mapeadas'}
                       {totalPages > 1 && ` - Página ${currentPage} de ${totalPages}`}
                     </p>
@@ -788,7 +1126,7 @@ const MapaContent = () => {
                           transition={{ delay: 0.7 + index * 0.1 }}
                           whileHover={{ scale: 1.02, y: -5 }}
                           onClick={() => handleMarkerClick(location)}
-                          className="bg-white border-2 border-theme p-6 cursor-pointer hover:bg-zinc-100 transition-all duration-300"
+                          className={`border-2 border-theme p-6 cursor-pointer transition-all duration-300`}
                         >
                           <div className="flex items-center gap-3 mb-3">
                             <div className="w-6 h-6 bg-[#fae523] border-2 border-theme rounded-full flex items-center justify-center">
@@ -816,9 +1154,19 @@ const MapaContent = () => {
                               <span className="bg-[#fae523] text-theme px-3 py-1 rounded-full text-sm font-sometype-mono border border-theme">
                                 {location.itemCount} item
                               </span>
-                              {location.has_real_coordinates && (
+                              {location.coordinateType === 'extracted_from_notes' && (
                                 <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-sometype-mono border border-green-300">
                                   GPS
+                                </span>
+                              )}
+                              {location.coordinateType === 'estimated_from_places' && (
+                                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-sometype-mono border border-blue-300">
+                                  EST
+                                </span>
+                              )}
+                              {location.coordinateType === 'default_brasilia' && (
+                                <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-sometype-mono border border-gray-300">
+                                  DEF
                                 </span>
                               )}
                             </div>
