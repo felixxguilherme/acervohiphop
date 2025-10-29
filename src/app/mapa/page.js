@@ -27,7 +27,7 @@ import {
   PaginationPrevious
 } from '@/components/ui/pagination';
 
-// AIDEV-NOTE: Internal component that uses map context
+// GUI-NOTE: Internal component that uses map context
 const MapaContent = () => {
   // Context hook for real data from development branch
   const {
@@ -55,19 +55,20 @@ const MapaContent = () => {
     }, 100);
   }, []);
 
-  // AIDEV-NOTE: Initialize map layers when component mounts
+  // GUI-NOTE: Initialize map layers when component mounts
   useEffect(() => {
+    console.log('[MapPage] Initializing map layers...');
     mapLayers.initializeDefaultLayers();
   }, []);
 
-  // AIDEV-NOTE: Helper function to get icon component for random points
+  // GUI-NOTE: Helper function to get icon component for random points
   const getIconComponent = (location) => {
     if (!location.isRandomPoint || !location.iconType) return null;
     const iconType = iconTypes.find(icon => icon.name === location.iconType);
     return iconType ? iconType.component : null;
   };
 
-  // AIDEV-NOTE: Helper function to check if tour chapter matches location
+  // GUI-NOTE: Helper function to check if tour chapter matches location
   const checkTourLocationMatch = (chapter, location) => {
     if (!chapter || !chapter.location || !location) return false;
 
@@ -166,10 +167,16 @@ const MapaContent = () => {
   // Set filtered locations state for search functionality
   const [filteredLocations, setFilteredLocations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   
   // State for DF localities
   const [dfLocalities, setDfLocalities] = useState([]);
   const [allSearchableLocations, setAllSearchableLocations] = useState([]);
+  
+  // State for Administrative Regions (RAs)
+  const [administrativeRegions, setAdministrativeRegions] = useState([]);
+  const [selectedRA, setSelectedRA] = useState(null);
+  const [isRASearch, setIsRASearch] = useState(false);
 
   // Load DF localities from government service
   useEffect(() => {
@@ -214,10 +221,107 @@ const MapaContent = () => {
     loadDfLocalities();
   }, []);
 
+  // Load Administrative Regions from government service
+  useEffect(() => {
+    const loadAdministrativeRegions = async () => {
+      try {
+        const response = await fetch(
+          'https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/LIMITES/MapServer/1/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&returnGeometry=true'
+        );
+        const data = await response.json();
+        
+        if (data.features) {
+          setAdministrativeRegions(data.features);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar regiões administrativas:', error);
+      }
+    };
+
+    loadAdministrativeRegions();
+  }, []);
+
+  // Debounce search term to avoid instant search while typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Function to check if search term matches an Administrative Region
+  const checkRASearch = (term) => {
+    if (!term || !administrativeRegions.length) return null;
+    
+    const searchLower = term.toLowerCase().trim();
+    
+    // List of known RA names for matching
+    const raNames = [
+      'brasília', 'gama', 'taguatinga', 'brazlândia', 'sobradinho', 'planaltina',
+      'paranoá', 'núcleo bandeirante', 'ceilândia', 'guará', 'cruzeiro', 'samambaia',
+      'santa maria', 'são sebastião', 'recanto das emas', 'lago sul', 'riacho fundo',
+      'lago norte', 'candangolândia', 'águas claras', 'riacho fundo ii', 'sudoeste',
+      'octogonal', 'varjão', 'park way', 'scia', 'sobradinho ii', 'jardim botânico',
+      'itapoã', 'sia', 'vicente pires', 'fercal', 'sol nascente', 'arniqueira'
+    ];
+    
+    // Check if search term matches any RA name
+    const matchedRA = raNames.find(ra => 
+      ra.includes(searchLower) || searchLower.includes(ra)
+    );
+    
+    if (matchedRA) {
+      // Find the corresponding RA feature in the data
+      const raFeature = administrativeRegions.find(feature => 
+        feature.properties.ra_nome && 
+        feature.properties.ra_nome.toLowerCase().includes(matchedRA)
+      );
+      return raFeature;
+    }
+    
+    return null;
+  };
+
   // Enhanced search function that searches across multiple fields
   const performSearch = (term, locationsData) => {
     if (!term || term.trim() === '') {
+      setSelectedRA(null);
+      setIsRASearch(false);
       return locationsData;
+    }
+    
+    // Reset previous RA selection for each new search
+    setSelectedRA(null);
+    setIsRASearch(false);
+    
+    // Check if this is a search for an Administrative Region
+    const raMatch = checkRASearch(term);
+    if (raMatch) {
+      setSelectedRA(raMatch);
+      setIsRASearch(true);
+      
+      // Filter locations that are related to this RA (textually or geographically)
+      const searchLower = term.toLowerCase().trim();
+      return locationsData.filter(location => {
+        // Text-based matching in various fields
+        const textMatch = (
+          (location.name && location.name.toLowerCase().includes(searchLower)) ||
+          (location.description && location.description.toLowerCase().includes(searchLower)) ||
+          (location.place_access_points && Array.isArray(location.place_access_points) && 
+           location.place_access_points.some(point => point && point.toLowerCase().includes(searchLower))) ||
+          (location.reference_code && location.reference_code.toLowerCase().includes(searchLower)) ||
+          (location.items && Array.isArray(location.items) && 
+           location.items.some(item => item.title && item.title.toLowerCase().includes(searchLower)))
+        );
+        
+        // TODO: Add geographic filtering based on coordinates within RA boundaries
+        // For now, return text matches
+        return textMatch;
+      });
+    } else {
+      setSelectedRA(null);
+      setIsRASearch(false);
     }
     
     const searchLower = term.toLowerCase().trim();
@@ -305,11 +409,58 @@ const MapaContent = () => {
     setAllSearchableLocations(combined);
   }, [locations, dfLocalities]);
 
-  // Update filtered locations when search term changes
+  // Update filtered locations when debounced search term changes
   useEffect(() => {
-    const filtered = performSearch(searchTerm, allSearchableLocations);
+    const filtered = performSearch(debouncedSearchTerm, allSearchableLocations);
     setFilteredLocations(filtered);
-  }, [allSearchableLocations, searchTerm]);
+  }, [allSearchableLocations, debouncedSearchTerm]);
+
+  // Update selected RA layer when RA is selected
+  useEffect(() => {
+    // Only proceed if layers are initialized and we have layers loaded
+    if (!mapLayers.isInitialized || mapLayers.layers.length === 0) {
+      console.log('[MapPage] Layers not ready yet, skipping RA selection update');
+      return;
+    }
+    
+    // Add a small delay to ensure layers are fully rendered on the map
+    const timer = setTimeout(() => {
+      console.log('[MapPage] RA selection changed. selectedRA:', selectedRA);
+      
+      if (selectedRA) {
+        console.log('[MapPage] Showing specific RA:', selectedRA.properties?.ra_nome);
+        // Always clear previous selection first
+        mapLayers.updateLayerProperty('ra-selected-highlight', 'visible', false);
+        mapLayers.updateLayerProperty('ra-selected-outline', 'visible', false);
+        
+        // Update data for both highlight and outline layers
+        const raData = {
+          type: 'FeatureCollection',
+          features: [selectedRA]
+        };
+        
+        // Update both layers with the new RA data
+        mapLayers.updateLayerData('ra-selected-highlight', raData);
+        mapLayers.updateLayerData('ra-selected-outline', raData);
+        
+        // Show both highlight and outline
+        mapLayers.updateLayerProperty('ra-selected-highlight', 'visible', true);
+        mapLayers.updateLayerProperty('ra-selected-outline', 'visible', true);
+        
+        // Hide the general RAs layer to show only the selected one
+        mapLayers.updateLayerProperty('regioes-administrativas-df', 'visible', false);
+        
+      } else {
+        console.log('[MapPage] No RA selected, ensuring all RAs are visible');
+        // Clear selection and show all RAs when no specific RA is selected
+        mapLayers.updateLayerProperty('ra-selected-highlight', 'visible', false);
+        mapLayers.updateLayerProperty('ra-selected-outline', 'visible', false);
+        mapLayers.updateLayerProperty('regioes-administrativas-df', 'visible', true);
+      }
+    }, 500); // 500ms delay to ensure layers are fully loaded
+    
+    return () => clearTimeout(timer);
+  }, [selectedRA, mapLayers.isInitialized, mapLayers.layers.length]);
 
   // Set viewState for map with default center
   const [viewState, setViewState] = useState({
@@ -351,12 +502,12 @@ const MapaContent = () => {
     });
   };
 
-  // AIDEV-NOTE: Handler for search component to filter map locations
+  // GUI-NOTE: Handler for search component to filter map locations
   const handleLocationFilter = (locations) => {
     setFilteredLocations(locations);
   };
 
-  // AIDEV-NOTE: Handler for tour selection and management
+  // GUI-NOTE: Handler for tour selection and management
   const handleTourSelect = (tour) => {
     setSelectedTour(tour);
     setCurrentChapter(0);
@@ -375,7 +526,7 @@ const MapaContent = () => {
     }
   };
 
-  // AIDEV-NOTE: Handler for map movement with smooth transitions
+  // GUI-NOTE: Handler for map movement with smooth transitions
   const handleMapMove = (newViewState) => {
     setIsAnimating(true);
     setViewState({
@@ -389,7 +540,7 @@ const MapaContent = () => {
     }, 1500);
   };
 
-  // AIDEV-NOTE: Handler for flyTo using MapLibre GL JS native method
+  // GUI-NOTE: Handler for flyTo using MapLibre GL JS native method
   const handleMapFlyTo = (flyToOptions) => {
     if (!mapRef.current) return;
 
@@ -415,7 +566,7 @@ const MapaContent = () => {
     }, duration + 200);
   };
 
-  // AIDEV-NOTE: Handler for chapter changes during tour
+  // GUI-NOTE: Handler for chapter changes during tour
   const handleChapterChange = (chapterIndex) => {
     setCurrentChapter(chapterIndex);
   };
@@ -592,7 +743,7 @@ const MapaContent = () => {
             >
               {/* Hero Section */}
               <motion.section
-                className="mb-12"
+                className=""
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
@@ -613,7 +764,7 @@ const MapaContent = () => {
                 <div className="">
                   <div
                     ref={mapContainerRef}
-                    className={`border-2 border-theme overflow-hidden bg-gray-200 relative ${isFullscreen ? 'fullscreen-map' : ''
+                    className={`border-b-3 border-theme overflow-hidden bg-gray-200 relative ${isFullscreen ? 'fullscreen-map' : ''
                       }`}
                   >
                     {/* Botão de Tela Cheia */}
@@ -633,11 +784,24 @@ const MapaContent = () => {
                       )}
                     </button>
 
-                    {/* Indicador de Ctrl - apenas no modo normal (não fullscreen) */}
+                    {/* Indicadores de interatividade - apenas no modo normal (não fullscreen) */}
                     {!isFullscreen && !isCtrlPressed && (
-                      <div className="border border-3 border-black bg-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 transition-all duration-300 px-4 py-3 font-sometype-mono text-sm">
-                        <div className="flex items-center gap-2 bg-white text-white p-2">                          
-                          <span className="">Pressione <kbd className="border border-black px-2 py-1 text-xs">Ctrl</kbd> para navegar.</span>
+                      <div className="border-2 border-black bg-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 transition-all duration-300 px-4 py-3 font-sometype-mono text-sm shadow-lg">
+                        <div className="flex items-center gap-2 text-black">                          
+                          <span className="font-semibold">Pressione <kbd className="border border-black px-2 py-1 text-xs bg-gray-100">Ctrl</kbd> para navegar o mapa</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Indicador quando Ctrl está ativo */}
+                    {!isFullscreen && isCtrlPressed && (
+                      <div className="border-2 border-green-500 bg-green-50 absolute top-4 left-4 z-10 transition-all duration-300 px-3 py-2 font-sometype-mono text-xs shadow-lg">
+                        <div className="flex items-center gap-2 text-green-800">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="font-semibold">Mapa Ativo - Ctrl pressionado</span>
+                        </div>
+                        <div className="text-xs text-green-600 mt-1">
+                          Zoom e arrastar habilitados
                         </div>
                       </div>
                     )}
@@ -689,10 +853,32 @@ const MapaContent = () => {
                                       <p className="text-xs font-sometype-mono text-black/70">
                                         {filteredLocations.length} de {locations.length} locais
                                       </p>
-                                      {searchTerm && (
-                                        <p className="text-xs font-sometype-mono text-blue-600">
-                                          Buscando: "{searchTerm}"
-                                        </p>
+                                      {(searchTerm || debouncedSearchTerm) && (
+                                        <div className="text-xs font-sometype-mono">
+                                          {isRASearch && selectedRA ? (
+                                            <div className="space-y-1">
+                                              <p className="text-purple-600 font-bold">
+                                                🗺️ Busca por RA: "{selectedRA.properties.ra_nome || debouncedSearchTerm}"
+                                              </p>
+                                              <p className="text-blue-600">
+                                                Mostrando apenas itens relacionados a esta região
+                                              </p>
+                                            </div>
+                                          ) : (
+                                            <div className="space-y-1">
+                                              {searchTerm && searchTerm !== debouncedSearchTerm && (
+                                                <p className="text-gray-500 italic">
+                                                  Digitando: "{searchTerm}"
+                                                </p>
+                                              )}
+                                              {debouncedSearchTerm && (
+                                                <p className="text-blue-600">
+                                                  Buscando: "{debouncedSearchTerm}"
+                                                </p>
+                                              )}
+                                            </div>
+                                          )}
+                                        </div>
                                       )}
                                     </div>
                                   </div>
@@ -726,7 +912,7 @@ const MapaContent = () => {
                                               
                                               {/* Coordinate type indicators for Hip Hop locations */}
                                               {!location.sourceType && location.coordinateType === 'extracted_from_notes' && (
-                                                <span className="bg-green-500 text-white px-1 py-0.5 text-xs font-sometype-mono">GPS</span>
+                                                <span className="text-black px-1 py-0.5 text-xs font-sometype-mono">GPS</span>
                                               )}
                                               {!location.sourceType && location.coordinateType === 'estimated_from_places' && (
                                                 <span className="bg-blue-500 text-white px-1 py-0.5 text-xs font-sometype-mono">EST</span>
@@ -935,12 +1121,12 @@ const MapaContent = () => {
                             attributionControl={false}
                             // Controles de interatividade - sempre ativo no fullscreen
                             dragPan={true}
-                            dragRotate={true}
+                            dragRotate={false} // Desabilitar rotação para evitar rotação acidental ao arrastar
                             scrollZoom={true}
                             boxZoom={true}
                             doubleClickZoom={true}
                             touchZoom={true}
-                            touchRotate={true}
+                            touchRotate={false} // Desabilitar rotação por touch também
                             keyboard={true}
                           >
                             {filteredLocations.map((location) => (
@@ -1019,6 +1205,131 @@ const MapaContent = () => {
                                 </motion.div>
                               </Marker>
                             ))}
+
+                            {/* Popup para hover no modo fullscreen */}
+                            {hoveredLocation && showHoverPopup && !selectedLocation && !selectedTour && (
+                              <Popup
+                                longitude={hoveredLocation.coordinates.lng}
+                                latitude={hoveredLocation.coordinates.lat}
+                                anchor="bottom"
+                                closeButton={false}
+                                className="hover-popup"
+                                closeOnClick={false}
+                                closeOnMove={false}
+                              >
+                                <div className="popup-folha-pauta px-6 py-3 min-w-[200px]">
+                                  <p className="font-scratchy text-4xl mb-1 text-black">{hoveredLocation.name}</p>
+                                  <p className="font-sometype-mono text-xs mb-2 line-clamp-2 text-black">{hoveredLocation.description}</p>
+                                  <div className="flex items-center gap-1">
+                                    {hoveredLocation.sourceType === 'df_locality' ? (
+                                      <>
+                                        <span className="bg-purple-500 text-white px-2 py-1 text-xl font-scratchy border border-black">
+                                          {hoveredLocation.locality_type_name}
+                                        </span>
+                                        <span className="bg-indigo-500 text-white px-2 py-1 text-xl font-scratchy border border-black">GOV</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <span className="text-black px-2 py-1 text-xl font-scratchy border border-black">
+                                          {hoveredLocation.itemCount} item{hoveredLocation.itemCount !== 1 ? 's' : ''}
+                                        </span>
+                                        {hoveredLocation.coordinateType === 'extracted_from_notes' && (
+                                          <span className="bg-green-500 text-white px-1 py-1 text-xl font-scratchy border border-black">GPS</span>
+                                        )}
+                                        {hoveredLocation.coordinateType === 'estimated_from_places' && (
+                                          <span className="bg-blue-500 text-white px-1 py-1 text-xl font-scratchy border border-black">EST</span>
+                                        )}
+                                        {hoveredLocation.coordinateType === 'default_brasilia' && (
+                                          <span className="bg-gray-500 text-white px-1 py-1 text-xl font-scratchy border border-black">DEF</span>
+                                        )}
+                                        {hoveredLocation.coordinateType === 'government_source' && (
+                                          <span className="bg-indigo-500 text-white px-1 py-1 text-xl font-scratchy border border-black">GOV</span>
+                                        )}
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              </Popup>
+                            )}
+
+                            {/* Popup para click (ativo/persistente) no modo fullscreen */}
+                            {selectedLocation && !selectedTour && (
+                              <Popup
+                                longitude={selectedLocation.coordinates.lng}
+                                latitude={selectedLocation.coordinates.lat}
+                                anchor="bottom"
+                                closeButton={true}
+                                className="active-popup"
+                                closeOnClick={false}
+                                closeOnMove={false}
+                                onClose={() => setSelectedLocation(null)}
+                              >
+                                <div className="popup-folha-pauta px-6 py-4 min-w-[280px] max-w-[400px]">
+                                  <h3 className="font-scratchy text-5xl mb-2 text-black font-bold">{selectedLocation.name}</h3>
+                                  <p className="font-sometype-mono text-sm mb-3 text-black leading-relaxed">{selectedLocation.description}</p>
+                                  
+                                  {/* Informações específicas para localidades DF */}
+                                  {selectedLocation.sourceType === 'df_locality' ? (
+                                    <div className="mb-3">
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <span className="bg-purple-500 text-white px-2 py-1 text-lg font-scratchy border border-black">
+                                          {selectedLocation.locality_type_name}
+                                        </span>
+                                        <span className="bg-indigo-500 text-white px-2 py-1 text-lg font-scratchy border border-black">
+                                          Governo DF
+                                        </span>
+                                      </div>
+                                      <p className="font-sometype-mono text-xs text-black/80">
+                                        Fonte: IDE - Infraestrutura de Dados Espaciais do DF
+                                      </p>
+                                    </div>
+                                  ) : (
+                                    /* Informações para locais Hip Hop */
+                                    <div className="mb-3">
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <span className="bg-yellow-500 text-black px-2 py-1 text-lg font-scratchy border border-black">
+                                          {selectedLocation.itemCount} item{selectedLocation.itemCount !== 1 ? 's' : ''}
+                                        </span>
+                                        {selectedLocation.coordinateType === 'extracted_from_notes' && (
+                                          <span className="bg-green-500 text-white px-2 py-1 text-lg font-scratchy border border-black">GPS</span>
+                                        )}
+                                        {selectedLocation.coordinateType === 'estimated_from_places' && (
+                                          <span className="bg-blue-500 text-white px-2 py-1 text-lg font-scratchy border border-black">Estimado</span>
+                                        )}
+                                        {selectedLocation.coordinateType === 'default_brasilia' && (
+                                          <span className="bg-gray-500 text-white px-2 py-1 text-lg font-scratchy border border-black">Padrão</span>
+                                        )}
+                                      </div>
+                                      
+                                      {/* Pontos de acesso, se existirem */}
+                                      {selectedLocation.place_access_points && selectedLocation.place_access_points.length > 0 && (
+                                        <div className="mb-2">
+                                          <p className="font-sometype-mono text-xs text-black/80 mb-1">Pontos de acesso:</p>
+                                          <p className="font-sometype-mono text-xs text-blue-700">
+                                            {selectedLocation.place_access_points.join(', ')}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Botão para explorar (apenas para locais Hip Hop) */}
+                                  {!selectedLocation.sourceType && (
+                                    <button 
+                                      className="w-full bg-black text-white px-4 py-2 font-scratchy text-lg border-2 border-black hover:bg-gray-800 transition-colors"
+                                      onClick={() => {
+                                        // Navegar para página do item se não for localidade DF
+                                        if (selectedLocation.slug) {
+                                          window.open(`/acervo/item/${selectedLocation.slug}`, '_blank');
+                                        }
+                                      }}
+                                    >
+                                      Explorar Local →
+                                    </button>
+                                  )}
+                                </div>
+                              </Popup>
+                            )}
                           </MapRenderer>
 
                           {/* LayerControl agora flutua sobre o mapa */}
@@ -1036,10 +1347,10 @@ const MapaContent = () => {
                             selectedTour={selectedTour}
                           />
 
-                          {/* AIDEV-NOTE: Layer control component */}
+                          {/* GUI-NOTE: Layer control component */}
                           <LayerControl isVisible={isFullscreen && !selectedTour} />
 
-                          {/* AIDEV-NOTE: Mapbox Storytelling Overlay */}
+                          {/* GUI-NOTE: Mapbox Storytelling Overlay */}
                           <MapboxStorytellingOverlay
                             selectedTour={selectedTour}
                             onMapMove={handleMapFlyTo}
@@ -1072,16 +1383,29 @@ const MapaContent = () => {
                               height: '100%',
                               cursor: isMapInteractive ? 'grab' : 'default'
                             }}
+                            onMouseDown={() => {
+                              if (isMapInteractive) {
+                                document.body.style.cursor = 'grabbing';
+                              }
+                            }}
+                            onMouseUp={() => {
+                              if (isMapInteractive) {
+                                document.body.style.cursor = 'grab';
+                              }
+                            }}
                             mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
                             attributionControl={false}
                             // Controles de interatividade baseados em Ctrl
                             dragPan={isMapInteractive}
-                            dragRotate={isMapInteractive}
-                            scrollZoom={isMapInteractive}
+                            dragRotate={false} // Desabilitar rotação por drag para evitar rotação acidental
+                            scrollZoom={isMapInteractive ? {
+                              // Configurar scroll zoom para não interferir com drag
+                              around: 'center'
+                            } : false}
                             boxZoom={isMapInteractive}
                             doubleClickZoom={isMapInteractive}
                             touchZoom={isMapInteractive}
-                            touchRotate={isMapInteractive}
+                            touchRotate={false} // Desabilitar rotação por touch também
                             keyboard={isMapInteractive}
                           >
                             {filteredLocations.map((location) => (
@@ -1127,7 +1451,7 @@ const MapaContent = () => {
                                   }}
                                 >
                                   {location.isRandomPoint ? (
-                                    // AIDEV-NOTE: Render custom SVG icon for random points
+                                    // GUI-NOTE: Render custom SVG icon for random points
                                     (() => {
                                       const IconComponent = getIconComponent(location);
                                       return IconComponent ? (
@@ -1149,7 +1473,7 @@ const MapaContent = () => {
                                       );
                                     })()
                                   ) : (
-                                    // AIDEV-NOTE: Default marker for original locations
+                                    // GUI-NOTE: Default marker for original locations
                                     <motion.div
                                       animate={{
                                         scale: (selectedTour &&
@@ -1267,16 +1591,16 @@ const MapaContent = () => {
 
               {/* Lista de Locais */}
               <motion.section
-                className={`mb-12 px-6 ${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'}`}
+                className={`mb-12 ${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'}`}
                 id="regions-section"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
               >
-                <div>
-                  <div className="mb-8">
-                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-sometype-mono text-black mb-4 text-left">REGIÕES MAPEADAS</h3>
-                    <p className="font-sometype-mono text-lg text-black text-left">
+                
+                  <div className="pb-6 pt-8 w-full">
+                    <h3 className="px-6 py-6 text-2xl sm:text-3xl md:text-4xl font-sometype-mono text-black mb-4 text-left bg-hip-amarelo-escuro">REGIÕES MAPEADAS</h3>
+                    <p className="px-6 font-sometype-mono text-lg text-black text-left">
                       {locations.length} {locations.length === 1 ? 'região mapeada' : 'regiões mapeadas'}
                       {totalPages > 1 && ` - Página ${currentPage} de ${totalPages}`}
                     </p>
@@ -1323,7 +1647,7 @@ const MapaContent = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 px-6">
                       {currentLocations.map((location, index) => (
                         <motion.div
                           key={location.id}
@@ -1337,7 +1661,7 @@ const MapaContent = () => {
                           <div className="flex items-center gap-3 mb-3">
                             <div className="w-6 h-6 bg-[#fae523] border-2 border-theme rounded-full flex items-center justify-center">
                               {location.isRandomPoint ? (
-                                // AIDEV-NOTE: Show custom icon for random points in location list
+                                // GUI-NOTE: Show custom icon for random points in location list
                                 (() => {
                                   const IconComponent = getIconComponent(location);
                                   return IconComponent ? (
@@ -1457,7 +1781,7 @@ const MapaContent = () => {
                       </Pagination>
                     </motion.div>
                   )}
-                </div>
+               
               </motion.section>
 
               <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-theme p-8">
@@ -1586,7 +1910,7 @@ const MapaContent = () => {
   );
 };
 
-// AIDEV-NOTE: Main component wrapped with MapProvider
+// GUI-NOTE: Main component wrapped with MapProvider
 const Mapa = () => {
   return (
     <MapProvider>
