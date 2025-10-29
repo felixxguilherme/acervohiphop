@@ -1784,7 +1784,7 @@ const MapaContent = () => {
                
               </motion.section>
 
-              <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-r-3 border-l-3 border-t-3 border-b-3 border-theme p-8">
+              <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-t-3 border-theme p-8">
 
 
                 {/* Decorative elements */}
@@ -1814,7 +1814,7 @@ const MapaContent = () => {
                 </div>
 
                 {/* Main content */}
-                <div className="relative z-20 text-center max-w-6xl mx-auto px-6">
+                <div className="relative z-20 text-center mx-auto px-6">
                   {/* Subtitle */}
                   <motion.p
                     initial={{ opacity: 0, y: 30 }}
