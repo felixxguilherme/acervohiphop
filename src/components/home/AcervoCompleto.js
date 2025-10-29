@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getInformationObjects } from '@/services/atomApi';
 
-// AIDEV-NOTE: Component to display ALL 39 items from the acervo in a comprehensive view
+// GUI-NOTE: Component to display ALL 39 items from the acervo in a comprehensive view
 export default function AcervoCompleto() {
   const [allItems, setAllItems] = useState([]);
   const [loading, setLoading] = useState(true);

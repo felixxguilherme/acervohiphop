@@ -1,4 +1,4 @@
-// AIDEV-NOTE: Mock data for Hip Hop stories following Digidem MapLibre template structure
+// GUI-NOTE: Mock data for Hip Hop stories following Digidem MapLibre template structure
 
 const storiesData = [
   {

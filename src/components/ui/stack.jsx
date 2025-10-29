@@ -10,7 +10,7 @@
 //   const { scrollYProgress } = useScroll();
 //   const containerRef = useRef(null);
   
-//   // AIDEV-NOTE: Dados das páginas do stack com conteúdo sobre Hip Hop do DF
+//   // GUI-NOTE: Dados das páginas do stack com conteúdo sobre Hip Hop do DF
 //   const pagesData = [
 //     {
 //       title: "ORIGENS DO HIP HOP NO DF",
@@ -359,16 +359,16 @@ const StackedPagesScroll = () => {
     }
   ];
 
-  // AIDEV-NOTE: Altura calculada para que todas as folhas apareçam com a pilha totalmente visível
+  // GUI-NOTE: Altura calculada para que todas as folhas apareçam com a pilha totalmente visível
   // Cada folha precisa de espaço para aparecer + espaço extra para manter visibilidade total
   const scrollSpacePerPage = 200; // Mais espaço de scroll para movimento mais lento e fluido
   const totalScrollNeeded = (papers.length - 1) * scrollSpacePerPage;
   const lastPageCompleteAt = totalScrollNeeded * 0.85; // 85% do scroll para completar a última folha
   
-  // AIDEV-NOTE: Detectar se a última folha está 100% visível
+  // GUI-NOTE: Detectar se a última folha está 100% visível
   const isLastPageComplete = scrollY >= lastPageCompleteAt;
   
-  // AIDEV-NOTE: Altura da seção - só permite scroll além quando última folha estiver completa
+  // GUI-NOTE: Altura da seção - só permite scroll além quando última folha estiver completa
   const minStackHeight = totalScrollNeeded + 50; // Altura mínima necessária
   const extraBuffer = isLastPageComplete ? 150 : 50; // Buffer menor para reduzir espaço em branco
   const stackHeight = minStackHeight + extraBuffer;

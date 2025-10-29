@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-// AIDEV-NOTE: Simple map lock indicator without Framer Motion
+// GUI-NOTE: Simple map lock indicator without Framer Motion
 const MapLockIndicatorSimple = ({ isVisible = false }) => {
   const [showIndicator, setShowIndicator] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);

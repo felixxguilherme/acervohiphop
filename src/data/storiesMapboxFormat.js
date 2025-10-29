@@ -1,4 +1,4 @@
-// AIDEV-NOTE: Hip Hop stories following Mapbox Storytelling config.js format
+// GUI-NOTE: Hip Hop stories following Mapbox Storytelling config.js format
 
 const storiesMapboxFormat = [
   {

@@ -9,7 +9,7 @@ const MapSearchComponent = ({ isFullscreen, onLocationFilter, onMarkerClick, sel
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // AIDEV-NOTE: Search filtering for map locations and their associated items
+  // GUI-NOTE: Search filtering for map locations and their associated items
   const { filteredLocations, filteredItems } = useMemo(() => {
     if (!searchTerm.trim()) {
       return {

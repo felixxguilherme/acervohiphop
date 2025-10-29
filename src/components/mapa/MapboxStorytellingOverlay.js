@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import scrollama from 'scrollama';
 import Image from 'next/image';
 
-// AIDEV-NOTE: Mapbox Storytelling overlay template implementation with Hip Hop styling
+// GUI-NOTE: Mapbox Storytelling overlay template implementation with Hip Hop styling
 const MapboxStorytellingOverlay = ({ 
   selectedTour, 
   onMapMove,
@@ -15,7 +15,7 @@ const MapboxStorytellingOverlay = ({
   const scrollerRef = useRef(null);
   const scrollamaInstance = useRef(null);
 
-  // AIDEV-NOTE: Initialize Scrollama - optimized to prevent multiple initializations
+  // GUI-NOTE: Initialize Scrollama - optimized to prevent multiple initializations
   useEffect(() => {
     if (!selectedTour || !isVisible) {
       // Cleanup if conditions not met
@@ -30,7 +30,7 @@ const MapboxStorytellingOverlay = ({
     const initTimer = setTimeout(() => {
       scrollamaInstance.current = scrollama();
 
-      let lastTriggeredIndex = -1; // AIDEV-NOTE: Prevent duplicate triggers
+      let lastTriggeredIndex = -1; // GUI-NOTE: Prevent duplicate triggers
       
       scrollamaInstance.current
         .setup({
@@ -41,7 +41,7 @@ const MapboxStorytellingOverlay = ({
         .onStepEnter(response => {
           const { index, direction } = response;
           
-          // AIDEV-NOTE: Prevent duplicate triggers for same chapter
+          // GUI-NOTE: Prevent duplicate triggers for same chapter
           if (index === lastTriggeredIndex) {
             console.log('Scrollama: Pulando gatilho duplicado para o capítulo', index);
             return;
@@ -84,13 +84,13 @@ const MapboxStorytellingOverlay = ({
         scrollamaInstance.current = null;
       }
     };
-  }, [selectedTour?.id, isVisible]); // AIDEV-NOTE: Reduced dependencies to prevent unnecessary re-runs
+  }, [selectedTour?.id, isVisible]); // GUI-NOTE: Reduced dependencies to prevent unnecessary re-runs
 
   if (!selectedTour || !isVisible) return null;
 
   return (
     <>
-      {/* AIDEV-NOTE: Story overlay container following Mapbox template */}
+      {/* GUI-NOTE: Story overlay container following Mapbox template */}
       <div 
         id="story" 
         className="absolute inset-0 z-20 pointer-events-none"
@@ -197,7 +197,7 @@ const MapboxStorytellingOverlay = ({
         </div>
       </div>
 
-      {/* AIDEV-NOTE: Mapbox storytelling styles */}
+      {/* GUI-NOTE: Mapbox storytelling styles */}
       <style jsx global>{`
         .story-step {
           opacity: 0.4;
@@ -223,7 +223,7 @@ const MapboxStorytellingOverlay = ({
   );
 };
 
-// AIDEV-NOTE: Get alignment class following Mapbox template pattern
+// GUI-NOTE: Get alignment class following Mapbox template pattern
 function getAlignmentClass(alignment) {
   switch (alignment) {
     case 'left':
@@ -243,7 +243,7 @@ function getAlignmentClass(alignment) {
   }
 }
 
-// AIDEV-NOTE: Get position class for content box
+// GUI-NOTE: Get position class for content box
 function getPositionClass(alignment) {
   switch (alignment) {
     case 'left':

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getInformationObjects, getTaxonomy } from '@/services/atomApi';
 
-// AIDEV-NOTE: Scalable collections grid that auto-detects new collections when added to API
+// GUI-NOTE: Scalable collections grid that auto-detects new collections when added to API
 export default function CollectionGrid({ onSelectCollection }) {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);

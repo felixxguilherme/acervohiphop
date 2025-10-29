@@ -274,8 +274,37 @@ html {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: #FFFCF2; /* Fallback */
-  color: #000000; /* Texto sempre preto em folha pautada */
+  background-color: #FFFCF2 !important; /* Fallback */
+  color: #000000 !important; /* Texto sempre preto em folha pautada */
+}
+
+/* Forçar cores específicas nos popups do mapa independente do tema */
+.popup-folha-pauta,
+.popup-folha-pauta *,
+.popup-folha-pauta p,
+.popup-folha-pauta h1,
+.popup-folha-pauta h2,
+.popup-folha-pauta h3,
+.popup-folha-pauta h4,
+.popup-folha-pauta h5,
+.popup-folha-pauta h6,
+.popup-folha-pauta span,
+.popup-folha-pauta div {
+  color: #000000 !important;
+}
+
+/* Garantir que elementos com classes específicas mantenham suas cores */
+.popup-folha-pauta .bg-purple-500,
+.popup-folha-pauta .bg-indigo-500,
+.popup-folha-pauta .bg-green-500,
+.popup-folha-pauta .bg-blue-500,
+.popup-folha-pauta .bg-gray-500,
+.popup-folha-pauta .bg-yellow-500 {
+  color: #ffffff !important; /* Badges coloridos mantêm texto branco */
+}
+
+.popup-folha-pauta .text-white {
+  color: #ffffff !important;
 }
 
 

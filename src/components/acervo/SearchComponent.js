@@ -8,7 +8,7 @@ import atomItemsResponse from '@/data/docItems';
 const SearchComponent = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // AIDEV-NOTE: Live search filtering through all item fields including title, subjects, places, and content
+  // GUI-NOTE: Live search filtering through all item fields including title, subjects, places, and content
   const filteredItems = useMemo(() => {
     if (!searchTerm.trim()) return atomItemsResponse.results;
     

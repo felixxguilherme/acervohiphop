@@ -1,4 +1,4 @@
-// AIDEV-NOTE: Service for consuming AtoM API via Next.js API route to avoid CORS issues
+// GUI-NOTE: Service for consuming AtoM API via Next.js API route to avoid CORS issues
 import { fetchCompat } from '@/utils/httpClient';
 
 const API_BASE = '/api/acervo'; // Use local API route

@@ -1,4 +1,4 @@
-// AIDEV-NOTE: Icon components for map markers using simplified SVG designs
+// GUI-NOTE: Icon components for map markers using simplified SVG designs
 import React from 'react';
 
 // Simplified fita (tape) icon component

@@ -1,4 +1,4 @@
-// AIDEV-NOTE: Static fallback service for when AtoM API is unavailable
+// GUI-NOTE: Static fallback service for when AtoM API is unavailable
 import atomCollectionsResponse from '../data/collections.js';
 import atomItemsResponse from '../data/docItems.js';
 import atomItemDetailResponse from '../data/item.js';

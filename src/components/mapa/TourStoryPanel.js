@@ -5,7 +5,7 @@ import { motion } from 'motion/react';
 import scrollama from 'scrollama';
 import Image from 'next/image';
 
-// AIDEV-NOTE: Tour panel using scrollama for Mapbox Storytelling approach with storiesMapboxFormat.js
+// GUI-NOTE: Tour panel using scrollama for Mapbox Storytelling approach with storiesMapboxFormat.js
 const TourStoryPanel = ({ 
   isFullscreen, 
   selectedTour, 
@@ -17,7 +17,7 @@ const TourStoryPanel = ({
   const scrollerRef = useRef(null);
   const scrollamaInstance = useRef(null);
 
-  // AIDEV-NOTE: Initialize Scrollama for story-driven map navigation - optimized
+  // GUI-NOTE: Initialize Scrollama for story-driven map navigation - optimized
   useEffect(() => {
     if (!selectedTour || !isFullscreen) {
       // Cleanup if conditions not met
@@ -37,7 +37,7 @@ const TourStoryPanel = ({
     const initTimer = setTimeout(() => {
       scrollamaInstance.current = scrollama();
 
-      let lastTriggeredIndex = -1; // AIDEV-NOTE: Prevent duplicate triggers
+      let lastTriggeredIndex = -1; // GUI-NOTE: Prevent duplicate triggers
 
       scrollamaInstance.current
         .setup({
@@ -48,7 +48,7 @@ const TourStoryPanel = ({
         .onStepEnter(response => {
           const { index } = response;
           
-          // AIDEV-NOTE: Prevent duplicate triggers for same chapter
+          // GUI-NOTE: Prevent duplicate triggers for same chapter
           if (index === lastTriggeredIndex) {
             console.log('Pulando gatilho duplicado para o capítulo', index);
             return;
@@ -91,13 +91,13 @@ const TourStoryPanel = ({
         scrollamaInstance.current = null;
       }
     };
-  }, [selectedTour?.id, isFullscreen]); // AIDEV-NOTE: Reduced dependencies to prevent unnecessary re-runs
+  }, [selectedTour?.id, isFullscreen]); // GUI-NOTE: Reduced dependencies to prevent unnecessary re-runs
 
   if (!isFullscreen || !selectedTour) return null;
 
   return (
     <>
-      {/* AIDEV-NOTE: Story panel container */}
+      {/* GUI-NOTE: Story panel container */}
       <motion.div
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}
@@ -200,7 +200,7 @@ const TourStoryPanel = ({
         </div>
       </motion.div>
 
-      {/* AIDEV-NOTE: Scroll hint */}
+      {/* GUI-NOTE: Scroll hint */}
       <div className="fixed bottom-8 right-1/2 transform translate-x-1/2 z-30">
         <div className="bg-yellow-400/90 border border-theme rounded-lg px-4 py-2 shadow-lg animate-bounce">
           <div className="flex items-center gap-2 text-theme">
@@ -214,7 +214,7 @@ const TourStoryPanel = ({
         </div>
       </div>
 
-      {/* AIDEV-NOTE: Story step styles */}
+      {/* GUI-NOTE: Story step styles */}
       <style jsx global>{`
         .story-step {
           min-height: 400px;
@@ -263,7 +263,7 @@ const TourStoryPanel = ({
   );
 };
 
-// AIDEV-NOTE: Get alignment class following Mapbox template pattern
+// GUI-NOTE: Get alignment class following Mapbox template pattern
 function getAlignmentClass(alignment) {
   switch (alignment) {
     case 'left':

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getInformationObjects } from '@/services/atomApi';
 
-// AIDEV-NOTE: Reusable collection detail component that works for any collection
+// GUI-NOTE: Reusable collection detail component that works for any collection
 export default function CollectionDetail({ collectionId, collectionName }) {
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);

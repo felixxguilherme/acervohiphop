@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import scrollama from 'scrollama';
 import Image from 'next/image';
 
-// AIDEV-NOTE: ScrollyTelling StoryMap using Scrollama library
+// GUI-NOTE: ScrollyTelling StoryMap using Scrollama library
 const StoryMapScrollama = ({ 
   story, 
   onMapMove, 
@@ -16,7 +16,7 @@ const StoryMapScrollama = ({
   const stepRefs = useRef([]);
   const scrollamaInstance = useRef(null);
 
-  // AIDEV-NOTE: Initialize Scrollama
+  // GUI-NOTE: Initialize Scrollama
   useEffect(() => {
     if (!story || !isVisible) return;
 
@@ -197,7 +197,7 @@ const StoryMapScrollama = ({
         </div>
       </div>
 
-      {/* AIDEV-NOTE: CSS for active states */}
+      {/* GUI-NOTE: CSS for active states */}
       <style jsx>{`
         .scroll-step.is-active .chapter-number {
           background-color: #fae523;

@@ -4,7 +4,7 @@
  * do acervo Hip Hop DF usando a API REST real do AtoM através do proxy Next.js
  */
 
-// AIDEV-NOTE: Removed all static mock data imports - using only real API
+// GUI-NOTE: Removed all static mock data imports - using only real API
 import { fetchCompat } from '@/utils/httpClient';
 
 class AtomService {
@@ -72,7 +72,7 @@ class AtomService {
       order
     } = params;
 
-    // AIDEV-NOTE: Using real ATOM API via proxy for informationobjects endpoint
+    // GUI-NOTE: Using real ATOM API via proxy for informationobjects endpoint
     try {
       const apiParams = { offset, limit };
       
@@ -102,7 +102,7 @@ class AtomService {
    * @returns {Promise<Object>} Dados detalhados do item
    */
   async getItem(id) {
-    // AIDEV-NOTE: Using real ATOM API for individual item details
+    // GUI-NOTE: Using real ATOM API for individual item details
     try {
       const response = await this._fetchFromApi(`informationobjects/${id}`);
       return response;
@@ -118,7 +118,7 @@ class AtomService {
    * @returns {Promise<Object>} Resposta com coleções
    */
   async getCollections(params = {}) {
-    // AIDEV-NOTE: Using topLod=1 to get only top-level descriptions (collections)
+    // GUI-NOTE: Using topLod=1 to get only top-level descriptions (collections)
     try {
       const apiParams = { 
         topLod: 1,
@@ -148,7 +148,7 @@ class AtomService {
    * @returns {Promise<Object>} Resposta com itens de mídia
    */
   async getMediaItems(params = {}) {
-    // AIDEV-NOTE: Using onlyMedia=1 to get only items with digital objects
+    // GUI-NOTE: Using onlyMedia=1 to get only items with digital objects
     try {
       const apiParams = { 
         onlyMedia: 1,
@@ -178,7 +178,7 @@ class AtomService {
    * @returns {Promise<Object>} Resposta com atores
    */
   async getActors(params = {}) {
-    // AIDEV-NOTE: Actors endpoint not available in real API
+    // GUI-NOTE: Actors endpoint not available in real API
     throw new Error('Endpoint de atores não disponível na API');
   }
 
@@ -188,7 +188,7 @@ class AtomService {
    * @returns {Promise<Object>} Dados do ator
    */
   async getActor(id) {
-    // AIDEV-NOTE: Individual actor endpoint not available in real API
+    // GUI-NOTE: Individual actor endpoint not available in real API
     throw new Error('Endpoint de ator individual não disponível na API');
   }
 
@@ -224,7 +224,7 @@ class AtomService {
       dateRange = null
     } = params;
     
-    // AIDEV-NOTE: Using real server-side search with sq0/sf0 parameters
+    // GUI-NOTE: Using real server-side search with sq0/sf0 parameters
     try {
       const apiParams = {
         offset,
@@ -345,7 +345,7 @@ class AtomService {
    * @returns {Promise<Object>} Dados de localização
    */
   async getMapData() {
-    // AIDEV-NOTE: Map data endpoint not available in real API
+    // GUI-NOTE: Map data endpoint not available in real API
     throw new Error('Endpoint de dados do mapa não disponível na API');
   }
 
@@ -354,7 +354,7 @@ class AtomService {
    * @returns {Promise<Object>} Estatísticas
    */
   async getStatistics() {
-    // AIDEV-NOTE: Computing statistics from real API data
+    // GUI-NOTE: Computing statistics from real API data
     const [allItems, collections, media] = await Promise.all([
       this.getItems({ limit: 1000 }),
       this.getCollections({ limit: 100 }),
@@ -374,7 +374,7 @@ class AtomService {
    * @returns {Promise<Object>} Dados de taxonomias combinadas
    */
   async getTaxonomies() {
-    // AIDEV-NOTE: Using real taxonomy endpoints with discovered IDs
+    // GUI-NOTE: Using real taxonomy endpoints with discovered IDs
     try {
       const [subjects, places, genres, levels, actorTypes] = await Promise.all([
         this._fetchFromApi('taxonomies/35'), // Subjects
@@ -423,7 +423,7 @@ class AtomService {
    * @returns {Promise<Array>} Termos da taxonomia
    */
   async getTaxonomy(id) {
-    // AIDEV-NOTE: Direct access to individual taxonomy endpoints
+    // GUI-NOTE: Direct access to individual taxonomy endpoints
     try {
       return await this._fetchFromApi(`taxonomies/${id}`);
     } catch (error) {
@@ -437,7 +437,7 @@ class AtomService {
    * @returns {Promise<Object>} Eventos da timeline
    */
   async getTimeline() {
-    // AIDEV-NOTE: Timeline endpoint not available in real API
+    // GUI-NOTE: Timeline endpoint not available in real API
     throw new Error('Endpoint de timeline não disponível na API');
   }
 
@@ -599,7 +599,7 @@ class AtomService {
     };
   }
 
-  // AIDEV-NOTE: Removed _generateFacets method that used static mock data
+  // GUI-NOTE: Removed _generateFacets method that used static mock data
 
   /**
    * Busca itens de um artista específico usando múltiplas estratégias

@@ -1,4 +1,4 @@
-// AIDEV-NOTE: API route for individual information objects
+// GUI-NOTE: API route for individual information objects
 import { NextResponse } from 'next/server';
 import { fetchCompat } from '@/utils/httpClient';
 

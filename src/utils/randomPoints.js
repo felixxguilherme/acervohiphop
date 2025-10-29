@@ -1,4 +1,4 @@
-// AIDEV-NOTE: Utility to generate random points within Federal District bounds
+// GUI-NOTE: Utility to generate random points within Federal District bounds
 import { getRandomIcon } from '@/components/mapa/MapIcons';
 
 // Federal District bounds from mapa.js

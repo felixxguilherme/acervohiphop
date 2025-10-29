@@ -5,7 +5,7 @@ import { getLatestItems, getMediaItems, getCollections } from '@/services/atomAp
 import PolaroidCard from '@/components/PolaroidPhoto';
 import { CartoonButton } from '@/components/ui/cartoon-button';
 
-// AIDEV-NOTE: Component to display real data from AtoM API on homepage
+// GUI-NOTE: Component to display real data from AtoM API on homepage
 export default function AcervoRealData() {
   const [latestItems, setLatestItems] = useState([]);
   const [mediaItems, setMediaItems] = useState([]);

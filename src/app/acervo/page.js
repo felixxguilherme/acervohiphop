@@ -349,12 +349,12 @@ const Acervo = () => {
           transition={{ duration: 0.6 }}
         >
           <div
-            className={`${currentTheme === 'light' ? 'bg-hip-verde-claro' : 'bg-hip-verde-escuro'} text-left mb-16 text-black border-theme w-full pb-10`}
+            className={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'} text-left mb-16 text-black border-theme w-full pb-10`}
           >
             <h2 className="text-black font-sometype-mono text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
                ARTISTAS EM DESTAQUE
             </h2>
-            <p className="border-theme border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-black max-w-4xl leading-relaxed">
+            <p className="border-black border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-black max-w-4xl leading-relaxed">
                Conheça os artistas que fazem parte do nosso acervo
             </p>
 
@@ -403,8 +403,8 @@ const Acervo = () => {
                           {artist.description}
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          <span className="bg-blue-100 text-blue-800 px-2 py-1 border border-blue-300 font-sometype-mono text-sm">
-                            📊 {artist.totalItems} {artist.totalItems === 1 ? 'item' : 'itens'}
+                          <span className="px-2 py-1 border border-theme font-sometype-mono text-sm">
+                            {artist.totalItems} {artist.totalItems === 1 ? 'item' : 'itens'}
                           </span>
                         </div>
                       </div>
@@ -445,7 +445,7 @@ const Acervo = () => {
                                   onError={(e) => { e.target.style.display = 'none'; }}
                                 />
                               )}
-                              <p className="text-xs font-sometype-mono truncate">
+                              <p className="text-xs text-black font-sometype-mono truncate">
                                 {item.title || 'Sem título'}
                               </p>
                             </div>
@@ -461,14 +461,26 @@ const Acervo = () => {
         </motion.section>
 
         <motion.section 
-          className="mb-12 px-6 mt-20"
+          className="mb-12 mt-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
+
+          <div
+            className={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'} text-left text-black border-theme border-t-3 w-full pb-10`}
+          >
+            <h2 className="text-black font-sometype-mono text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
+               NAVEGUE NO ACERVO
+            </h2>
+            <p className="border-black border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-black max-w-4xl leading-relaxed">
+               Explore documentos, imagens, escritos, e muito mais do nosso acervo digital.
+            </p>
+
+          </div>
           {/* Barra de Busca Melhorada */}
         <motion.div 
-          className="mb-8 p-6 border-2 fundo-base-preto border-theme"
+          className="mb-8 px-6 py-8 fundo-base-preto border-theme border-b-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -482,12 +494,12 @@ const Acervo = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Digite sua busca... (ex: vera, dino, 1994)"
-                  className={`flex-1 px-4 py-3 border-2 border-theme font-sometype-mono text-base focus:outline-none focus:border-yellow-400 text-white`}
+                  className={`flex-1 px-4 py-3 border-2 border-white font-sometype-mono text-base focus:outline-none focus:border-[#D2FA49] text-white`}
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleSearch()}
-                    className={`marca-texto-verde hover:bg-black hover:text-theme px-4 sm:px-6 py-3 text-theme cursor-pointer font-dirty-stains transition-colors whitespace-nowrap`}
+                    className={`marca-texto-verde text-white hover:scale-150 hover:text-theme px-4 sm:px-6 py-3 text-theme cursor-pointer font-dirty-stains transition-colors whitespace-nowrap`}
                   >
                     Buscar
                   </button>
@@ -502,7 +514,7 @@ const Acervo = () => {
               
               {/* Seleção de Campo de Busca */}
               <div className="space-y-2">
-                <p className="text-sm font-sometype-mono text-black">Buscar por:</p>
+                <p className="text-sm font-sometype-mono text-white">Buscar por:</p>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { value: 'title', label: 'Título' },
@@ -514,10 +526,10 @@ const Acervo = () => {
                     <button
                       key={field.value}
                       onClick={() => setSearchField(field.value)}
-                      className={`px-3 py-2 border-2 border-theme font-sometype-mono text-sm transition-colors ${
+                      className={`cursor-pointer px-3 py-2 border-2 border-theme font-sometype-mono text-sm transition-colors ${
                         searchField === field.value
-                          ? 'bg-white text-black'
-                          : 'bg-white text-black hover:bg-gray-100'
+                          ? 'bg-hip-verde-claro text-black border-black'
+                          : 'bg-white text-black hover:bg-hip-verde-escuro hover:text-white'
                       }`}
                     >
                       {field.label}
@@ -532,7 +544,7 @@ const Acervo = () => {
         {/* Contador de Resultados e Paginação */}
         <motion.div 
           id="results-section"
-          className="mb-6 text-center"
+          className="mb-6 text-center px-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
@@ -541,7 +553,7 @@ const Acervo = () => {
             <p className="text-lg font-dirty-stains">
               {activeTotal} {activeTotal === 1 ? 'item encontrado' : 'itens encontrados'}
               {searchQuery && (creatorResults ? 
-                ` para Creator ID: ${creatorResults.creatorId}` : 
+                ` para buscar por: ${searchQuery}` : 
                 ` para "${searchQuery}" em ${getFieldLabel(searchField)}`
               )}
             </p>
@@ -604,6 +616,7 @@ const Acervo = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
+          className="px-6"
         >
           {loading.search ? (
             <div className="text-center py-12">

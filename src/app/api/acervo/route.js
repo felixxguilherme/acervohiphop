@@ -1,4 +1,4 @@
-// AIDEV-NOTE: API route to proxy requests to AtoM API - no fallbacks
+// GUI-NOTE: API route to proxy requests to AtoM API - no fallbacks
 import { NextResponse } from 'next/server';
 import { fetchCompat } from '@/utils/httpClient';
 

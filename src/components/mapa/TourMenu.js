@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import storiesMapboxFormat from '@/data/storiesMapboxFormat';
 
-// AIDEV-NOTE: Tour selection menu for fullscreen map mode
+// GUI-NOTE: Tour selection menu for fullscreen map mode
 const TourMenu = ({ isFullscreen, onTourSelect, selectedTour }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
