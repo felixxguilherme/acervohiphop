@@ -3,13 +3,84 @@
 import { useCallback } from 'react';
 import { useMap } from '@/contexts/MapContext';
 
-// AIDEV-NOTE: Custom hook for advanced layer management operations
+// GUI-NOTE: Custom hook for advanced layer management operations
 export const useMapLayers = () => {
   const mapContext = useMap();
 
-  // AIDEV-NOTE: Initialize layers with default Hip Hop map layers
-  const initializeDefaultLayers = useCallback(() => {
+  // GUI-NOTE: Initialize layers with default Hip Hop map layers
+  const initializeDefaultLayers = () => {
+    // Only initialize if not already initialized to prevent duplicate calls
+    if (mapContext.isInitialized) {
+      console.log('[MapLayers] Already initialized, skipping initialization');
+      return;
+    }
+    
+    // Clear any existing layers first to prevent duplicates
+    if (mapContext.layers.length > 0) {
+      console.log('[MapLayers] Clearing existing layers before initialization');
+      mapContext.layers.forEach(layer => {
+        mapContext.removeLayer(layer.id);
+      });
+    }
+    
+    console.log('[MapLayers] Starting layer initialization...');
+    
     const defaultLayers = [
+      {
+        id: 'regioes-administrativas-df',
+        name: 'Regiões Administrativas',
+        type: 'line',
+        visible: true,
+        source: {
+          type: 'geojson',
+          data: 'https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/LIMITES/MapServer/1/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&returnGeometry=true'
+        },
+        layout: {
+          'visibility': 'visible'  // Explicitamente definir como visível
+        },
+        paint: {
+          'line-color': '#e74c3c',  // Vermelho forte para limites das RAs
+          'line-width': 4,          // Linha grossa
+          'line-opacity': 1.0       // Opacidade máxima para maior visibilidade
+        }
+      },
+      {
+        id: 'ra-selected-highlight',
+        name: 'RA Selecionada',
+        type: 'fill',
+        visible: false,
+        source: {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: []
+          }
+        },
+        paint: {
+          'fill-color': '#fae523',
+          'fill-opacity': 0.2
+        },
+        layout: {}
+      },
+      {
+        id: 'ra-selected-outline',
+        name: 'Contorno RA Selecionada',
+        type: 'line',
+        visible: false,
+        source: {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: []
+          }
+        },
+        paint: {
+          'line-color': '#000000',
+          'line-width': 3,
+          'line-opacity': 1
+        },
+        layout: {}
+      },
       {
         id: 'localidades-df',
         name: 'Localidades do DF',
@@ -96,7 +167,19 @@ export const useMapLayers = () => {
     ];
 
     mapContext.loadLayers(defaultLayers);
-  }, [mapContext]);
+    console.log('[MapLayers] Default layers loaded:', defaultLayers.length);
+    console.log('[MapLayers] RA layer configuration:', defaultLayers.find(l => l.id === 'regioes-administrativas-df'));
+    
+    // Force RA layer to be visible after a short delay to ensure it's rendered
+    setTimeout(() => {
+      console.log('[MapLayers] Ensuring RA layer is visible...');
+      const raLayer = mapContext.getLayerById('regioes-administrativas-df');
+      if (raLayer && raLayer.visible !== true) {
+        mapContext.updateLayerProperty('regioes-administrativas-df', 'visible', true);
+        console.log('[MapLayers] RA layer visibility forced to true');
+      }
+    }, 1500);
+  };
 
   // AIDEV-NOTE: Update layer data from API or external source
   const updateLayerData = useCallback(async (layerId, newData) => {

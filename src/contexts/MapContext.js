@@ -2,27 +2,35 @@
 
 import { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 
-// AIDEV-NOTE: Context for managing map layers state and operations
+// GUI-NOTE: Context for managing map layers state and operations
 const MapContext = createContext();
 
-// AIDEV-NOTE: Action types for layer management
+// GUI-NOTE: Action types for layer management
 const MAP_ACTIONS = {
   LOAD_LAYERS: 'LOAD_LAYERS',
   TOGGLE_LAYER_VISIBILITY: 'TOGGLE_LAYER_VISIBILITY',
   UPDATE_LAYER_PROPERTY: 'UPDATE_LAYER_PROPERTY',
   REORDER_LAYERS: 'REORDER_LAYERS',
   ADD_LAYER: 'ADD_LAYER',
-  REMOVE_LAYER: 'REMOVE_LAYER'
+  REMOVE_LAYER: 'REMOVE_LAYER',
+  SET_INITIALIZED: 'SET_INITIALIZED'
 };
 
-// AIDEV-NOTE: Reducer for managing layers state
+// GUI-NOTE: Reducer for managing layers state
 const mapReducer = (state, action) => {
   switch (action.type) {
     case MAP_ACTIONS.LOAD_LAYERS:
       return {
         ...state,
         layers: action.payload,
-        isLoading: false
+        isLoading: false,
+        isInitialized: true
+      };
+
+    case MAP_ACTIONS.SET_INITIALIZED:
+      return {
+        ...state,
+        isInitialized: action.payload
       };
 
     case MAP_ACTIONS.TOGGLE_LAYER_VISIBILITY:
@@ -71,14 +79,15 @@ const mapReducer = (state, action) => {
   }
 };
 
-// AIDEV-NOTE: Initial state for map context
+// GUI-NOTE: Initial state for map context
 const initialState = {
   layers: [],
   isLoading: true,
-  error: null
+  error: null,
+  isInitialized: false
 };
 
-// AIDEV-NOTE: Hook to access map context
+// GUI-NOTE: Hook to access map context
 export const useMap = () => {
   const context = useContext(MapContext);
   if (!context) {
@@ -87,11 +96,11 @@ export const useMap = () => {
   return context;
 };
 
-// AIDEV-NOTE: Provider component for map context
+// GUI-NOTE: Provider component for map context
 export const MapProvider = ({ children }) => {
   const [state, dispatch] = useReducer(mapReducer, initialState);
 
-  // AIDEV-NOTE: Load layers from API or data source
+  // GUI-NOTE: Load layers from API or data source
   const loadLayers = useCallback(async (layersData) => {
     try {
       // If layersData is provided, use it directly
@@ -113,7 +122,7 @@ export const MapProvider = ({ children }) => {
     }
   }, []);
 
-  // AIDEV-NOTE: Toggle visibility of a specific layer
+  // GUI-NOTE: Toggle visibility of a specific layer
   const toggleLayerVisibility = useCallback((layerId) => {
     dispatch({
       type: MAP_ACTIONS.TOGGLE_LAYER_VISIBILITY,
@@ -121,7 +130,7 @@ export const MapProvider = ({ children }) => {
     });
   }, []);
 
-  // AIDEV-NOTE: Update any property of a specific layer
+  // GUI-NOTE: Update any property of a specific layer
   const updateLayerProperty = useCallback((layerId, property, value) => {
     dispatch({
       type: MAP_ACTIONS.UPDATE_LAYER_PROPERTY,
@@ -129,7 +138,7 @@ export const MapProvider = ({ children }) => {
     });
   }, []);
 
-  // AIDEV-NOTE: Reorder layers for rendering priority
+  // GUI-NOTE: Reorder layers for rendering priority
   const reorderLayers = useCallback((newLayersOrder) => {
     dispatch({
       type: MAP_ACTIONS.REORDER_LAYERS,
@@ -137,7 +146,7 @@ export const MapProvider = ({ children }) => {
     });
   }, []);
 
-  // AIDEV-NOTE: Add a new layer to the map
+  // GUI-NOTE: Add a new layer to the map
   const addLayer = useCallback((layer) => {
     dispatch({
       type: MAP_ACTIONS.ADD_LAYER,
@@ -145,7 +154,7 @@ export const MapProvider = ({ children }) => {
     });
   }, []);
 
-  // AIDEV-NOTE: Remove a layer from the map
+  // GUI-NOTE: Remove a layer from the map
   const removeLayer = useCallback((layerId) => {
     dispatch({
       type: MAP_ACTIONS.REMOVE_LAYER,
@@ -153,17 +162,17 @@ export const MapProvider = ({ children }) => {
     });
   }, []);
 
-  // AIDEV-NOTE: Get visible layers only (useful for map rendering)
-  const getVisibleLayers = useCallback(() => {
+  // GUI-NOTE: Get visible layers only (useful for map rendering)
+  const getVisibleLayers = () => {
     return state.layers.filter(layer => layer.visible !== false);
-  }, [state.layers]);
+  };
 
-  // AIDEV-NOTE: Get layer by ID
-  const getLayerById = useCallback((layerId) => {
+  // GUI-NOTE: Get layer by ID
+  const getLayerById = (layerId) => {
     return state.layers.find(layer => layer.id === layerId);
-  }, [state.layers]);
+  };
 
-  // AIDEV-NOTE: Move layer up in rendering order
+  // GUI-NOTE: Move layer up in rendering order
   const moveLayerUp = useCallback((layerId) => {
     const currentIndex = state.layers.findIndex(layer => layer.id === layerId);
     if (currentIndex > 0) {
@@ -174,7 +183,7 @@ export const MapProvider = ({ children }) => {
     }
   }, [state.layers, reorderLayers]);
 
-  // AIDEV-NOTE: Move layer down in rendering order
+  // GUI-NOTE: Move layer down in rendering order
   const moveLayerDown = useCallback((layerId) => {
     const currentIndex = state.layers.findIndex(layer => layer.id === layerId);
     if (currentIndex < state.layers.length - 1) {
@@ -185,12 +194,21 @@ export const MapProvider = ({ children }) => {
     }
   }, [state.layers, reorderLayers]);
 
-  // AIDEV-NOTE: Context value object
+  // GUI-NOTE: Function to mark context as initialized
+  const setInitialized = useCallback((initialized = true) => {
+    dispatch({
+      type: MAP_ACTIONS.SET_INITIALIZED,
+      payload: initialized
+    });
+  }, []);
+
+  // GUI-NOTE: Context value object
   const value = {
     // State
     layers: state.layers,
     isLoading: state.isLoading,
     error: state.error,
+    isInitialized: state.isInitialized,
 
     // Core functions
     loadLayers,
@@ -199,6 +217,7 @@ export const MapProvider = ({ children }) => {
     reorderLayers,
     addLayer,
     removeLayer,
+    setInitialized,
 
     // Utility functions
     getVisibleLayers,
