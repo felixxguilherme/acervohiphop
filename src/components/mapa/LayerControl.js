@@ -4,10 +4,22 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useMapLayers } from '@/hooks/useMapLayers';
 
-// AIDEV-NOTE: Component for controlling map layers visibility and properties
+// GUI-NOTE: Component for controlling map layers visibility and properties
 const LayerControl = ({ isVisible = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const mapLayers = useMapLayers();
+
+  // Debug: Check for duplicate or empty layer IDs
+  const layerIds = mapLayers.layers.map(layer => layer.id);
+  const uniqueIds = [...new Set(layerIds)];
+  if (layerIds.length !== uniqueIds.length) {
+    console.error('[LayerControl] Duplicate layer IDs detected:', layerIds);
+  }
+  
+  const emptyIds = mapLayers.layers.filter(layer => !layer.id || layer.id === '');
+  if (emptyIds.length > 0) {
+    console.error('[LayerControl] Layers with empty IDs detected:', emptyIds);
+  }
 
   if (!isVisible) return null;
 
@@ -32,8 +44,10 @@ const LayerControl = ({ isVisible = false }) => {
           </div>
 
           <div className="space-y-3">
-            {/* AIDEV-NOTE: List all available layers */}
-            {mapLayers.layers.map((layer) => (
+            {/* GUI-NOTE: List all available layers */}
+            {mapLayers.layers
+              .filter(layer => layer.id && layer.id !== '') // Only render layers with valid IDs
+              .map((layer) => (
               <motion.div
                 key={layer.id}
                 layout
@@ -41,7 +55,9 @@ const LayerControl = ({ isVisible = false }) => {
               >
                 <div className="flex items-center gap-3">
                   <input
+                    key={`checkbox-${layer.id}`}
                     type="checkbox"
+                    id={`layer-checkbox-${layer.id}`}
                     checked={layer.visible !== false}
                     onChange={() => mapLayers.toggleLayerVisibility(layer.id)}
                     className="w-4 h-4 text-[#fae523] border-2 border-theme focus:ring-[#fae523]"
@@ -52,8 +68,9 @@ const LayerControl = ({ isVisible = false }) => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* AIDEV-NOTE: Layer reordering controls */}
+                  {/* GUI-NOTE: Layer reordering controls */}
                   <button
+                    key={`btn-up-${layer.id}`}
                     onClick={() => mapLayers.moveLayerUp(layer.id)}
                     className="px-2 py-1 text-xs bg-[#fae523] border-2 border-theme hover:bg-[#f8e71c] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                     title="Mover para cima"
@@ -61,6 +78,7 @@ const LayerControl = ({ isVisible = false }) => {
                     ↑
                   </button>
                   <button
+                    key={`btn-down-${layer.id}`}
                     onClick={() => mapLayers.moveLayerDown(layer.id)}
                     className="px-2 py-1 text-xs bg-[#fae523] border-2 border-theme hover:bg-[#f8e71c] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                     title="Mover para baixo"
@@ -71,7 +89,7 @@ const LayerControl = ({ isVisible = false }) => {
               </motion.div>
             ))}
 
-            {/* AIDEV-NOTE: Layer management actions */}
+            {/* GUI-NOTE: Layer management actions */}
             <div className="flex gap-2 pt-3 border-t-3 border-theme">
               <button
                 onClick={() => mapLayers.toggleMultipleLayers(
@@ -103,7 +121,7 @@ const LayerControl = ({ isVisible = false }) => {
         </motion.div>
       )}
 
-      {/* AIDEV-NOTE: Toggle button */}
+      {/* GUI-NOTE: Toggle button */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.05 }}
@@ -112,9 +130,9 @@ const LayerControl = ({ isVisible = false }) => {
         title="Controle de Camadas"
       >
         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 16l-6-6h12l-6 6z"/>
-          <path d="M12 10l-6-6h12l-6 6z"/>
-          <path d="M12 22l-6-6h12l-6 6z"/>
+          <path key="path-1" d="M12 16l-6-6h12l-6 6z"/>
+          <path key="path-2" d="M12 10l-6-6h12l-6 6z"/>
+          <path key="path-3" d="M12 22l-6-6h12l-6 6z"/>
         </svg>
       </motion.button>
     </AnimatePresence>
