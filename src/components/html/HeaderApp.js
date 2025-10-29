@@ -68,10 +68,10 @@ export default function HeaderApp({ title, showTitle = false }) {
     setCurrentTheme(theme);
   }, [theme]);
 
-  // Sincronizar ref com estado
+  // Sincronizar ref com estado apenas uma vez
   useEffect(() => {
     isScrolledRef.current = isScrolled;
-  }, [isScrolled]);
+  }, []);
   useEffect(() => {
     // Só inicializa o scroll listener após a página estar carregada
     if (!isInitialized) return;
