@@ -27,6 +27,24 @@ export const useMapLayers = () => {
     
     const defaultLayers = [
       {
+        id: 'municipios-ibge',
+        name: 'Municípios do Brasil',
+        type: 'line',
+        visible: true,
+        source: {
+          type: 'geojson',
+          data: 'https://servicodados.ibge.gov.br/api/v4/malhas/municipios?formato=application/vnd.geo+json'
+        },
+        layout: {
+          'visibility': 'visible'
+        },
+        paint: {
+          'line-color': '#95a5a6',  // Cinza para municípios do Brasil
+          'line-width': 1,          // Linha fina para não poluir
+          'line-opacity': 0.6       // Transparente para ser discreta
+        }
+      },
+      {
         id: 'regioes-administrativas-df',
         name: 'Regiões Administrativas',
         type: 'line',
@@ -36,12 +54,12 @@ export const useMapLayers = () => {
           data: 'https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/LIMITES/MapServer/1/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&returnGeometry=true'
         },
         layout: {
-          'visibility': 'visible'  // Explicitamente definir como visível
+          'visibility': 'visible'
         },
         paint: {
-          'line-color': '#e74c3c',  // Vermelho forte para limites das RAs
-          'line-width': 4,          // Linha grossa
-          'line-opacity': 1.0       // Opacidade máxima para maior visibilidade
+          'line-color': '#e74c3c',
+          'line-width': 4,
+          'line-opacity': 1.0
         }
       },
       {
@@ -90,30 +108,31 @@ export const useMapLayers = () => {
           type: 'geojson',
           data: 'https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/LOCALIDADES/MapServer/0/query?where=1%3D1&outFields=objectid,nome,tipo&outSR=4326&f=geojson&returnGeometry=true'
         },
+        layout: {},
         paint: {
           'circle-radius': [
             'case',
             ['==', ['get', 'tipo'], 1], 8,  // RAs maiores
-            ['==', ['get', 'tipo'], 2], 5,  // Localidades menores
+            ['==', ['get', 'tipo'], 2], 6,  // Localidades médias
             4  // Default para NÃO INFORMADO
           ],
           'circle-color': [
             'case',
-            ['==', ['get', 'tipo'], 1], '#e74c3c',  // RAs em vermelho
-            ['==', ['get', 'tipo'], 2], '#3498db',  // Localidades em azul
-            '#95a5a6'  // Default cinza para NÃO INFORMADO
+            ['==', ['get', 'tipo'], 1], '#8e44ad',  // RAs em roxo escuro
+            ['==', ['get', 'tipo'], 2], '#27ae60',  // Localidades em verde escuro
+            '#7f8c8d'  // Default cinza escuro para NÃO INFORMADO
           ],
-          'circle-stroke-color': '#2c3e50',
-          'circle-stroke-width': 1,
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-width': 2,
           'circle-opacity': 0.8,
-          'circle-stroke-opacity': 0.9
+          'circle-stroke-opacity': 1.0
         }
       },
       {
         id: 'hip-hop-locations',
-        name: 'Locais do Hip Hop',
+        name: 'Itens do Acervo',
         type: 'circle',
-        visible: true,
+        visible: false, // Inicialmente invisível até dados carregarem
         source: {
           type: 'geojson',
           data: {
@@ -121,11 +140,24 @@ export const useMapLayers = () => {
             features: []
           }
         },
+        layout: {},
         paint: {
-          'circle-radius': 8,
-          'circle-color': '#fae523',
-          'circle-stroke-color': '#000',
-          'circle-stroke-width': 2
+          'circle-radius': [
+            'case',
+            ['get', 'has_real_coordinates'], 10,  // Coordenadas reais maiores
+            8  // Coordenadas estimadas menores
+          ],
+          'circle-color': [
+            'case',
+            ['get', 'has_real_coordinates'], '#f39c12',  // Laranja para reais
+            ['==', ['get', 'coordinate_source'], 'extracted_from_notes'], '#2ecc71',  // Verde para GPS
+            ['==', ['get', 'coordinate_source'], 'estimated_from_places'], '#3498db',  // Azul para estimadas
+            '#e67e22'  // Laranja escuro para outras
+          ],
+          'circle-stroke-color': '#2c3e50',  // Borda escura para contraste
+          'circle-stroke-width': 2,
+          'circle-opacity': 0.9,
+          'circle-stroke-opacity': 1.0
         }
       },
       {
@@ -167,8 +199,9 @@ export const useMapLayers = () => {
     ];
 
     mapContext.loadLayers(defaultLayers);
-    console.log('[MapLayers] Default layers loaded:', defaultLayers.length);
-    console.log('[MapLayers] RA layer configuration:', defaultLayers.find(l => l.id === 'regioes-administrativas-df'));
+    console.log('[MapLayers] 🎯 Default layers loaded:', defaultLayers.length);
+    console.log('[MapLayers] 📋 Layer names:', defaultLayers.map(l => l.name));
+    console.log('[MapLayers] ✅ RA layer configuration:', defaultLayers.find(l => l.id === 'regioes-administrativas-df'));
     
     // Force RA layer to be visible after a short delay to ensure it's rendered
     setTimeout(() => {

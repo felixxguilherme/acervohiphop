@@ -3,6 +3,7 @@
 import { useRef, useEffect, forwardRef, useMemo } from 'react';
 import Map, { Source, Layer } from 'react-map-gl/maplibre';
 import { useMap } from '@/contexts/MapContext';
+import { useMapLayers } from '@/hooks/useMapLayers';
 
 // GUI-NOTE: Component that automatically renders map layers from context
 const MapRenderer = forwardRef(({ 
@@ -14,14 +15,20 @@ const MapRenderer = forwardRef(({
   transitionDuration = 300,
   ...mapProps 
 }, ref) => {
-  const { layers, getVisibleLayers } = useMap();
+  const { layers, isInitialized, initializeLayers } = useMap();
   const internalMapRef = useRef(null);
   const mapRef = ref || internalMapRef;
   const lastLayersStateRef = useRef(null);
+  const mapLoadedRef = useRef(false);
 
   // Memoize visible layers to avoid unnecessary recalculations
   const visibleLayers = useMemo(() => {
-    return layers.filter(layer => layer.visible !== false);
+    const visible = layers.filter(layer => layer.visible !== false);
+    console.log('[MapRenderer] 📊 Layers no contexto:', layers.length, '| Visíveis:', visible.length);
+    visible.forEach(layer => {
+      console.log(`[MapRenderer] 👁️ Layer visível: ${layer.id} (${layer.name})`);
+    });
+    return visible;
   }, [layers]);
 
   // Create a stable hash of layer state to avoid unnecessary re-renders
@@ -36,145 +43,164 @@ const MapRenderer = forwardRef(({
     })));
   }, [visibleLayers]);
 
-  // GUI-NOTE: Effect to handle layer updates when layers state changes
+  // GUI-NOTE: Effect to initialize map and then load default layers
   useEffect(() => {
     if (!mapRef.current) return;
 
+    const map = mapRef.current.getMap();
+    
+    const handleMapLoad = () => {
+      console.log('[MapRenderer] 🗺️ Map loaded, setting mapLoadedRef = true');
+      mapLoadedRef.current = true;
+      console.log('[MapRenderer] 🔍 Status after load:', {
+        mapLoadedRef: mapLoadedRef.current,
+        isInitialized,
+        layersInContext: layers.length
+      });
+      
+      // Initialize default layers from context if not already initialized
+      if (!isInitialized) {
+        console.log('[MapRenderer] 🎯 Calling initializeLayers...');
+        initializeLayers();
+      } else {
+        console.log('[MapRenderer] ✅ Layers already initialized, syncing with map...');
+        // Sync existing layers with map
+        syncLayersWithMap(map);
+      }
+    };
+
+    if (!map.loaded()) {
+      console.log('[MapRenderer] ⏳ Waiting for map to load...');
+      map.once('load', handleMapLoad);
+    } else {
+      console.log('[MapRenderer] ⚡ Map already loaded, proceeding...');
+      handleMapLoad();
+    }
+  }, [isInitialized, initializeLayers]);
+
+  // GUI-NOTE: Effect to handle layer updates when layers state changes (only after initialization)
+  useEffect(() => {
+    if (!mapRef.current || !mapLoadedRef.current || !isInitialized) {
+      console.log('[MapRenderer] ⏸️ Skipping layer update - Reasons:', {
+        hasMapRef: !!mapRef.current,
+        mapLoaded: mapLoadedRef.current,
+        isInitialized: isInitialized,
+        layersCount: layers.length
+      });
+      return;
+    }
+
     // Only update if layers hash actually changed
     if (lastLayersStateRef.current === layersHash) {
+      console.log('[MapRenderer] ⏸️ Skipping layer update - no changes detected');
       return;
     }
 
     const map = mapRef.current.getMap();
+    console.log('[MapRenderer] 🔄 Processing layer changes...');
     
-    // Function to handle layer updates with delay for external sources
-    const handleLayerUpdate = () => {
-      console.log('[MapRenderer] Map loaded, updating layers...');
-      updateMapLayers(map);
-      lastLayersStateRef.current = layersHash;
-      
-      // Listen for source data events to refresh layers when external data loads
-      const handleSourceData = (e) => {
-        if (e.sourceId && e.sourceId.includes('regioes-administrativas-df') && e.isSourceLoaded) {
-          console.log('[MapRenderer] RA source data loaded, refreshing layer...');
-          // Force layer visibility refresh
-          const raLayerId = 'custom-layer-regioes-administrativas-df';
-          if (map.getLayer(raLayerId)) {
-            map.setLayoutProperty(raLayerId, 'visibility', 'visible');
-          }
-          // Remove the listener after first use to prevent multiple calls
-          map.off('sourcedata', handleSourceData);
-        }
-      };
-      map.on('sourcedata', handleSourceData);
-      
-      // Force a refresh after a short delay to ensure external sources are loaded
-      setTimeout(() => {
-        console.log('[MapRenderer] Force refresh after delay...');
-        // Only refresh visibility properties, don't recreate layers
-        visibleLayers.forEach(layer => {
-          const layerId = `custom-layer-${layer.id}`;
-          if (map.getLayer(layerId)) {
-            const shouldBeVisible = layer.visible !== false ? 'visible' : 'none';
-            map.setLayoutProperty(layerId, 'visibility', shouldBeVisible);
-          }
-        });
-      }, 1000);
-    };
-    
-    // Wait for map to be loaded before manipulating layers
-    if (!map.loaded()) {
-      console.log('[MapRenderer] Map not loaded yet, waiting...');
-      map.on('load', handleLayerUpdate);
-    } else {
-      console.log('[MapRenderer] Map already loaded, updating immediately...');
-      handleLayerUpdate();
-    }
-  }, [layersHash]);
-
-  // GUI-NOTE: Function to update map layers based on context state
-  const updateMapLayers = (map) => {
-    console.log('[MapRenderer] Updating map layers. Layers count:', layers.length);
-
-    // Add or update visible layers
-    visibleLayers.forEach((layer, index) => {
+    // Process each layer in context for INSTANT toggle behavior
+    layers.forEach(layer => {
       const layerId = `custom-layer-${layer.id}`;
       const sourceId = `custom-source-${layer.id}`;
-
-      console.log(`[MapRenderer] Processing layer: ${layer.id}, visible: ${layer.visible}`);
+      const layerExists = map.getLayer(layerId);
+      const shouldBeVisible = layer.visible !== false;
       
-      // Special logging for RA layer
-      if (layer.id === 'regioes-administrativas-df') {
-        console.log('[MapRenderer] *** RA LAYER PROCESSING ***', {
-          id: layer.id,
-          visible: layer.visible,
-          type: layer.type,
-          hasSource: !!layer.source
-        });
-      }
-
-      // Remove existing layer if it exists to update it
-      if (map.getLayer(layerId)) {
+      if (shouldBeVisible && !layerExists) {
+        // Layer should be visible but doesn't exist - ADD IT
+        console.log(`[MapRenderer] 🟢 INSTANTLY adding layer: ${layer.id}`);
+        addNewLayer(map, layer, layerId, sourceId);
+      } else if (!shouldBeVisible && layerExists) {
+        // Layer should be hidden and exists - REMOVE IT
+        console.log(`[MapRenderer] 🔴 INSTANTLY removing layer: ${layer.id}`);
         map.removeLayer(layerId);
+        // Keep source for quick re-adding later
+      } else if (shouldBeVisible && layerExists) {
+        // Layer should be visible and exists - ENSURE IT'S VISIBLE
+        console.log(`[MapRenderer] ✅ Ensuring layer visibility: ${layer.id}`);
+        map.setLayoutProperty(layerId, 'visibility', 'visible');
       }
-      if (map.getSource(sourceId)) {
-        map.removeSource(sourceId);
-      }
+    });
+    
+    lastLayersStateRef.current = layersHash;
+  }, [layersHash, isInitialized, mapLoadedRef.current]);
 
-      // Add source with error handling
-      if (layer.source) {
-        try {
-          console.log(`[MapRenderer] Adding source for ${layer.id}:`, layer.source);
-          map.addSource(sourceId, layer.source);
-        } catch (error) {
-          console.error(`[MapRenderer] Error adding source for ${layer.id}:`, error);
-          return;
-        }
-      }
-
-      // Add layer with proper ordering (higher index = on top)
-      const layerConfig = {
-        id: layerId,
-        source: sourceId,
-        type: layer.type || 'fill',
-        ...layer.layout && { layout: layer.layout },
-        ...layer.paint && { paint: layer.paint }
-      };
-
-      // Set initial visibility based on layer.visible property
-      if (!layerConfig.layout) {
-        layerConfig.layout = {};
-      }
-      layerConfig.layout.visibility = layer.visible !== false ? 'visible' : 'none';
-      
-      console.log(`[MapRenderer] Setting layer ${layer.id} visibility to:`, layerConfig.layout.visibility);
-
+  // GUI-NOTE: Efficient function to add a new layer to the map
+  const addNewLayer = (map, layer, layerId, sourceId) => {
+    console.log(`[MapRenderer] ⚡ INSTANTLY adding layer: ${layer.id}`);
+    
+    // Add source if it doesn't exist
+    if (!map.getSource(sourceId) && layer.source) {
       try {
-        // Find the correct position to insert the layer
-        const beforeLayer = findBeforeLayer(map, index, visibleLayers);
-        if (beforeLayer) {
-          map.addLayer(layerConfig, beforeLayer);
-        } else {
-          map.addLayer(layerConfig);
-        }
-        console.log(`[MapRenderer] Successfully added layer: ${layer.id}`);
+        map.addSource(sourceId, layer.source);
       } catch (error) {
-        console.error(`[MapRenderer] Error adding layer ${layer.id}:`, error);
+        console.error(`[MapRenderer] Error adding source for ${layer.id}:`, error);
+        return;
+      }
+    }
+
+    // Create layer configuration
+    const layerConfig = {
+      id: layerId,
+      source: sourceId,
+      type: layer.type || 'fill',
+      layout: {
+        visibility: 'visible',
+        ...layer.layout
+      },
+      ...layer.paint && { paint: layer.paint }
+    };
+
+    try {
+      map.addLayer(layerConfig);
+      console.log(`[MapRenderer] ✅ INSTANTLY added layer: ${layer.id}`);
+    } catch (error) {
+      console.error(`[MapRenderer] ❌ Error adding layer ${layer.id}:`, error);
+    }
+  };
+
+  // GUI-NOTE: Function to sync existing layers from context with map
+  const syncLayersWithMap = (map) => {
+    console.log('[MapRenderer] 🔄 Syncing existing layers with map...');
+    
+    layers.forEach(layer => {
+      const layerId = `custom-layer-${layer.id}`;
+      const sourceId = `custom-source-${layer.id}`;
+      const layerExists = map.getLayer(layerId);
+      const shouldBeVisible = layer.visible !== false;
+      
+      if (shouldBeVisible && !layerExists) {
+        // Layer should be visible but doesn't exist on map - ADD IT
+        console.log(`[MapRenderer] 🟢 Syncing: Adding layer ${layer.id}`);
+        addNewLayer(map, layer, layerId, sourceId);
+      } else if (!shouldBeVisible && layerExists) {
+        // Layer should be hidden but exists on map - REMOVE IT
+        console.log(`[MapRenderer] 🔴 Syncing: Removing layer ${layer.id}`);
+        map.removeLayer(layerId);
+      } else if (shouldBeVisible && layerExists) {
+        // Layer should be visible and exists - ENSURE VISIBILITY
+        console.log(`[MapRenderer] ✅ Syncing: Ensuring visibility for ${layer.id}`);
+        map.setLayoutProperty(layerId, 'visibility', 'visible');
       }
     });
   };
 
-  // GUI-NOTE: Helper to find the correct layer to insert before
-  const findBeforeLayer = (map, currentIndex, visibleLayers) => {
-    // Look for the next layer in the list that already exists on the map
-    for (let i = currentIndex + 1; i < visibleLayers.length; i++) {
-      const nextLayerId = `custom-layer-${visibleLayers[i].id}`;
-      if (map.getLayer(nextLayerId)) {
-        return nextLayerId;
-      }
+  // GUI-NOTE: Efficient function to update layer visibility instantly
+  const updateLayerVisibility = (map, layerId, visible) => {
+    const layer = map.getLayer(layerId);
+    if (!layer) return;
+    
+    const shouldBeVisible = visible !== false;
+    const currentVisibility = map.getLayoutProperty(layerId, 'visibility');
+    const targetVisibility = shouldBeVisible ? 'visible' : 'none';
+    
+    // Only update if visibility actually changed
+    if (currentVisibility !== targetVisibility) {
+      console.log(`[MapRenderer] Updating visibility for ${layerId}: ${targetVisibility}`);
+      map.setLayoutProperty(layerId, 'visibility', targetVisibility);
     }
-    return null;
   };
+
 
   // Garantir que temos todas as props necessárias
   const safeMapProps = {
@@ -192,6 +218,23 @@ const MapRenderer = forwardRef(({
       transitionDuration={transitionDuration}
       {...safeMapProps}
     >
+      {/* Render layers from context using Source and Layer components */}
+      {visibleLayers.map((layer) => (
+        <Source
+          key={`source-${layer.id}`}
+          id={`source-${layer.id}`}
+          type="geojson"
+          data={layer.source?.data || { type: 'FeatureCollection', features: [] }}
+        >
+          <Layer
+            id={`layer-${layer.id}`}
+            type={layer.type || 'circle'}
+            paint={layer.paint || {}}
+            layout={layer.layout || {}}
+          />
+        </Source>
+      ))}
+      
       {/* GUI-NOTE: Render any additional children (markers, popups, etc.) */}
       {children}
     </Map>
