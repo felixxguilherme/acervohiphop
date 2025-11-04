@@ -61,6 +61,19 @@ const MapaContent = () => {
     mapLayers.initializeDefaultLayers();
   }, []);
 
+  // State to track if hip-hop-locations layer has been updated
+  const [hipHopLayerUpdated, setHipHopLayerUpdated] = useState(false);
+
+  // Update hip-hop-locations layer when geoJson data is available
+  useEffect(() => {
+    if (geoJson?.features?.length > 0 && !hipHopLayerUpdated) {
+      console.log('[MapPage] 🎯 Atualizando layer hip-hop-locations com', geoJson.features.length, 'itens do acervo');
+      mapLayers.updateLayerData('hip-hop-locations', geoJson);
+      mapLayers.updateLayerProperty('hip-hop-locations', 'visible', true);
+      setHipHopLayerUpdated(true);
+    }
+  }, [geoJson, hipHopLayerUpdated]);
+
   // GUI-NOTE: Helper function to get icon component for random points
   const getIconComponent = (location) => {
     if (!location.isRandomPoint || !location.iconType) return null;
@@ -106,9 +119,6 @@ const MapaContent = () => {
   const [hoveredLocation, setHoveredLocation] = useState(null);
   const [showHoverPopup, setShowHoverPopup] = useState(false);
 
-  // Estado para controlar interatividade do mapa com Ctrl
-  const [isCtrlPressed, setIsCtrlPressed] = useState(false);
-  const [isMapInteractive, setIsMapInteractive] = useState(false);
 
   // Load map data de forma assíncrona (não bloqueia a página) - COM CACHE
   useEffect(() => {
@@ -450,6 +460,67 @@ const MapaContent = () => {
         // Hide the general RAs layer to show only the selected one
         mapLayers.updateLayerProperty('regioes-administrativas-df', 'visible', false);
         
+        // FLY TO RA: Calcular centro da RA e navegar até ela
+        if (selectedRA.geometry && selectedRA.geometry.coordinates) {
+          try {
+            const calculatePolygonBounds = (coordinates) => {
+              let minLng = Infinity, maxLng = -Infinity;
+              let minLat = Infinity, maxLat = -Infinity;
+              
+              coordinates.forEach(coord => {
+                minLng = Math.min(minLng, coord[0]);
+                maxLng = Math.max(maxLng, coord[0]);
+                minLat = Math.min(minLat, coord[1]);
+                maxLat = Math.max(maxLat, coord[1]);
+              });
+              
+              return {
+                minLng, maxLng, minLat, maxLat,
+                centerLng: (minLng + maxLng) / 2,
+                centerLat: (minLat + maxLat) / 2,
+                width: maxLng - minLng,
+                height: maxLat - minLat
+              };
+            };
+            
+            let bounds;
+            
+            // Calcular bounding box baseado no tipo de geometria
+            if (selectedRA.geometry.type === 'Polygon') {
+              bounds = calculatePolygonBounds(selectedRA.geometry.coordinates[0]);
+            } else if (selectedRA.geometry.type === 'MultiPolygon') {
+              // Para multi-polígonos, usar o primeiro polígono
+              bounds = calculatePolygonBounds(selectedRA.geometry.coordinates[0][0]);
+            }
+            
+            // Fazer fly para o centro da RA com zoom calculado
+            if (bounds && bounds.centerLng && bounds.centerLat) {
+              // Calcular zoom baseado no tamanho da RA
+              const maxDimension = Math.max(bounds.width, bounds.height);
+              let zoom = 12; // zoom padrão
+              
+              if (maxDimension > 0.5) zoom = 9;       // RA muito grande
+              else if (maxDimension > 0.2) zoom = 10; // RA grande  
+              else if (maxDimension > 0.1) zoom = 11; // RA média
+              else if (maxDimension > 0.05) zoom = 12; // RA pequena
+              else zoom = 13; // RA muito pequena
+              
+              console.log('[MapPage] Navegando para RA:', selectedRA.properties?.ra_nome, 
+                         'Centro:', bounds.centerLat.toFixed(4), bounds.centerLng.toFixed(4),
+                         'Zoom:', zoom, 'Dimensões:', bounds.width.toFixed(4), 'x', bounds.height.toFixed(4));
+              
+              handleMapFlyTo({
+                longitude: bounds.centerLng,
+                latitude: bounds.centerLat,
+                zoom: zoom,
+                speed: 1.5 // Velocidade moderada para permitir acompanhar a navegação
+              });
+            }
+          } catch (error) {
+            console.error('[MapPage] Erro ao calcular centro da RA:', error);
+          }
+        }
+        
       } else {
         console.log('[MapPage] No RA selected, ensuring all RAs are visible');
         // Clear selection and show all RAs when no specific RA is selected
@@ -634,38 +705,7 @@ const MapaContent = () => {
     };
   }, []);
 
-  // Listener para tecla Ctrl - controla interatividade do mapa
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.ctrlKey && !isCtrlPressed) {
-        setIsCtrlPressed(true);
-        setIsMapInteractive(true);
-      }
-    };
 
-    const handleKeyUp = (event) => {
-      if (!event.ctrlKey && isCtrlPressed) {
-        setIsCtrlPressed(false);
-        setIsMapInteractive(false);
-      }
-    };
-
-    // Listener para quando a janela perde o foco (garante que Ctrl seja "solto")
-    const handleWindowBlur = () => {
-      setIsCtrlPressed(false);
-      setIsMapInteractive(false);
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-    window.addEventListener('blur', handleWindowBlur);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('blur', handleWindowBlur);
-    };
-  }, [isCtrlPressed]);
 
   // Separar loading da página geral do loading das regiões
   const isPageLoading = isMapLoading; // Apenas loading inicial da página
@@ -767,71 +807,70 @@ const MapaContent = () => {
                     className={`border-b-3 border-theme overflow-hidden bg-gray-200 relative ${isFullscreen ? 'fullscreen-map' : ''
                       }`}
                   >
-                    {/* Botão de Tela Cheia */}
-                    <button
-                      onClick={toggleFullscreen}
-                      className="absolute top-4 right-4 z-10 bg-[#fae523] border-2 border-theme rounded-lg p-2 hover:bg-[#f8e71c] transition-colors shadow-lg"
-                      title={isFullscreen ? 'Sair da tela cheia' : 'Expandir para tela cheia'}
-                    >
-                      {isFullscreen ? (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      ) : (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                        </svg>
-                      )}
-                    </button>
 
-                    {/* Indicadores de interatividade - apenas no modo normal (não fullscreen) */}
-                    {!isFullscreen && !isCtrlPressed && (
-                      <div className="border-2 border-black bg-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 transition-all duration-300 px-4 py-3 font-sometype-mono text-sm shadow-lg">
-                        <div className="flex items-center gap-2 text-black">                          
-                          <span className="font-semibold">Pressione <kbd className="border border-black px-2 py-1 text-xs bg-gray-100">Ctrl</kbd> para navegar o mapa</span>
+                    {/* Botão de Fullscreen no centro - sempre visível no modo normal */}
+                    {!isFullscreen && (
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-4">
+                        <div className="border-2 border-black bg-white px-4 py-3 font-sometype-mono text-sm shadow-lg">
+                          <div className="flex items-center gap-2 text-black">                          
+                            <span className="font-semibold">Clique para expandir o mapa</span>
+                            {/* Botão de Fullscreen no centro */}
+                        <button
+                          onClick={toggleFullscreen}
+                          className="border-theme border-2 bg-theme-background flex items-center justify-center transition-opacity p-3 cursor-pointer"
+                          title="Expandir para tela cheia"
+                        >
+                          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                          </svg>
+                        </button>
+                          </div>
                         </div>
+                        
+                        
                       </div>
                     )}
 
-                    {/* Indicador quando Ctrl está ativo */}
-                    {!isFullscreen && isCtrlPressed && (
-                      <div className="border-2 border-green-500 bg-green-50 absolute top-4 left-4 z-10 transition-all duration-300 px-3 py-2 font-sometype-mono text-xs shadow-lg">
-                        <div className="flex items-center gap-2 text-green-800">
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                          <span className="font-semibold">Mapa Ativo - Ctrl pressionado</span>
-                        </div>
-                        <div className="text-xs text-green-600 mt-1">
-                          Zoom e arrastar habilitados
-                        </div>
-                      </div>
+
+                    {/* Botão de sair do fullscreen */}
+                    {isFullscreen && (
+                      <button
+                        onClick={toggleFullscreen}
+                        className="absolute top-4 right-4 z-[10001] flex items-center justify-center text-white bg-black bg-opacity-70 hover:bg-opacity-90 transition-opacity p-2 rounded-lg"
+                        title="Sair da tela cheia"
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
                     )}
 
                     <div style={{ height: isFullscreen ? '100vh' : '600px', position: isFullscreen ? 'fixed' : 'relative', top: isFullscreen ? 0 : 'auto', left: isFullscreen ? 0 : 'auto', width: isFullscreen ? '100vw' : '100%', zIndex: isFullscreen ? 9999 : 'auto' }}>
                       {isFullscreen ? (
-                        /* Layout fullscreen - grid com sidebar esquerda + mapa */
-                        <div className="h-full flex">
-                          {/* Sidebar esquerda */}
-                          <div className="w-80 fundo-base border-r-2 border-black flex flex-col overflow-hidden">
+                        /* Layout fullscreen - responsivo: sidebar esquerda em desktop, inferior em mobile */
+                        <div className="h-full flex flex-col lg:flex-row">
+                          {/* Sidebar - esquerda em desktop, inferior em mobile/tablet */}
+                          <div className="lg:w-80 w-full lg:h-full md:h-1/3 h-2/5 min-h-[300px] fundo-base lg:border-r-2 border-t-2 lg:border-t-0 border-black flex flex-col overflow-hidden lg:order-1 order-2">
                             
                             {/* Header da Sidebar */}
-                            <div className="bg-hip-amarelo-escuro border-b-2 border-black p-4">
-                              <h2 className="font-dirty-stains text-2xl text-black">EXPLORAR MAPA</h2>
+                            <div className="bg-hip-amarelo-escuro border-b-2 border-black lg:p-4 p-2">
+                              <h2 className="font-dirty-stains lg:text-2xl md:text-xl text-lg text-black">EXPLORAR MAPA</h2>
                             </div>
 
                             {/* Busca e Filtros - quando não há tour ativo */}
                             {!selectedTour && (
-                              <div className="flex-1 overflow-y-auto p-4">
+                              <div className="flex-1 overflow-y-auto lg:p-4 p-2">
                                 {/* Seção de Busca */}
-                                <div className="mb-6">
-                                  <h3 className="font-sometype-mono text-lg font-bold text-black mb-3 border-b border-black pb-1">
+                                <div className="lg:mb-6 mb-3">
+                                  <h3 className="font-sometype-mono lg:text-lg text-sm font-bold text-black lg:mb-3 mb-2 border-b border-black pb-1">
                                     BUSCAR LOCAIS
                                   </h3>
-                                  <div className="space-y-3">
+                                  <div className="lg:space-y-3 space-y-2">
                                     <div className="relative">
                                       <input
                                         type="text"
                                         placeholder="Buscar em locais, descrições, pontos de acesso..."
-                                        className="w-full p-3 pr-10 border-2 border-black font-sometype-mono text-sm"
+                                        className="w-full lg:p-3 p-2 pr-10 border-2 border-black font-sometype-mono lg:text-sm text-xs"
                                         value={searchTerm}
                                         onChange={(e) => {
                                           setSearchTerm(e.target.value);
@@ -885,21 +924,21 @@ const MapaContent = () => {
                                 </div>
 
                                 {/* Lista de Locais */}
-                                <div className="mb-6">
-                                  <h3 className="font-sometype-mono text-lg font-bold text-black mb-3 border-b border-black pb-1">
+                                <div className="lg:mb-6 mb-3">
+                                  <h3 className="font-sometype-mono lg:text-lg text-sm font-bold text-black lg:mb-3 mb-2 border-b border-black pb-1">
                                     LOCAIS ENCONTRADOS
                                   </h3>
-                                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                                  <div className="lg:space-y-2 space-y-1 lg:max-h-96 max-h-48 overflow-y-auto">
                                     {filteredLocations.slice(0, 10).map((location) => {
                                       const searchMatches = getSearchMatches(location, searchTerm);
                                       return (
                                         <div
                                           key={location.id}
                                           onClick={() => handleMarkerClick(location)}
-                                          className="border border-black p-3 cursor-pointer hover:bg-hip-amarelo-claro transition-colors"
+                                          className="border border-black lg:p-3 p-2 cursor-pointer hover:bg-hip-amarelo-claro transition-colors"
                                         >
-                                          <div className="flex items-start justify-between mb-2">
-                                            <h4 className="font-dirty-stains text-sm text-black font-bold">
+                                          <div className="flex items-start justify-between lg:mb-2 mb-1">
+                                            <h4 className="font-dirty-stains lg:text-sm text-xs text-black font-bold">
                                               {location.name}
                                             </h4>
                                             <div className="flex gap-1">
@@ -1016,7 +1055,7 @@ const MapaContent = () => {
 
                             {/* Tour Ativo - quando há tour selecionado */}
                             {selectedTour && (
-                              <div className="flex-1 overflow-y-auto p-4">
+                              <div className="flex-1 overflow-y-auto lg:p-4 p-2">
                                 <div className="mb-4">
                                   <h3 className="font-sometype-mono text-lg font-bold text-black mb-2 border-b border-black pb-1">
                                     TOUR: {selectedTour.title}
@@ -1079,16 +1118,16 @@ const MapaContent = () => {
                             )}
 
                             {/* Menu de Tours - sempre visível na parte inferior */}
-                            <div className="border-t-2 border-black bg-hip-amarelo-claro p-4">
-                              <h3 className="font-sometype-mono text-md font-bold text-black mb-3">
+                            <div className="border-t-2 border-black bg-hip-amarelo-claro lg:p-4 p-2">
+                              <h3 className="font-sometype-mono lg:text-md text-sm font-bold text-black lg:mb-3 mb-2">
                                 TOURS DISPONÍVEIS
                               </h3>
-                              <div className="space-y-2">
+                              <div className="lg:space-y-2 space-y-1">
                                 {(storiesMapboxFormat || []).slice(0, 3).map((story, index) => (
                                   <button
                                     key={index}
                                     onClick={() => handleTourSelect(story)}
-                                    className={`w-full p-2 border border-black text-left font-sometype-mono text-sm transition-colors ${
+                                    className={`w-full lg:p-2 p-1 border border-black text-left font-sometype-mono lg:text-sm text-xs transition-colors ${
                                       selectedTour?.title === story.title
                                         ? 'bg-black text-white'
                                         : 'bg-white hover:bg-gray-100'
@@ -1101,15 +1140,16 @@ const MapaContent = () => {
                             </div>
                           </div>
 
-                          {/* Mapa ocupando o restante da tela */}
-                          <div className="flex-1 relative">
+                          {/* Mapa ocupando o restante da tela - superior em mobile, direita em desktop */}
+                          <div className="flex-1 relative lg:order-2 order-1 lg:h-full md:h-2/3 h-3/5">
                           <MapRenderer
                             ref={mapRef}
                             {...viewState}
                             onLoad={(evt) => {
-                              console.log('Mapa carregado.');
+                              console.log('Mapa carregado em modo fullscreen.');
                             }}
                             onMove={evt => {
+                              // Atualizar viewState no modo fullscreen para permitir interação
                               setViewState(evt.viewState);
                             }}
                             style={{
@@ -1119,15 +1159,20 @@ const MapaContent = () => {
                             }}
                             mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
                             attributionControl={false}
-                            // Controles de interatividade - sempre ativo no fullscreen
+                            // Mapa fullscreen totalmente interativo
                             dragPan={true}
-                            dragRotate={false} // Desabilitar rotação para evitar rotação acidental ao arrastar
-                            scrollZoom={true}
+                            dragRotate={false} // Desabilitar rotação por drag para evitar rotação acidental
+                            scrollZoom={{
+                              // Configurar scroll zoom para não interferir com drag
+                              around: 'center'
+                            }}
                             boxZoom={true}
                             doubleClickZoom={true}
                             touchZoom={true}
                             touchRotate={false} // Desabilitar rotação por touch também
-                            keyboard={true}
+                            keyboard={false} // DESABILITAR COMPLETAMENTE controles de teclado do MapBox
+                            cooperativeGestures={false} // Desabilitar gestos cooperativos (Ctrl+scroll)
+                            pitchWithRotate={false} // Desabilitar pitch com rotação
                           >
                             {filteredLocations.map((location) => (
                               <Marker
@@ -1332,6 +1377,7 @@ const MapaContent = () => {
                             )}
                           </MapRenderer>
 
+
                           {/* LayerControl agora flutua sobre o mapa */}
                           <LayerControl isVisible={!selectedTour} />
 
@@ -1372,41 +1418,31 @@ const MapaContent = () => {
                             ref={mapRef}
                             {...viewState}
                             onLoad={(evt) => {
-                              console.log('Mapa carregado.');
+                              console.log('Mapa carregado em modo normal.');
                             }}
                             onMove={evt => {
-                              // Always update viewState but prevent user interaction during tour
-                              setViewState(evt.viewState);
+                              // Não atualizar viewState no modo normal para manter o mapa estático
+                              // setViewState(evt.viewState);
                             }}
                             style={{
                               width: '100%',
                               height: '100%',
-                              cursor: isMapInteractive ? 'grab' : 'default'
-                            }}
-                            onMouseDown={() => {
-                              if (isMapInteractive) {
-                                document.body.style.cursor = 'grabbing';
-                              }
-                            }}
-                            onMouseUp={() => {
-                              if (isMapInteractive) {
-                                document.body.style.cursor = 'grab';
-                              }
+                              cursor: 'default'
                             }}
                             mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
                             attributionControl={false}
-                            // Controles de interatividade baseados em Ctrl
-                            dragPan={isMapInteractive}
-                            dragRotate={false} // Desabilitar rotação por drag para evitar rotação acidental
-                            scrollZoom={isMapInteractive ? {
-                              // Configurar scroll zoom para não interferir com drag
-                              around: 'center'
-                            } : false}
-                            boxZoom={isMapInteractive}
-                            doubleClickZoom={isMapInteractive}
-                            touchZoom={isMapInteractive}
-                            touchRotate={false} // Desabilitar rotação por touch também
-                            keyboard={isMapInteractive}
+                            // Mapa completamente não-interativo na página principal
+                            dragPan={false}
+                            dragRotate={false}
+                            scrollZoom={false}
+                            boxZoom={false}
+                            doubleClickZoom={false}
+                            touchZoom={false}
+                            touchRotate={false}
+                            keyboard={false}
+                            cooperativeGestures={false}
+                            pitchWithRotate={false}
+                            interactive={false}
                           >
                             {filteredLocations.map((location) => (
                               <Marker
@@ -1591,7 +1627,7 @@ const MapaContent = () => {
 
               {/* Lista de Locais */}
               <motion.section
-                className={`mb-12 ${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'}`}
+                className={`pb-8 ${currentTheme === 'light' ? 'fundo-base' : 'fundo-base-preto'}`}
                 id="regions-section"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1656,7 +1692,7 @@ const MapaContent = () => {
                           transition={{ delay: 0.7 + index * 0.1 }}
                           whileHover={{ scale: 1.02, y: -5 }}
                           onClick={() => handleMarkerClick(location)}
-                          className={`border-2 border-theme p-6 cursor-pointer transition-all duration-300`}
+                          className={`border-2 border-theme p-6 bg-theme-background cursor-pointer transition-all duration-300`}
                         >
                           <div className="flex items-center gap-3 mb-3">
                             <div className="w-6 h-6 bg-[#fae523] border-2 border-theme rounded-full flex items-center justify-center">
