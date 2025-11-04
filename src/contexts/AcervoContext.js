@@ -1,8 +1,10 @@
 'use client';
 
-import { createContext, useContext, useReducer, useCallback } from 'react';
+import { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
 import atomService from '@/services/atomService';
 import { fetchCompat } from '@/utils/httpClient';
+import municipiosService from '@/services/municipiosService';
+import atomMapResponse from '@/data/mapa';
 
 // Tipos de ações
 const ACTIONS = {
@@ -358,12 +360,12 @@ const DF_PLACES_COORDINATES = {
   'df': [-47.8825, -15.7942]
 };
 
-function estimateCoordinatesFromPlaces(place_access_points) {
+async function estimateCoordinatesFromPlaces(place_access_points) {
   if (!place_access_points || !Array.isArray(place_access_points) || place_access_points.length === 0) {
     return null;
   }
   
-  // Procurar por correspondências exatas primeiro, depois parciais
+  // Procurar por correspondências nos dados locais primeiro
   for (const place of place_access_points) {
     if (!place || typeof place !== 'string') continue;
     
@@ -377,18 +379,40 @@ function estimateCoordinatesFromPlaces(place_access_points) {
       .replace(/ç/g, 'c')
       .replace(/ñ/g, 'n');
     
-    // Correspondência exata
+    // 1. Correspondência exata no DF
     if (DF_PLACES_COORDINATES[normalizedPlace]) {
-      console.info(`[Coordinates] 📍 Correspondência exata encontrada: "${place}" -> ${DF_PLACES_COORDINATES[normalizedPlace]}`);
+      console.info(`[Coordinates] 📍 DF - Correspondência exata: "${place}" -> ${DF_PLACES_COORDINATES[normalizedPlace]}`);
       return DF_PLACES_COORDINATES[normalizedPlace];
     }
     
-    // Correspondência parcial - procurar por palavras-chave
+    // 2. Correspondência parcial no DF
     for (const [key, coords] of Object.entries(DF_PLACES_COORDINATES)) {
       if (normalizedPlace.includes(key) || key.includes(normalizedPlace)) {
-        console.info(`[Coordinates] 📍 Correspondência parcial encontrada: "${place}" contém "${key}" -> ${coords}`);
+        console.info(`[Coordinates] 📍 DF - Correspondência parcial: "${place}" contém "${key}" -> ${coords}`);
         return coords;
       }
+    }
+
+    // 3. Buscar no mapa local (atomMapResponse)
+    const foundLocation = atomMapResponse.locations.find(location => {
+      const locationName = location.name.toLowerCase();
+      return locationName.includes(normalizedPlace) || normalizedPlace.includes(locationName);
+    });
+    
+    if (foundLocation) {
+      console.info(`[Coordinates] 📍 Mapa local - Encontrado: "${place}" -> ${foundLocation.name}`);
+      return [foundLocation.coordinates.lng, foundLocation.coordinates.lat]; // GeoJSON format
+    }
+
+    // 4. Buscar nos municípios do IBGE
+    try {
+      const municipioCoords = await municipiosService.findMunicipioCoordinates(place);
+      if (municipioCoords) {
+        console.info(`[Coordinates] 📍 IBGE - Município encontrado: "${place}" -> ${municipioCoords.municipioName}, ${municipioCoords.uf}`);
+        return [municipioCoords.lng, municipioCoords.lat]; // GeoJSON format
+      }
+    } catch (error) {
+      console.warn(`[Coordinates] ⚠️ Erro ao buscar município "${place}":`, error);
     }
   }
   
@@ -715,10 +739,10 @@ export function AcervoProvider({ children }) {
     try {
       console.info('[AcervoContext] 🗺️ Carregando dados do mapa para creator:', creatorId);
       
-      // No modo rápido, carrega apenas uma amostra inicial
+      // Configurar paginação otimizada
       let allItems = [];
       let skip = 0;
-      const limit = fastMode ? 20 : 50; // Menos itens no modo rápido
+      const limit = fastMode ? 50 : 30; // Páginas maiores no modo rápido para eficiência
       
       // Primeira chamada para obter total
       const firstResponse = await fetchCompat(`/api/acervo?creators=${creatorId}&limit=${limit}`);
@@ -732,9 +756,9 @@ export function AcervoProvider({ children }) {
       
       console.info(`[AcervoContext] 📊 Primeira página: ${allItems.length}/${total} itens`);
       
-      // No modo rápido, carrega apenas o suficiente para mostrar algo
-      // No modo completo, carrega tudo
-      const maxItemsToLoad = fastMode ? Math.min(total, 60) : total;
+      // No modo rápido, carrega todos os dados mas com requisições mais rápidas
+      // No modo completo, carrega tudo com pausa maior entre requisições
+      const maxItemsToLoad = total; // Sempre carregar todos os dados disponíveis
       
       // Buscar páginas restantes se necessário
       if (total > allItems.length && allItems.length < maxItemsToLoad) {
@@ -762,14 +786,15 @@ export function AcervoProvider({ children }) {
             break;
           }
           
-          // Pausa menor entre requisições no modo rápido
-          await new Promise(resolve => setTimeout(resolve, fastMode ? 50 : 100));
+          // Pausa otimizada: menor no modo rápido, maior no modo completo
+          await new Promise(resolve => setTimeout(resolve, fastMode ? 25 : 100));
         }
       }
       
-      console.info(`[AcervoContext] 🎉 Total coletado: ${allItems.length} itens`);
+      console.info(`[AcervoContext] 🎉 Total coletado: ${allItems.length} itens de ${total} disponíveis na API`);
       
       // Buscar detalhes completos para cada item
+      console.info(`[AcervoContext] 🔍 Buscando detalhes para ${allItems.length} itens...`);
       const itemsWithDetails = [];
       
       for (const item of allItems) {
@@ -800,8 +825,8 @@ export function AcervoProvider({ children }) {
             itemsWithDetails.push(combinedItem);
           }
           
-          // Pausa entre requisições de detalhes
-          await new Promise(resolve => setTimeout(resolve, 50));
+          // Pausa otimizada entre requisições de detalhes
+          await new Promise(resolve => setTimeout(resolve, fastMode ? 25 : 50));
           
         } catch (error) {
           console.warn(`[AcervoContext] ⚠️ Erro ao buscar detalhes de ${item.slug}:`, error);
@@ -817,7 +842,7 @@ export function AcervoProvider({ children }) {
       });
       
       // Gerar GeoJSON automaticamente
-      const geoJson = generateGeoJson(itemsWithDetails);
+      const geoJson = await generateGeoJson(itemsWithDetails);
       
       // Salvar no localStorage para cache persistente
       if (typeof window !== 'undefined') {
@@ -840,7 +865,7 @@ export function AcervoProvider({ children }) {
   }, []);
 
   // Gerar GeoJSON a partir dos dados do mapa
-  const generateGeoJson = useCallback((items = state.mapData) => {
+  const generateGeoJson = useCallback(async (items = state.mapData) => {
     console.info('[AcervoContext] 🗺️ Gerando GeoJSON...');
     
     const features = [];
@@ -859,7 +884,7 @@ export function AcervoProvider({ children }) {
         itemsWithCoordinates++;
       } else {
         // 2. Se não tem coordenadas em notes, tentar estimar baseado em place_access_points
-        coordinates = estimateCoordinatesFromPlaces(item.place_access_points);
+        coordinates = await estimateCoordinatesFromPlaces(item.place_access_points);
         
         if (coordinates) {
           coordinateSource = 'estimated_from_places';
@@ -1058,6 +1083,31 @@ export function AcervoProvider({ children }) {
       return cacheInfo;
     }
   };
+
+  // Adicionar funções de desenvolvimento globais
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+      // Função para limpar cache facilmente no console
+      window.clearMapCache = clearCache;
+      
+      // Função para forçar reload de dados
+      window.reloadMapData = () => {
+        console.info('[AcervoContext] 🔄 Forçando reload dos dados do mapa...');
+        clearCache();
+        setTimeout(() => {
+          loadMapData('8337', true, false); // Forçar reload completo
+        }, 100);
+      };
+      
+      // Função para ver info do cache
+      window.getCacheInfo = contextValue.getCacheStatus;
+      
+      console.info('[AcervoContext] 🛠️ Funções de desenvolvimento disponíveis:');
+      console.info('  - window.clearMapCache() → Limpa todo o cache');
+      console.info('  - window.reloadMapData() → Limpa cache e recarrega dados');
+      console.info('  - window.getCacheInfo() → Mostra informações do cache');
+    }
+  }, [clearCache, loadMapData, contextValue.getCacheStatus]);
 
   return (
     <AcervoContext.Provider value={contextValue}>
