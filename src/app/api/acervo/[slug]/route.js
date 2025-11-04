@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { fetchCompat } from '@/utils/httpClient';
 
 const ATOM_API_BASE = 'https://base.acervodistritohiphop.com.br/index.php/api';
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+const API_KEY = process.env.API_KEY;
 
 export async function GET(request, { params }) {
   try {
