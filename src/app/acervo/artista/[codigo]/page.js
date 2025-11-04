@@ -517,7 +517,7 @@ const CreatorDetailPage = () => {
                 {discografia.map((item, index) => (
                   <motion.div 
                     key={item.slug || index}
-                    className="bg-white border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300"
+                    className="bg-white p-6 hover:bg-zinc-100 transition-all duration-300"
                     whileHover={{ scale: 1.02 }}
                   >
                     {item.thumbnail_url && (

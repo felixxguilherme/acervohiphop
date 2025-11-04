@@ -239,12 +239,11 @@ export default function AcervoRealData() {
           </div>
           
           <div className="mt-8">
-            <CartoonButton 
-              text="EXPLORAR ACERVO COMPLETO" 
-              textSize="text-xl"
-              backgroundMode="static" 
-              imagePath="marca-texto-roxo.webp"
+            <CartoonButton
+              label="EXPLORAR ACERVO COMPLETO"
+              color={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'}`}
               onClick={() => window.location.href = '/acervo'}
+              className="cursor-pointer text-xl px-8 py-4"
             />
           </div>
         </motion.div>

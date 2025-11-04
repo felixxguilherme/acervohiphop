@@ -15,19 +15,7 @@ const AnimatedButton = ({ text, imagePath, backgroundClass, textSize, background
     <>
     
     <motion.button
-      className={`font-scratchy ${textSize} text-bold antialiased`}
-      style={{
-        position: 'relative',
-        display: 'inline-block',
-        padding: '10px 20px',
-        textDecoration: 'none',
-        color: '#000',
-        borderRadius: '4px',
-        overflow: 'hidden',
-        cursor: 'pointer',
-        textAlign: 'center',
-        zIndex: 2
-      }}
+      className={`font-scratchy ${textSize} text-bold antialiased relative inline-block px-3 py-1.5 sm:px-5 sm:py-2.5 no-underline text-black rounded overflow-hidden cursor-pointer text-center z-[2]`}
       onHoverStart={handleHoverStart}
       onHoverEnd={handleHoverEnd}
       whileHover={{ scale: 1.1 }}

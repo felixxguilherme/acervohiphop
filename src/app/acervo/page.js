@@ -341,125 +341,6 @@ const Acervo = () => {
       
       <div className="relative mx-auto min-h-screen border-theme border-l-3 border-r-3 border-b-3">
         
-        {/* Seção de Artistas em Destaque */}
-        <motion.section 
-          className="mb-12 h-min-screen"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div
-            className={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'} text-left mb-16 text-black border-theme w-full pb-10`}
-          >
-            <h2 className="text-black font-sometype-mono text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
-               ARTISTAS EM DESTAQUE
-            </h2>
-            <p className="border-black border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-black max-w-4xl leading-relaxed">
-               Conheça os artistas que fazem parte do nosso acervo
-            </p>
-
-          </div>
-
-          {loadingArtists ? (
-            <div className="text-center py-12">
-              <div className="animate-spin h-8 w-8 border-2 border-theme border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-lg font-sometype-mono">Carregando artistas...</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-6">
-              {featuredArtists.map((artist, index) => (
-                <motion.div
-                  key={artist.id}
-                  className="bg-theme-background border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.2 }}
-                >
-                  <div className="space-y-6">
-                    {/* Primeira linha: Foto, nome, descrição e contagem */}
-                    <div className="flex flex-col md:flex-row gap-4">
-                      {/* Thumbnail do artista */}
-                      <div className="md:w-32 md:h-32 w-full h-48 flex-shrink-0">
-                        {artist.thumbnail ? (
-                          <img
-                            src={artist.thumbnail}
-                            alt={artist.name}
-                            className="w-full h-full object-cover border-2 border-theme"
-                            onError={(e) => { e.target.style.display = 'none'; }}
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gray-200 border-2 border-theme flex items-center justify-center">
-                            <span className="text-4xl">🎭</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Informações do artista */}
-                      <div className="flex-1">
-                        <h3 className="text-2xl font-dirty-stains text-theme-primary mb-2">
-                          {artist.name}
-                        </h3>
-                        <p className="font-sometype-mono text-gray-700 mb-3">
-                          {artist.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="px-2 py-1 border border-theme font-sometype-mono text-sm">
-                            {artist.totalItems} {artist.totalItems === 1 ? 'item' : 'itens'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Segunda linha: Botões de ação */}
-                    <div className="flex gap-3 text-sm pt-4 border-t-2 border-gray-200">
-                      <button
-                        onClick={() => goToArtistPage(artist.id)}
-                        className="cursor-pointer px-4 py-2 text-theme border-2 border-theme font-dirty-stains hover:bg-black hover:text-theme transition-colors"
-                      >
-                        Ver Página do Artista
-                      </button>
-                      <button
-                        onClick={() => handleCreatorSearch(artist.id)}
-                        className="cursor-pointer px-4 py-2 text-theme border-2 border-theme font-dirty-stains hover:bg-black hover:text-theme transition-colors"
-                      >
-                        Ver Todos os Itens
-                      </button>
-                    </div>
-
-                    {/* Terceira linha: Preview dos itens recentes */}
-                    {artist.recentItems.length > 0 && (
-                      <div className="pt-4 border-t-2 border-theme">
-                        <h4 className="font-dirty-stains text-lg mb-3">Itens Recentes:</h4>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                          {artist.recentItems.slice(0, 3).map((item, itemIndex) => (
-                            <div
-                              key={item.slug || itemIndex}
-                              className="bg-white p-2 border border-gray-300 hover:bg-gray-50 cursor-pointer transition-colors"
-                              onClick={() => openItemDetails(item.slug)}
-                            >
-                              {item.thumbnail_url && (
-                                <img
-                                  src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')}
-                                  alt={item.title || 'Item'}
-                                  className="w-full h-16 object-cover border border-gray-200 mb-1"
-                                  onError={(e) => { e.target.style.display = 'none'; }}
-                                />
-                              )}
-                              <p className="text-xs text-black font-sometype-mono truncate">
-                                {item.title || 'Sem título'}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </motion.section>
-
         <motion.section 
           className="mb-12 mt-20"
           initial={{ opacity: 0, y: 20 }}
@@ -550,7 +431,7 @@ const Acervo = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-lg font-dirty-stains">
+            <p className="text-base md:text-lg font-dirty-stains text-center md:text-left">
               {activeTotal} {activeTotal === 1 ? 'item encontrado' : 'itens encontrados'}
               {searchQuery && (creatorResults ? 
                 ` para buscar por: ${searchQuery}` : 
@@ -559,13 +440,13 @@ const Acervo = () => {
             </p>
             
             {totalPages > 1 && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-sometype-mono">Página {currentPage} de {totalPages}</span>
+              <div className="flex flex-col sm:flex-row items-center gap-2">
+                <span className="text-xs sm:text-sm font-sometype-mono">Página {currentPage} de {totalPages}</span>
                 <div className="flex gap-1">
                   <button
                     onClick={() => goToPage(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains text-sm transition-colors"
+                    className="px-2 sm:px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains text-xs sm:text-sm transition-colors min-w-[32px] sm:min-w-[36px]"
                   >
                     ←
                   </button>
@@ -587,7 +468,7 @@ const Acervo = () => {
                       <button
                         key={pageNum}
                         onClick={() => goToPage(pageNum)}
-                        className={`px-3 py-1 border-2 border-theme font-dirty-stains text-sm transition-colors ${
+                        className={`px-2 sm:px-3 py-1 border-2 border-theme font-dirty-stains text-xs sm:text-sm transition-colors min-w-[32px] sm:min-w-[36px] ${
                           pageNum === currentPage 
                             ? 'bg-blue-500 text-theme' 
                             : 'bg-white hover:bg-gray-100'
@@ -601,7 +482,7 @@ const Acervo = () => {
                   <button
                     onClick={() => goToPage(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains text-sm transition-colors"
+                    className="px-2 sm:px-3 py-1 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-theme font-dirty-stains text-xs sm:text-sm transition-colors min-w-[32px] sm:min-w-[36px]"
                   >
                     →
                   </button>
@@ -642,7 +523,7 @@ const Acervo = () => {
               {currentItems.map((item, index) => (
                 <motion.div 
                   key={item.slug || index} 
-                  className="bg-theme-background border-2 border-theme hover:bg-zinc-100 transition-all duration-300 cursor-pointer hover:shadow-lg hover:scale-105 flex flex-col h-full"
+                  className="bg-theme-background hover:bg-zinc-100 transition-all duration-300 cursor-pointer hover:shadow-lg hover:scale-105 flex flex-col h-full"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.05 }}
@@ -689,7 +570,7 @@ const Acervo = () => {
                       <p className="text-xs font-sometype-mono opacity-60 truncate mr-2">
                         {item.slug || 'N/A'}
                       </p>
-                      <button className="text-xs bg-white text-theme cursor-pointer px-3 py-1 border border-theme font-dirty-stains hover:bg-black hover:text-theme transition-colors whitespace-nowrap">
+                      <button className="text-xs sm:text-sm bg-white text-theme cursor-pointer px-2 sm:px-3 py-1 border border-theme font-dirty-stains hover:bg-black hover:text-theme transition-colors whitespace-nowrap">
                         Ver Detalhes
                       </button>
                     </div>
@@ -732,10 +613,124 @@ const Acervo = () => {
           </motion.div>
         )}
         </motion.section>
+        {/* Seção de Artistas em Destaque */}
+        <motion.section 
+          className="mb-12 h-min-screen"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div
+            className={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'} text-left mb-16 text-black border-theme w-full pb-10`}
+          >
+            <h2 className="text-black font-sometype-mono text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
+               ARTISTAS EM DESTAQUE
+            </h2>
+            <p className="border-black border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-black max-w-4xl leading-relaxed">
+               Conheça os artistas que fazem parte do nosso acervo
+            </p>
 
-        
+          </div>
 
+          {loadingArtists ? (
+            <div className="text-center py-12">
+              <div className="animate-spin h-8 w-8 border-2 border-theme border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-lg font-sometype-mono">Carregando artistas...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-6">
+              {featuredArtists.map((artist, index) => (
+                <motion.div
+                  key={artist.id}
+                  className="bg-theme-background border-2 border-theme p-6 hover:bg-zinc-100 transition-all duration-300 hover:shadow-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.2 }}
+                >
+                  <div className="space-y-6">
+                    {/* Primeira linha: Foto, nome, descrição e contagem */}
+                    <div className="flex flex-col md:flex-row gap-4">
+                      {/* Thumbnail do artista */}
+                      <div className="md:w-32 md:h-32 w-full h-48 flex-shrink-0">
+                        {artist.thumbnail ? (
+                          <img
+                            src={artist.thumbnail}
+                            alt={artist.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-4xl">🎭</span>
+                          </div>
+                        )}
+                      </div>
 
+                      {/* Informações do artista */}
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-dirty-stains text-theme-primary mb-2">
+                          {artist.name}
+                        </h3>
+                        <p className="font-sometype-mono text-gray-700 mb-3">
+                          {artist.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="px-2 py-1 border border-theme font-sometype-mono text-sm">
+                            {artist.totalItems} {artist.totalItems === 1 ? 'item' : 'itens'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Segunda linha: Botões de ação */}
+                    <div className="flex gap-3 text-sm pt-4 border-t-2 border-gray-200">
+                      <button
+                        onClick={() => goToArtistPage(artist.id)}
+                        className="cursor-pointer px-4 py-2 text-theme border-2 border-theme font-dirty-stains hover:bg-black hover:text-theme transition-colors text-xs"
+                      >
+                        Ver Página do Artista
+                      </button>
+                      <button
+                        onClick={() => handleCreatorSearch(artist.id)}
+                        className="cursor-pointer px-4 py-2 text-theme border-2 border-theme font-dirty-stains hover:bg-black hover:text-theme transition-colors"
+                      >
+                        Ver Todos os Itens
+                      </button>
+                    </div>
+
+                    {/* Terceira linha: Preview dos itens recentes */}
+                    {artist.recentItems.length > 0 && (
+                      <div className="pt-4 border-t-2 border-theme">
+                        <h4 className="font-dirty-stains text-lg mb-3">Itens Recentes:</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {artist.recentItems.slice(0, 3).map((item, itemIndex) => (
+                            <div
+                              key={item.slug || itemIndex}
+                              className="bg-white p-2 border border-gray-300 hover:bg-gray-50 cursor-pointer transition-colors"
+                              onClick={() => openItemDetails(item.slug)}
+                            >
+                              {item.thumbnail_url && (
+                                <img
+                                  src={item.thumbnail_url.replace('https://acervodistrito', 'https://base.acervodistrito')}
+                                  alt={item.title || 'Item'}
+                                  className="w-full h-16 object-cover border border-gray-200 mb-1"
+                                  onError={(e) => { e.target.style.display = 'none'; }}
+                                />
+                              )}
+                              <p className="text-xs text-black font-sometype-mono truncate">
+                                {item.title || 'Sem título'}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </motion.section>
       </div>
     </div>
   );

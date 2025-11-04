@@ -791,10 +791,10 @@ export default function Home() {
             className="space-y-6"
           >
             <CartoonButton
-              label="EXPLORAR ACERVO COMPLETO"
-              color=""
+              label="EXPLORAR TODO O ACERVO"
+              color={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'}`}
               onClick={() => window.location.href = '/acervo'}
-              className="text-xl px-8 py-4 mx-auto cursor-pointer"
+              className="cursor-pointer text-xl px-8 py-4"
             />
             {/* <div className="flex flex-wrap justify-center gap-4 text-sm font-sometype-mono text-theme-secondary">
               <span>📸 {artistsData.reduce((total, result) => total + result.total, 0)} itens no acervo</span>

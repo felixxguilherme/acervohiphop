@@ -143,21 +143,15 @@ export default function HeaderApp({ title, showTitle = false }) {
       }}
     >
       <motion.div 
-        className="w-full border-theme overflow-hidden"
-        style={{
-          minHeight: isScrolled ? '80px' : 'auto'
-        }}
+        className={`w-full border-theme overflow-hidden ${isScrolled ? 'min-h-[80px]' : 'min-h-[120px] md:min-h-[140px]'}`}
       >
         {/* Layout em grid 2x2 para alinhamento perfeito */}
         <div className="relative">
-          <div className="grid grid-cols-12 h-full" style={{ 
-            minHeight: isScrolled ? '80px' : '200px',
-            gridTemplateRows: isScrolled ? '0px 1fr' : '2fr 1fr'
-          }}>
+          <div className={`grid grid-cols-12 h-full ${isScrolled ? 'min-h-[80px] grid-rows-[0px_1fr]' : 'min-h-[120px] md:min-h-[140px] grid-rows-[1fr_1fr] md:grid-rows-[1fr_1fr]'}`}>
             
             {/* Linha 1: Logo + Título */}
             <motion.div 
-              className={`col-span-2 ${!isScrolled ? 'border-r-3 border-b-3' : ''} border-theme row-span-1 flex items-center justify-center ${!isScrolled ? 'py-8' : 'py-0'}`}
+              className={`col-span-3 ${!isScrolled ? 'border-r-3 border-b-3' : ''} border-theme row-span-1 flex items-center justify-center ${!isScrolled ? 'py-1 sm:py-2 md:py-2' : 'py-0'}`}
               animate={{ 
                 height: isScrolled ? '0px' : 'auto',
                 opacity: isScrolled ? 0 : 1
@@ -172,20 +166,18 @@ export default function HeaderApp({ title, showTitle = false }) {
                 <motion.div 
                   className="flex items-center justify-center w-full h-full"
                 >
-                  <motion.img
-                    src={getLogoSrc()}
-                    alt={pathname === '/' ? "Spray decoration" : "Distrito Hip Hop Logo"}
-                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, delay: 0.5 }}
-                  />
+                  <SpinningText
+                    radius={isScrolled ? 6.5 : 6}
+                    className={`${isScrolled ? 'h-14 w-14 text-base' : 'h-16 w-16 text-xs sm:text-sm md:text-base'} tracking-[0.2em] font-scratchy transition-all duration-500`}
+                  >
+                    acervo • hip-hop • DF •
+                  </SpinningText>                  
                 </motion.div>
               )}
             </motion.div>
             
             <motion.div 
-              className={`col-span-10 ${!isScrolled ? 'border-b-3' : ''} border-theme row-span-1 flex items-center justify-center ${!isScrolled ? 'py-8' : 'py-0'}`}
+              className={`col-span-9 ${!isScrolled ? 'border-b-3' : ''} border-theme row-span-1 flex items-center justify-center ${!isScrolled ? 'py-1 sm:py-2 md:py-2' : 'py-0'}`}
               animate={{ 
                 height: isScrolled ? '0px' : 'auto',
                 opacity: isScrolled ? 0 : 1
@@ -201,7 +193,7 @@ export default function HeaderApp({ title, showTitle = false }) {
                   className="flex items-center justify-center w-full h-full"
                 >
                   <motion.h1
-                    className="font-dirty-stains text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-shadow-lg text-theme-primary text-center"
+                    className="font-dirty-stains text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-8xl text-shadow-lg text-theme-primary text-center"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.3 }}
@@ -228,7 +220,7 @@ export default function HeaderApp({ title, showTitle = false }) {
             </motion.div>
 
             {/* Linha 2: Spinning Text + Navegação */}
-            <div className={`col-span-2 border-r-3 border-theme row-span-1 flex items-center justify-center ${isScrolled ? 'py-4' : 'py-2'}`}>
+            <div className={`col-span-3 border-r-3 border-theme row-span-1 flex items-center justify-center ${isScrolled ? 'py-4' : 'py-2'}`}>
               <Link href="/">
                 <motion.div
                   animate={{
@@ -240,17 +232,19 @@ export default function HeaderApp({ title, showTitle = false }) {
                   }}
                   className="flex items-center justify-center"
                 >
-                  <SpinningText
-                    radius={isScrolled ? 6.5 : 6}
-                    className={`${isScrolled ? 'h-14 w-14 text-base' : 'h-16 w-16 text-xs sm:text-sm md:text-base'} tracking-[0.2em] font-scratchy transition-all duration-500`}
-                  >
-                    acervo • hip-hop • DF •
-                  </SpinningText>
+                  <motion.img
+                    src={getLogoSrc()}
+                    alt={pathname === '/' ? "Spray decoration" : "Distrito Hip Hop Logo"}
+                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.5 }}
+                  />
                 </motion.div>
               </Link>
             </div>
             
-            <div className={`col-span-10 row-span-1 flex items-center justify-center ${isScrolled ? 'py-4' : 'py-2'}`}>
+            <div className={`col-span-9 row-span-1 flex items-center justify-center ${isScrolled ? 'py-4' : ''}`}>
               <motion.nav 
                 className={`flex flex-wrap justify-center items-center gap-1 sm:gap-2 md:gap-4 lg:gap-6 w-full px-2 ${isScrolled ? 'py-2' : 'py-4'}`}
               >

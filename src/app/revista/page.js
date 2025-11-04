@@ -324,11 +324,11 @@ const Revista = () => {
                 className="space-y-6"
               >
                 <CartoonButton
-                  label="EXPLORAR ACERVO COMPLETO"
-                  color=""
-                  onClick={() => window.location.href = '/acervo'}
-                  className="text-xl px-8 py-4 mx-auto"
-                />
+              label="EXPLORAR ACERVO COMPLETO"
+              color={`${currentTheme === 'light' ? 'bg-hip-verde-escuro' : 'bg-hip-verde-claro'}`}
+              onClick={() => window.location.href = '/acervo'}
+              className="cursor-pointer text-xl px-8 py-4"
+            />
               </motion.div>
             </div>
           </section>
