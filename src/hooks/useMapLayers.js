@@ -33,14 +33,14 @@ export const useMapLayers = () => {
         visible: true,
         source: {
           type: 'geojson',
-          data: 'https://servicodados.ibge.gov.br/api/v4/malhas/municipios?formato=application/vnd.geo+json'
+          data: 'https://servicodados.ibge.gov.br/api/v3/malhas/municipios?formato=application/vnd.geo+json'
         },
         layout: {
           'visibility': 'visible'
         },
         paint: {
-          'line-color': '#95a5a6',  // Cinza para municípios do Brasil
-          'line-width': 1,          // Linha fina para não poluir
+          'line-color': '#000',// '#95a5a6',  // Cinza para municípios do Brasil
+          'line-width': 2,          // Linha fina para não poluir
           'line-opacity': 0.6       // Transparente para ser discreta
         }
       },
@@ -57,9 +57,10 @@ export const useMapLayers = () => {
           'visibility': 'visible'
         },
         paint: {
-          'line-color': '#e74c3c',
+          'line-color': '#000', // Azul para RA do DF
           'line-width': 4,
-          'line-opacity': 1.0
+          'line-opacity': 1.0,
+          'line-dasharray': [1, 3]
         }
       },
       {
@@ -132,7 +133,7 @@ export const useMapLayers = () => {
         id: 'hip-hop-locations',
         name: 'Itens do Acervo',
         type: 'circle',
-        visible: false, // Inicialmente invisível até dados carregarem
+        visible: true,
         source: {
           type: 'geojson',
           data: {
@@ -142,22 +143,31 @@ export const useMapLayers = () => {
         },
         layout: {},
         paint: {
-          'circle-radius': [
-            'case',
-            ['get', 'has_real_coordinates'], 10,  // Coordenadas reais maiores
-            8  // Coordenadas estimadas menores
-          ],
-          'circle-color': [
-            'case',
-            ['get', 'has_real_coordinates'], '#f39c12',  // Laranja para reais
-            ['==', ['get', 'coordinate_source'], 'extracted_from_notes'], '#2ecc71',  // Verde para GPS
-            ['==', ['get', 'coordinate_source'], 'estimated_from_places'], '#3498db',  // Azul para estimadas
-            '#e67e22'  // Laranja escuro para outras
-          ],
-          'circle-stroke-color': '#2c3e50',  // Borda escura para contraste
-          'circle-stroke-width': 2,
-          'circle-opacity': 0.9,
+          'circle-radius': 12,
+          'circle-color': '#fae523',
+          'circle-stroke-color': '#000000',
+          'circle-stroke-width': 3,
+          'circle-opacity': 1.0,
           'circle-stroke-opacity': 1.0
+        }
+      },
+      {
+        id: 'hip-hop-locations-center',
+        name: 'Centro dos Itens',
+        type: 'circle',
+        visible: true,
+        source: {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: []
+          }
+        },
+        layout: {},
+        paint: {
+          'circle-radius': 4,
+          'circle-color': '#000000',
+          'circle-opacity': 1.0
         }
       },
       {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, forwardRef, useMemo } from 'react';
+import { useRef, useEffect, forwardRef, useMemo, useCallback } from 'react';
 import Map, { Source, Layer } from 'react-map-gl/maplibre';
 import { useMap } from '@/contexts/MapContext';
 import { useMapLayers } from '@/hooks/useMapLayers';
@@ -9,6 +9,8 @@ import { useMapLayers } from '@/hooks/useMapLayers';
 const MapRenderer = forwardRef(({ 
   children, 
   onMove,
+  onMarkerClick,
+  onHover,
   style,
   mapStyle = "https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z",
   attributionControl = false,
@@ -43,15 +45,51 @@ const MapRenderer = forwardRef(({
     })));
   }, [visibleLayers]);
 
+  // GUI-NOTE: Function to automatically load images for layers
+  const loadLayerImages = useCallback(async (map, layers) => {
+    const imagesToLoad = new Set();
+    
+    // Extract all icon-image references from layers
+    layers.forEach(layer => {
+      if (layer.layout && layer.layout['icon-image']) {
+        imagesToLoad.add(layer.layout['icon-image']);
+      }
+    });
+    
+    // Load each image
+    for (const imageName of imagesToLoad) {
+      if (!map.hasImage(imageName)) {
+        try {
+          console.log(`[MapRenderer] 🖼️ Loading image: ${imageName}`);
+          const response = await fetch(`/mapa/${imageName}.png`);
+          if (response.ok) {
+            const imageBlob = await response.blob();
+            const imageBitmap = await createImageBitmap(imageBlob);
+            map.addImage(imageName, imageBitmap);
+            console.log(`[MapRenderer] ✅ Image loaded: ${imageName}`);
+          } else {
+            console.warn(`[MapRenderer] ⚠️ Image not found: /mapa/${imageName}.png`);
+          }
+        } catch (error) {
+          console.warn(`[MapRenderer] ❌ Error loading image ${imageName}:`, error);
+        }
+      }
+    }
+  }, []);
+
   // GUI-NOTE: Effect to initialize map and then load default layers
   useEffect(() => {
     if (!mapRef.current) return;
 
     const map = mapRef.current.getMap();
     
-    const handleMapLoad = () => {
+    const handleMapLoad = async () => {
       console.log('[MapRenderer] 🗺️ Map loaded, setting mapLoadedRef = true');
       mapLoadedRef.current = true;
+      
+      // Load custom images before initializing layers
+      await loadLayerImages(map, layers);
+      
       console.log('[MapRenderer] 🔍 Status after load:', {
         mapLoadedRef: mapLoadedRef.current,
         isInitialized,
@@ -76,7 +114,7 @@ const MapRenderer = forwardRef(({
       console.log('[MapRenderer] ⚡ Map already loaded, proceeding...');
       handleMapLoad();
     }
-  }, [isInitialized, initializeLayers]);
+  }, [isInitialized, initializeLayers, layers, loadLayerImages]);
 
   // GUI-NOTE: Effect to handle layer updates when layers state changes (only after initialization)
   useEffect(() => {
@@ -208,14 +246,55 @@ const MapRenderer = forwardRef(({
     mapStyle: mapStyle || "https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
   };
 
+  const handleMapClick = useCallback((event) => {
+    if (!onMarkerClick) return;
+    
+    const { features } = event;
+    if (features && features.length > 0) {
+      const feature = features[0];
+      
+      // Check if clicked feature is from hip-hop-locations layers
+      if (feature.layer && (feature.layer.id === 'layer-hip-hop-locations' || feature.layer.id === 'layer-hip-hop-locations-center')) {
+        // Construir objeto location completo com dados do feature
+        const location = {
+          ...feature.properties,
+          coordinates: {
+            lng: feature.geometry.coordinates[0],
+            lat: feature.geometry.coordinates[1]
+          }
+        };
+        onMarkerClick(location);
+      }
+    }
+  }, [onMarkerClick]);
+
+  const handleMapMouseMove = useCallback((event) => {
+    if (!onHover) return;
+    
+    const { features } = event;
+    if (features && features.length > 0) {
+      const feature = features[0];
+      
+      // Check if hovered feature is from hip-hop-locations layers
+      if (feature.layer && (feature.layer.id === 'layer-hip-hop-locations' || feature.layer.id === 'layer-hip-hop-locations-center')) {
+        onHover(feature.properties, event.lngLat);
+      }
+    } else {
+      onHover(null);
+    }
+  }, [onHover]);
+
   return (
     <Map
       ref={mapRef}
       onMove={onMove}
+      onClick={handleMapClick}
+      onMouseMove={handleMapMouseMove}
       style={style}
       mapStyle={safeMapProps.mapStyle}
       attributionControl={attributionControl}
       transitionDuration={transitionDuration}
+      interactiveLayerIds={['layer-hip-hop-locations', 'layer-hip-hop-locations-center']}
       {...safeMapProps}
     >
       {/* Render layers from context using Source and Layer components */}

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import AnimatedButton from '@/components/AnimatedButton';
 import HeaderApp from '@/components/html/HeaderApp';
-import { Marker, Popup } from 'react-map-gl/maplibre';
+import { Popup } from 'react-map-gl/maplibre';
 import { MapProvider } from '@/contexts/MapContext';
 import MapRenderer from '@/components/mapa/MapRenderer';
 import { useMapLayers } from '@/hooks/useMapLayers';
@@ -35,6 +35,7 @@ const MapaContent = () => {
     geoJson,
     mapStatistics,
     loadMapData,
+    clearCache,
     isLoading,
     getError
   } = useAcervo();
@@ -67,9 +68,11 @@ const MapaContent = () => {
   // Update hip-hop-locations layer when geoJson data is available
   useEffect(() => {
     if (geoJson?.features?.length > 0 && !hipHopLayerUpdated) {
-      console.log('[MapPage] 🎯 Atualizando layer hip-hop-locations com', geoJson.features.length, 'itens do acervo');
+      console.log('[MapPage] 🎯 Atualizando layers hip-hop-locations com', geoJson.features.length, 'itens do acervo');
       mapLayers.updateLayerData('hip-hop-locations', geoJson);
+      mapLayers.updateLayerData('hip-hop-locations-center', geoJson);
       mapLayers.updateLayerProperty('hip-hop-locations', 'visible', true);
+      mapLayers.updateLayerProperty('hip-hop-locations-center', 'visible', true);
       setHipHopLayerUpdated(true);
     }
   }, [geoJson, hipHopLayerUpdated]);
@@ -117,6 +120,7 @@ const MapaContent = () => {
 
   // Estado para controlar hover nos markers
   const [hoveredLocation, setHoveredLocation] = useState(null);
+  const [hoveredCoordinates, setHoveredCoordinates] = useState(null);
   const [showHoverPopup, setShowHoverPopup] = useState(false);
 
 
@@ -565,12 +569,26 @@ const MapaContent = () => {
     }
     
     // Enquadrar o mapa na região selecionada
-    setViewState({
-      ...viewState,
-      longitude: location.coordinates.lng,
-      latitude: location.coordinates.lat,
-      zoom: 14 // Zoom mais próximo para melhor enquadramento
-    });
+    if (location.coordinates) {
+      setViewState({
+        ...viewState,
+        longitude: location.coordinates.lng,
+        latitude: location.coordinates.lat,
+        zoom: 14 // Zoom mais próximo para melhor enquadramento
+      });
+    }
+  };
+
+  const handleMarkerHover = (location, lngLat) => {
+    if (location && lngLat) {
+      setHoveredLocation(location);
+      setHoveredCoordinates({ lng: lngLat.lng, lat: lngLat.lat });
+      setShowHoverPopup(true);
+    } else {
+      setHoveredLocation(null);
+      setHoveredCoordinates(null);
+      setShowHoverPopup(false);
+    }
   };
 
   // GUI-NOTE: Handler for search component to filter map locations
@@ -766,6 +784,23 @@ const MapaContent = () => {
       {/* Conteúdo da página */}
       <div className={`${isPageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
         <HeaderApp title="MAPA DO HIP HOP" showTitle={true} />
+        
+        {/* Botão de desenvolvimento - apenas em modo desenvolvimento */}
+        {process.env.NODE_ENV === 'development' && (
+          <button
+            onClick={() => {
+              console.info('[Mapa] 🧹 Limpando cache e recarregando dados...');
+              clearCache();
+              setTimeout(() => {
+                window.location.reload();
+              }, 100);
+            }}
+            className="fixed top-20 right-4 z-50 bg-red-500 hover:bg-red-600 text-white px-3 py-2 text-xs font-mono border-2 border-black shadow-lg transition-colors"
+            title="Limpar cache e recarregar (desenvolvimento)"
+          >
+            🧹 Clear Cache
+          </button>
+        )}
 
         <div className="relative max-w-7xl mx-auto min-h-screen border-theme border-l-3 border-r-3 border-b-3">
 
@@ -1145,6 +1180,8 @@ const MapaContent = () => {
                           <MapRenderer
                             ref={mapRef}
                             {...viewState}
+                            onMarkerClick={handleMarkerClick}
+                            onHover={handleMarkerHover}
                             onLoad={(evt) => {
                               console.log('Mapa carregado em modo fullscreen.');
                             }}
@@ -1159,103 +1196,18 @@ const MapaContent = () => {
                             }}
                             mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
                             attributionControl={false}
-                            // Mapa fullscreen totalmente interativo
-                            dragPan={true}
                             dragRotate={false} // Desabilitar rotação por drag para evitar rotação acidental
                             scrollZoom={{
                               // Configurar scroll zoom para não interferir com drag
                               around: 'center'
                             }}
-                            boxZoom={true}
-                            doubleClickZoom={true}
-                            touchZoom={true}
-                            touchRotate={false} // Desabilitar rotação por touch também
-                            keyboard={false} // DESABILITAR COMPLETAMENTE controles de teclado do MapBox
-                            cooperativeGestures={false} // Desabilitar gestos cooperativos (Ctrl+scroll)
-                            pitchWithRotate={false} // Desabilitar pitch com rotação
                           >
-                            {filteredLocations.map((location) => (
-                              <Marker
-                                key={location.id}
-                                longitude={location.coordinates.lng}
-                                latitude={location.coordinates.lat}
-                                onClick={(e) => {
-                                  e.originalEvent.stopPropagation();
-                                  handleMarkerClick(location);
-                                }}
-                              >
-                                <motion.div
-                                  whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
-                                  whileTap={{ scale: 0.9 }}
-                                  onMouseEnter={() => {
-                                    if (!selectedTour) {
-                                      setHoveredLocation(location);
-                                      setShowHoverPopup(true);
-                                    }
-                                  }}
-                                  onMouseLeave={() => {
-                                    if (!selectedLocation || selectedLocation.id !== location.id) {
-                                      setHoveredLocation(null);
-                                      setShowHoverPopup(false);
-                                    }
-                                  }}
-                                  animate={{
-                                    scale: (selectedTour &&
-                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                      ? 1.3 : 1,
-                                    backgroundColor: (selectedTour &&
-                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                      ? '#f8e71c' : '#fae523'
-                                  }}
-                                  transition={{ duration: 0.5, ease: "easeOut" }}
-                                  className={`w-8 h-8 border-3 border-theme rounded-full flex items-center justify-center shadow-lg cursor-pointer ${selectedTour ? 'ring-2 ring-white/50' : ''
-                                    }`}
-                                  style={{
-                                    backgroundColor: (selectedTour &&
-                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                      ? '#f8e71c' : '#fae523'
-                                  }}
-                                >
-                                  {location.isRandomPoint ? (
-                                    (() => {
-                                      const IconComponent = getIconComponent(location);
-                                      return IconComponent ? (
-                                        <IconComponent
-                                          size={20}
-                                          color={(selectedTour &&
-                                            checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                            ? '#f8e71c' : '#fae523'}
-                                        />
-                                      ) : (
-                                        <motion.div
-                                          animate={{
-                                            scale: (selectedTour &&
-                                              checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                              ? 1.2 : 1
-                                          }}
-                                          className="w-3 h-3 bg-black rounded-full"
-                                        />
-                                      );
-                                    })()
-                                  ) : (
-                                    <motion.div
-                                      animate={{
-                                        scale: (selectedTour &&
-                                          checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                          ? 1.2 : 1
-                                      }}
-                                      className="w-3 h-3 bg-black rounded-full"
-                                    />
-                                  )}
-                                </motion.div>
-                              </Marker>
-                            ))}
 
                             {/* Popup para hover no modo fullscreen */}
-                            {hoveredLocation && showHoverPopup && !selectedLocation && !selectedTour && (
+                            {hoveredLocation && showHoverPopup && !selectedLocation && !selectedTour && hoveredCoordinates && (
                               <Popup
-                                longitude={hoveredLocation.coordinates.lng}
-                                latitude={hoveredLocation.coordinates.lat}
+                                longitude={hoveredCoordinates.lng}
+                                latitude={hoveredCoordinates.lat}
                                 anchor="bottom"
                                 closeButton={false}
                                 className="hover-popup"
@@ -1298,7 +1250,7 @@ const MapaContent = () => {
                             )}
 
                             {/* Popup para click (ativo/persistente) no modo fullscreen */}
-                            {selectedLocation && !selectedTour && (
+                            {selectedLocation && !selectedTour && selectedLocation.coordinates && (
                               <Popup
                                 longitude={selectedLocation.coordinates.lng}
                                 latitude={selectedLocation.coordinates.lat}
@@ -1310,8 +1262,8 @@ const MapaContent = () => {
                                 onClose={() => setSelectedLocation(null)}
                               >
                                 <div className="popup-folha-pauta px-6 py-4 min-w-[280px] max-w-[400px]">
-                                  <h3 className="font-scratchy text-5xl mb-2 text-black font-bold">{selectedLocation.name}</h3>
-                                  <p className="font-sometype-mono text-sm mb-3 text-black leading-relaxed">{selectedLocation.description}</p>
+                                  <h3 className="font-scratchy text-5xl mb-2 text-black font-bold">{selectedLocation.name || selectedLocation.title || 'Local'}</h3>
+                                  <p className="font-sometype-mono text-sm mb-3 text-black leading-relaxed">{selectedLocation.description || selectedLocation.scope_and_content || 'Sem descrição disponível'}</p>
                                   
                                   {/* Informações específicas para localidades DF */}
                                   {selectedLocation.sourceType === 'df_locality' ? (
@@ -1333,7 +1285,7 @@ const MapaContent = () => {
                                     <div className="mb-3">
                                       <div className="flex items-center gap-2 mb-2">
                                         <span className="bg-yellow-500 text-black px-2 py-1 text-lg font-scratchy border border-black">
-                                          {selectedLocation.itemCount} item{selectedLocation.itemCount !== 1 ? 's' : ''}
+                                          {selectedLocation.itemCount || 1} item{(selectedLocation.itemCount || 1) !== 1 ? 's' : ''}
                                         </span>
                                         {selectedLocation.coordinateType === 'extracted_from_notes' && (
                                           <span className="bg-green-500 text-white px-2 py-1 text-lg font-scratchy border border-black">GPS</span>
@@ -1380,6 +1332,24 @@ const MapaContent = () => {
 
                           {/* LayerControl agora flutua sobre o mapa */}
                           <LayerControl isVisible={!selectedTour} />
+                          
+                          {/* Botão Clear Cache em desenvolvimento */}
+                          {process.env.NODE_ENV === 'development' && (
+                            <div className="absolute top-4 right-4 z-10">
+                              <button
+                                onClick={() => {
+                                  if (typeof window !== 'undefined' && window.clearMapCache) {
+                                    window.clearMapCache();
+                                    window.location.reload();
+                                  }
+                                }}
+                                className="bg-red-500 text-white px-3 py-2 border-2 border-black font-scratchy hover:bg-red-600 transition-colors text-sm"
+                                title="Limpar cache do mapa (desenvolvimento)"
+                              >
+                                🗑️ Cache
+                              </button>
+                            </div>
+                          )}
 
                           </div>
                         </div>
@@ -1417,6 +1387,8 @@ const MapaContent = () => {
                           <MapRenderer
                             ref={mapRef}
                             {...viewState}
+                            onMarkerClick={handleMarkerClick}
+                            onHover={handleMarkerHover}
                             onLoad={(evt) => {
                               console.log('Mapa carregado em modo normal.');
                             }}
@@ -1444,90 +1416,12 @@ const MapaContent = () => {
                             pitchWithRotate={false}
                             interactive={false}
                           >
-                            {filteredLocations.map((location) => (
-                              <Marker
-                                key={location.id}
-                                longitude={location.coordinates.lng}
-                                latitude={location.coordinates.lat}
-                                onClick={(e) => {
-                                  e.originalEvent.stopPropagation();
-                                  handleMarkerClick(location);
-                                }}
-                              >
-                                <motion.div
-                                  whileHover={{ scale: selectedTour ? 1.1 : 1.2 }}
-                                  whileTap={{ scale: 0.9 }}
-                                  onMouseEnter={() => {
-                                    if (!selectedTour) {
-                                      setHoveredLocation(location);
-                                      setShowHoverPopup(true);
-                                    }
-                                  }}
-                                  onMouseLeave={() => {
-                                    if (!selectedLocation || selectedLocation.id !== location.id) {
-                                      setHoveredLocation(null);
-                                      setShowHoverPopup(false);
-                                    }
-                                  }}
-                                  animate={{
-                                    scale: (selectedTour &&
-                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                      ? 1.3 : 1,
-                                    backgroundColor: (selectedTour &&
-                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                      ? '#f8e71c' : '#fae523'
-                                  }}
-                                  transition={{ duration: 0.5, ease: "easeOut" }}
-                                  className={`w-8 h-8 border-3 border-theme rounded-full flex items-center justify-center shadow-lg cursor-pointer ${selectedTour ? 'ring-2 ring-white/50' : ''
-                                    }`}
-                                  style={{
-                                    backgroundColor: (selectedTour &&
-                                      checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                      ? '#f8e71c' : '#fae523'
-                                  }}
-                                >
-                                  {location.isRandomPoint ? (
-                                    // GUI-NOTE: Render custom SVG icon for random points
-                                    (() => {
-                                      const IconComponent = getIconComponent(location);
-                                      return IconComponent ? (
-                                        <IconComponent
-                                          size={20}
-                                          color={(selectedTour &&
-                                            checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                            ? '#f8e71c' : '#fae523'}
-                                        />
-                                      ) : (
-                                        <motion.div
-                                          animate={{
-                                            scale: (selectedTour &&
-                                              checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                              ? 1.2 : 1
-                                          }}
-                                          className="w-3 h-3 bg-black rounded-full"
-                                        />
-                                      );
-                                    })()
-                                  ) : (
-                                    // GUI-NOTE: Default marker for original locations
-                                    <motion.div
-                                      animate={{
-                                        scale: (selectedTour &&
-                                          checkTourLocationMatch(selectedTour.chapters[currentChapter], location))
-                                          ? 1.2 : 1
-                                      }}
-                                      className="w-3 h-3 bg-black rounded-full"
-                                    />
-                                  )}
-                                </motion.div>
-                              </Marker>
-                            ))}
 
                             {/* Popup para hover */}
-                            {hoveredLocation && showHoverPopup && !selectedLocation && !selectedTour && (
+                            {hoveredLocation && showHoverPopup && !selectedLocation && !selectedTour && hoveredCoordinates && (
                               <Popup
-                                longitude={hoveredLocation.coordinates.lng}
-                                latitude={hoveredLocation.coordinates.lat}
+                                longitude={hoveredCoordinates.lng}
+                                latitude={hoveredCoordinates.lat}
                                 anchor="bottom"
                                 closeButton={false}
                                 className="hover-popup"
@@ -1556,7 +1450,7 @@ const MapaContent = () => {
                             )}
 
                             {/* Popup para click (ativo/persistente) */}
-                            {selectedLocation && !selectedTour && (
+                            {selectedLocation && !selectedTour && selectedLocation.coordinates && (
                               <Popup
                                 longitude={selectedLocation.coordinates.lng}
                                 latitude={selectedLocation.coordinates.lat}
