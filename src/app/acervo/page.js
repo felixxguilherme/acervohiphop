@@ -342,7 +342,7 @@ const Acervo = () => {
       <div className="relative mx-auto min-h-screen border-theme border-l-3 border-r-3 border-b-3">
         
         <motion.section 
-          className="mb-12 mt-20"
+          className="mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
