@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    output: 'standalone',
     images: {
       domains: ['images.unsplash.com', 'external-content.duckduckgo.com', 'base.acervodistritohiphop.com.br'],
       unoptimized: true,
