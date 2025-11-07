@@ -885,11 +885,11 @@ const MapaContent = () => {
                         /* Layout fullscreen - responsivo: sidebar esquerda em desktop, inferior em mobile */
                         <div className="h-full flex flex-col lg:flex-row">
                           {/* Sidebar - esquerda em desktop, inferior em mobile/tablet */}
-                          <div className="lg:w-80 w-full lg:h-full md:h-1/3 h-2/5 min-h-[300px] fundo-base lg:border-r-2 border-t-2 lg:border-t-0 border-black flex flex-col overflow-hidden lg:order-1 order-2">
+                          <div className="lg:w-80 w-full lg:h-full md:h-1/3 h-2/5 min-h-[300px] bg-theme-background lg:border-r-2 border-t-2 lg:border-t-0 border-black flex flex-col overflow-hidden lg:order-1 order-2">
                             
                             {/* Header da Sidebar */}
-                            <div className="bg-hip-amarelo-escuro border-b-2 border-black lg:p-4 p-2">
-                              <h2 className="font-dirty-stains lg:text-2xl md:text-xl text-lg text-black">EXPLORAR MAPA</h2>
+                            <div className="border-b-2 border-black lg:p-4 p-2">
+                              <p className="marca-texto-amarelo font-dirty-stains lg:text-2xl md:text-xl text-lg text-black">EXPLORAR MAPA</p>
                             </div>
 
                             {/* Busca e Filtros - quando não há tour ativo */}
@@ -905,7 +905,7 @@ const MapaContent = () => {
                                       <input
                                         type="text"
                                         placeholder="Buscar em locais, descrições, pontos de acesso..."
-                                        className="w-full lg:p-3 p-2 pr-10 border-2 border-black font-sometype-mono lg:text-sm text-xs"
+                                        className="w-full lg:p-3 p-2 pr-10 border-2 border-black font-sometype-mono lg:text-sm text-xs text-black"
                                         value={searchTerm}
                                         onChange={(e) => {
                                           setSearchTerm(e.target.value);
@@ -914,7 +914,7 @@ const MapaContent = () => {
                                       {searchTerm && (
                                         <button
                                           onClick={() => setSearchTerm('')}
-                                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black hover:text-gray-600 p-1"
+                                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black hover:text-black p-1"
                                           title="Limpar busca"
                                         >
                                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1153,7 +1153,7 @@ const MapaContent = () => {
                             )}
 
                             {/* Menu de Tours - sempre visível na parte inferior */}
-                            <div className="border-t-2 border-black bg-hip-amarelo-claro lg:p-4 p-2">
+                            <div className="border-t-2 border-black lg:p-4 p-2">
                               <h3 className="font-sometype-mono lg:text-md text-sm font-bold text-black lg:mb-3 mb-2">
                                 TOURS DISPONÍVEIS
                               </h3>
@@ -1168,7 +1168,7 @@ const MapaContent = () => {
                                         : 'bg-white hover:bg-gray-100'
                                     }`}
                                   >
-                                    🎯 {story.title}
+                                    {story.title}
                                   </button>
                                 ))}
                               </div>
@@ -1334,7 +1334,7 @@ const MapaContent = () => {
                           <LayerControl isVisible={!selectedTour} />
                           
                           {/* Botão Clear Cache em desenvolvimento */}
-                          {process.env.NODE_ENV === 'development' && (
+                          {/* {process.env.NODE_ENV === 'development' && (
                             <div className="absolute top-4 right-4 z-10">
                               <button
                                 onClick={() => {
@@ -1349,7 +1349,7 @@ const MapaContent = () => {
                                 🗑️ Cache
                               </button>
                             </div>
-                          )}
+                          )} */}
 
                           </div>
                         </div>
