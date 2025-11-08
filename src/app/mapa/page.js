@@ -554,6 +554,7 @@ const MapaContent = () => {
 
   const handleMarkerClick = (location) => {
     setSelectedLocation(location);
+    setShowHoverPopup(false); // Hide hover popup when clicking
     
     // Scroll para o mapa suavemente
     const mapSection = document.querySelector('[ref="mapContainerRef"]') || mapContainerRef.current;
@@ -844,8 +845,8 @@ const MapaContent = () => {
                       }`}
                   >
 
-                    {/* Botão de Fullscreen no centro - sempre visível no modo normal */}
-                    {!isFullscreen && (
+                    {/* Botão de Fullscreen no centro - visível apenas quando não há popup ativo */}
+                    {!isFullscreen && !(hoveredLocation && showHoverPopup) && !selectedLocation && (
                       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-4">
                         <div className="border-2 border-black bg-white px-4 py-3 font-sometype-mono text-sm shadow-lg">
                           <div className="flex items-center gap-2 text-black">                          
@@ -1183,6 +1184,8 @@ const MapaContent = () => {
                             {...viewState}
                             onMarkerClick={handleMarkerClick}
                             onHover={handleMarkerHover}
+                            dragPan={true}
+                            interactive={true}
                             onLoad={(evt) => {
                               console.log('Mapa carregado em modo fullscreen.');
                             }}
@@ -1198,10 +1201,7 @@ const MapaContent = () => {
                             mapStyle="https://api.maptiler.com/maps/0198f104-5621-7dfc-896c-fe02aa4f37f8/style.json?key=44Jpa8uxVZvK9mvnZI2z"
                             attributionControl={false}
                             dragRotate={false} // Desabilitar rotação por drag para evitar rotação acidental
-                            scrollZoom={{
-                              // Configurar scroll zoom para não interferir com drag
-                              around: 'center'
-                            }}
+                            scrollZoom={true}
                           >
 
                             {/* Popup para hover no modo fullscreen */}
@@ -1216,7 +1216,7 @@ const MapaContent = () => {
                                 closeOnMove={false}
                               >
                                 <div className="popup-folha-pauta px-6 py-3">
-                                  <p className="font-scratchy text-xl mb-1 text-black">{hoveredLocation.name}</p>
+                                  <p className="font-scratchy text-4xl mb-1 text-black">{hoveredLocation.name}</p>
                                   <p className="font-sometype-mono text-xs mb-2 line-clamp-2 text-black">{hoveredLocation.description}</p>
                                   <div className="flex items-center gap-1">
                                     {hoveredLocation.sourceType === 'df_locality' ? (
@@ -1232,7 +1232,7 @@ const MapaContent = () => {
                                           {hoveredLocation.itemCount} item{hoveredLocation.itemCount !== 1 ? 's' : ''}
                                         </span>
                                         {hoveredLocation.coordinateType === 'extracted_from_notes' && (
-                                          <span className="bg-green-500 text-white px-1 py-1 text-xl font-scratchy border border-black">GPS</span>
+                                          <span className="bg-green-500 text-black px-1 py-1 text-xl font-scratchy border border-black">GPS</span>
                                         )}
                                         {hoveredLocation.coordinateType === 'estimated_from_places' && (
                                           <span className="bg-blue-500 text-white px-1 py-1 text-xl font-scratchy border border-black">EST</span>
@@ -1260,10 +1260,13 @@ const MapaContent = () => {
                                 className="active-popup"
                                 closeOnClick={false}
                                 closeOnMove={false}
-                                onClose={() => setSelectedLocation(null)}
+                                onClose={() => {
+                                  setSelectedLocation(null);
+                                  setShowHoverPopup(false);
+                                }}
                               >
                                 <div className="popup-folha-pauta px-6 py-4 min-w-[280px] max-w-[400px]">
-                                  <h3 className="font-scratchy text-5xl mb-2 text-black font-bold">{selectedLocation.name || selectedLocation.title || 'Local'}</h3>
+                                  <h3 className="font-scratchy text-4xl mb-2 text-black font-bold">{selectedLocation.name || selectedLocation.title || 'Local'}</h3>
                                   <p className="font-sometype-mono text-sm mb-3 text-black leading-relaxed">{selectedLocation.description || selectedLocation.scope_and_content || 'Sem descrição disponível'}</p>
                                   
                                   {/* Informações específicas para localidades DF */}
@@ -1289,7 +1292,7 @@ const MapaContent = () => {
                                           {selectedLocation.itemCount || 1} item{(selectedLocation.itemCount || 1) !== 1 ? 's' : ''}
                                         </span>
                                         {selectedLocation.coordinateType === 'extracted_from_notes' && (
-                                          <span className="bg-green-500 text-white px-2 py-1 text-lg font-scratchy border border-black">GPS</span>
+                                          <span className="bg-green-500 text-black px-2 py-1 text-lg font-scratchy border border-black">GPS</span>
                                         )}
                                         {selectedLocation.coordinateType === 'estimated_from_places' && (
                                           <span className="bg-blue-500 text-white px-2 py-1 text-lg font-scratchy border border-black">Estimado</span>
@@ -1300,7 +1303,7 @@ const MapaContent = () => {
                                       </div>
                                       
                                       {/* Pontos de acesso, se existirem */}
-                                      {selectedLocation.place_access_points && selectedLocation.place_access_points.length > 0 && (
+                                      {selectedLocation.place_access_points && Array.isArray(selectedLocation.place_access_points) && selectedLocation.place_access_points.length > 0 && (
                                         <div className="mb-2">
                                           <p className="font-sometype-mono text-xs text-black/80 mb-1">Pontos de acesso:</p>
                                           <p className="font-sometype-mono text-xs text-blue-700">
@@ -1437,7 +1440,7 @@ const MapaContent = () => {
                                       {hoveredLocation.itemCount} item
                                     </span>
                                     {hoveredLocation.coordinateType === 'extracted_from_notes' && (
-                                      <span className="text-white px-1 py-1 text-xl font-scratchy border border-black">GPS</span>
+                                      <span className="text-black px-1 py-1 text-xl font-scratchy border border-black">GPS</span>
                                     )}
                                     {hoveredLocation.coordinateType === 'estimated_from_places' && (
                                       <span className="bg-blue-500 text-white px-1 py-1 text-xl font-scratchy border border-black">EST</span>
@@ -1471,7 +1474,7 @@ const MapaContent = () => {
                                       {selectedLocation.itemCount} itens
                                     </span>
                                     {selectedLocation.coordinateType === 'extracted_from_notes' && (
-                                      <span className="bg-green-500 text-white px-2 py-1 border border-black text-xl font-scratchy">
+                                      <span className="bg-green-500 text-black px-2 py-1 border border-black text-xl font-scratchy">
                                         GPS
                                       </span>
                                     )}
@@ -1529,7 +1532,7 @@ const MapaContent = () => {
                 transition={{ delay: 0.6 }}
               >
                 
-                  <div className="pb-6 pt-8 w-full">
+                  <div className="pb-6 w-full">
                     <h3 className="px-6 py-6 text-2xl sm:text-3xl md:text-4xl font-sometype-mono text-black mb-4 text-left bg-hip-amarelo-escuro">REGIÕES MAPEADAS</h3>
                     <p className="px-6 font-sometype-mono text-lg text-black text-left">
                       {locations.length} {locations.length === 1 ? 'região mapeada' : 'regiões mapeadas'}
@@ -1616,7 +1619,7 @@ const MapaContent = () => {
                                 {location.itemCount} item
                               </span>
                               {location.coordinateType === 'extracted_from_notes' && (
-                                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-sometype-mono border border-green-300">
+                                <span className="bg-green-100 text-black px-2 py-1 rounded-full text-xs font-sometype-mono border border-green-300">
                                   GPS
                                 </span>
                               )}
@@ -1806,7 +1809,7 @@ const MapaContent = () => {
                         {selectedLocation.reference_code && (
                           <p>🏷️ {selectedLocation.reference_code}</p>
                         )}
-                        {selectedLocation.place_access_points && selectedLocation.place_access_points.length > 0 && (
+                        {selectedLocation.place_access_points && Array.isArray(selectedLocation.place_access_points) && selectedLocation.place_access_points.length > 0 && (
                           <p>📍 {selectedLocation.place_access_points.join(', ')}</p>
                         )}
                       </div>

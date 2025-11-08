@@ -254,15 +254,26 @@ const MapRenderer = forwardRef(({
       const feature = features[0];
       
       // Check if clicked feature is from hip-hop-locations layers
-      if (feature.layer && (feature.layer.id === 'layer-hip-hop-locations' || feature.layer.id === 'layer-hip-hop-locations-center')) {
-        // Construir objeto location completo com dados do feature
+      if (feature.layer && (feature.layer.id === 'layer-hip-hop-locations' || feature.layer.id === 'layer-hip-hop-locations-center' || feature.layer.id === 'custom-layer-hip-hop-locations' || feature.layer.id === 'custom-layer-hip-hop-locations-center')) {
+        
+        // Map feature properties to expected format and add coordinates
         const location = {
-          ...feature.properties,
+          id: feature.properties.id,
+          name: feature.properties.title || feature.properties.name,
+          description: feature.properties.archival_history || feature.properties.description || 'Sem descrição disponível',
+          itemCount: 1,
+          coordinateType: feature.properties.coordinate_source,
+          sourceType: feature.properties.sourceType,
+          locality_type_name: feature.properties.locality_type_name,
+          slug: feature.properties.id,
           coordinates: {
             lng: feature.geometry.coordinates[0],
             lat: feature.geometry.coordinates[1]
-          }
+          },
+          // Preserve all original properties
+          ...feature.properties
         };
+        
         onMarkerClick(location);
       }
     }
@@ -276,8 +287,22 @@ const MapRenderer = forwardRef(({
       const feature = features[0];
       
       // Check if hovered feature is from hip-hop-locations layers
-      if (feature.layer && (feature.layer.id === 'layer-hip-hop-locations' || feature.layer.id === 'layer-hip-hop-locations-center')) {
-        onHover(feature.properties, event.lngLat);
+      if (feature.layer && (feature.layer.id === 'layer-hip-hop-locations' || feature.layer.id === 'layer-hip-hop-locations-center' || feature.layer.id === 'custom-layer-hip-hop-locations' || feature.layer.id === 'custom-layer-hip-hop-locations-center')) {
+        
+        // Map feature properties to expected format for popup
+        const mappedLocation = {
+          id: feature.properties.id,
+          name: feature.properties.title || feature.properties.name,
+          description: feature.properties.archival_history || feature.properties.description || 'Sem descrição disponível',
+          itemCount: 1,
+          coordinateType: feature.properties.coordinate_source,
+          sourceType: feature.properties.sourceType,
+          locality_type_name: feature.properties.locality_type_name,
+          // Preserve all original properties
+          ...feature.properties
+        };
+        
+        onHover(mappedLocation, event.lngLat);
       }
     } else {
       onHover(null);
@@ -294,8 +319,8 @@ const MapRenderer = forwardRef(({
       mapStyle={safeMapProps.mapStyle}
       attributionControl={attributionControl}
       transitionDuration={transitionDuration}
-      interactiveLayerIds={['layer-hip-hop-locations', 'layer-hip-hop-locations-center']}
       {...safeMapProps}
+      interactiveLayerIds={['layer-hip-hop-locations', 'layer-hip-hop-locations-center', 'custom-layer-hip-hop-locations', 'custom-layer-hip-hop-locations-center']}
     >
       {/* Render layers from context using Source and Layer components */}
       {visibleLayers.map((layer) => (

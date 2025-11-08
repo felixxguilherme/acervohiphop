@@ -33,7 +33,7 @@ export const useMapLayers = () => {
         visible: true,
         source: {
           type: 'geojson',
-          data: 'https://servicodados.ibge.gov.br/api/v3/malhas/municipios?formato=application/vnd.geo+json'
+          data: 'https://servicodados.ibge.gov.br/api/v4/malhas/municipios?formato=application/vnd.geo+json'
         },
         layout: {
           'visibility': 'visible'
