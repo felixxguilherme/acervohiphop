@@ -457,13 +457,13 @@ export default function Home() {
         <div className={`relative z-20 w-full`}>
           {/* Título da seção */}
           <div
-            className={`${currentTheme === 'light' ? 'bg-hip-vermelho-escuro' : 'bg-hip-vermelho-escuro'} text-left mb-16 text-theme border-theme w-full pb-10 pt-10 px-6`}
+            className={`${currentTheme === 'light' ? 'bg-hip-vermelho-escuro' : 'bg-hip-vermelho-escuro'} text-left mb-16 text-theme border-theme w-full pb-10 pt-6 px-6`}
           >
-            <h2 className="text-4xl text-bold sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl pl-6 pt-6 mb-6 text-bold">
+            <h2 className="text-3xl text-bold md:text-4xl lg:text-5xl xl:text-6xl md:pl-6 mb-6 text-bold">
               DESTAQUES
             </h2>
-            <p className="border-theme border-b-3 pb-2 ml-6 text-xl md:text-2xl font-sometype-mono text-theme max-w-4xl leading-relaxed">
-              Mergulhe na <span className="marca-texto-verde px-2 py-1">história viva</span> do Hip Hop do DF através de <span className="marca-texto-verde px-2 py-1">documentos únicos</span> que contam nossa trajetória
+            <p className="border-theme border-b-3 pb-2 md:ml-6 text-xl md:text-2xl font-sometype-mono text-theme max-w-4xl leading-relaxed">
+              Mergulhe na <span className="marca-texto-verde px-2 py-1">história viva</span> do Hip Hop do DF através de<span className="marca-texto-verde p-0 m-0">documentos únicos</span> que contam nossa trajetória
             </p>
 
           </div>
@@ -753,7 +753,7 @@ export default function Home() {
         </div>
 
         {/* Main content */}
-        <div className="relative z-20 text-center max-w-6xl mx-auto">
+        <div className="relative z-20 text-center max-w-6xl">
           {/* Texto principal dividido em parágrafos */}
           <motion.p
             initial={{ opacity: 0, y: 30 }}

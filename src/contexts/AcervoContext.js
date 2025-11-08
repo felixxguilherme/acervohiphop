@@ -382,14 +382,20 @@ async function estimateCoordinatesFromPlaces(place_access_points) {
     // 1. Correspondência exata no DF
     if (DF_PLACES_COORDINATES[normalizedPlace]) {
       console.info(`[Coordinates] 📍 DF - Correspondência exata: "${place}" -> ${DF_PLACES_COORDINATES[normalizedPlace]}`);
-      return DF_PLACES_COORDINATES[normalizedPlace];
+      return {
+        coordinates: DF_PLACES_COORDINATES[normalizedPlace],
+        source: 'df_places_exact'
+      };
     }
     
     // 2. Correspondência parcial no DF
     for (const [key, coords] of Object.entries(DF_PLACES_COORDINATES)) {
       if (normalizedPlace.includes(key) || key.includes(normalizedPlace)) {
         console.info(`[Coordinates] 📍 DF - Correspondência parcial: "${place}" contém "${key}" -> ${coords}`);
-        return coords;
+        return {
+          coordinates: coords,
+          source: 'df_places_partial'
+        };
       }
     }
 
@@ -401,7 +407,10 @@ async function estimateCoordinatesFromPlaces(place_access_points) {
     
     if (foundLocation) {
       console.info(`[Coordinates] 📍 Mapa local - Encontrado: "${place}" -> ${foundLocation.name}`);
-      return [foundLocation.coordinates.lng, foundLocation.coordinates.lat]; // GeoJSON format
+      return {
+        coordinates: [foundLocation.coordinates.lng, foundLocation.coordinates.lat], // GeoJSON format
+        source: 'local_map_data'
+      };
     }
 
     // 4. Buscar nos municípios do IBGE
@@ -409,16 +418,77 @@ async function estimateCoordinatesFromPlaces(place_access_points) {
       const municipioCoords = await municipiosService.findMunicipioCoordinates(place);
       if (municipioCoords) {
         console.info(`[Coordinates] 📍 IBGE - Município encontrado: "${place}" -> ${municipioCoords.municipioName}, ${municipioCoords.uf}`);
-        return [municipioCoords.lng, municipioCoords.lat]; // GeoJSON format
+        return {
+          coordinates: [municipioCoords.lng, municipioCoords.lat], // GeoJSON format
+          source: 'ibge_municipios'
+        };
       }
     } catch (error) {
       console.warn(`[Coordinates] ⚠️ Erro ao buscar município "${place}":`, error);
     }
   }
   
+  // 5. Último recurso: Geocoding com Nominatim
+  for (const place of place_access_points) {
+    if (!place || typeof place !== 'string') continue;
+    
+    try {
+      const geocodedCoords = await geocodeWithNominatim(place);
+      if (geocodedCoords) {
+        console.info(`[Coordinates] 🌍 Nominatim - Geocodificação: "${place}" -> ${geocodedCoords}`);
+        return {
+          coordinates: geocodedCoords,
+          source: 'geocoded_nominatim'
+        };
+      }
+    } catch (error) {
+      console.warn(`[Coordinates] ⚠️ Erro na geocodificação de "${place}":`, error);
+    }
+  }
+  
   // Se chegou aqui, não encontrou correspondência
   console.warn(`[Coordinates] ⚠️ Nenhuma correspondência encontrada para: ${place_access_points.join(', ')}`);
   return null;
+}
+
+// Função para geocodificação usando Nominatim (OpenStreetMap)
+async function geocodeWithNominatim(place) {
+  if (!place || typeof place !== 'string') return null;
+  
+  try {
+    // Adicionar ", Distrito Federal, Brasil" para melhorar a precisão da busca
+    const searchQuery = `${place}, Distrito Federal, Brasil`;
+    const encodedQuery = encodeURIComponent(searchQuery);
+    
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=1&addressdetails=1&bounded=1&viewbox=-48.3,-15.4,-47.2,-16.1`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data && data.length > 0) {
+      const result = data[0];
+      const lat = parseFloat(result.lat);
+      const lon = parseFloat(result.lon);
+      
+      // Verificar se as coordenadas estão dentro do DF (aproximadamente)
+      if (lat >= -16.1 && lat <= -15.4 && lon >= -48.3 && lon <= -47.2) {
+        return [lon, lat]; // Formato GeoJSON [longitude, latitude]
+      } else {
+        console.warn(`[Coordinates] ⚠️ Coordenadas fora do DF para "${place}": ${lat}, ${lon}`);
+        return null;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.warn(`[Coordinates] ⚠️ Erro na geocodificação Nominatim:`, error);
+    return null;
+  }
 }
 
 // Provider
@@ -614,10 +684,10 @@ export function AcervoProvider({ children }) {
     if (typeof window !== 'undefined') {
       try {
         // Remover cache do mapa
-        ['8337', '3312'].forEach(creatorId => {
-          localStorage.removeItem(`mapData_${creatorId}`);
-          localStorage.removeItem(`geoJson_${creatorId}`);
-          localStorage.removeItem(`mapCache_timestamp_${creatorId}`);
+        ['8337', '3312', 'all'].forEach(cacheKey => {
+          localStorage.removeItem(`mapData_${cacheKey}`);
+          localStorage.removeItem(`geoJson_${cacheKey}`);
+          localStorage.removeItem(`mapCache_timestamp_${cacheKey}`);
         });
         console.info('[AcervoContext] 🧹 Cache do localStorage limpo');
       } catch (error) {
@@ -674,7 +744,7 @@ export function AcervoProvider({ children }) {
   }, []);
 
   // Carregar dados do mapa com carregamento progressivo otimizado e cache persistente
-  const loadMapData = useCallback(async (creatorId = '8337', forceReload = false, fastMode = true) => {
+  const loadMapData = useCallback(async (creatorId = null, forceReload = false, fastMode = true) => {
     // Verificar cache em memória primeiro
     if (state.mapData.length > 0 && state.geoJson && !forceReload) {
       console.info('[AcervoContext] 🎯 Dados do mapa já carregados em memória');
@@ -684,9 +754,10 @@ export function AcervoProvider({ children }) {
     // Verificar cache no localStorage
     if (!forceReload && typeof window !== 'undefined') {
       try {
-        const cachedMapData = localStorage.getItem(`mapData_${creatorId}`);
-        const cachedGeoJson = localStorage.getItem(`geoJson_${creatorId}`);
-        const cacheTimestamp = localStorage.getItem(`mapCache_timestamp_${creatorId}`);
+        const cacheKey = creatorId ? `${creatorId}` : 'all';
+        const cachedMapData = localStorage.getItem(`mapData_${cacheKey}`);
+        const cachedGeoJson = localStorage.getItem(`geoJson_${cacheKey}`);
+        const cacheTimestamp = localStorage.getItem(`mapCache_timestamp_${cacheKey}`);
         
         // Cache válido por 24 horas
         const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas
@@ -723,9 +794,9 @@ export function AcervoProvider({ children }) {
             return;
           } else {
             console.info('[AcervoContext] ⏰ Cache expirado, removendo do localStorage');
-            localStorage.removeItem(`mapData_${creatorId}`);
-            localStorage.removeItem(`geoJson_${creatorId}`);
-            localStorage.removeItem(`mapCache_timestamp_${creatorId}`);
+            localStorage.removeItem(`mapData_${cacheKey}`);
+            localStorage.removeItem(`geoJson_${cacheKey}`);
+            localStorage.removeItem(`mapCache_timestamp_${cacheKey}`);
           }
         }
       } catch (error) {
@@ -737,7 +808,8 @@ export function AcervoProvider({ children }) {
     dispatch({ type: ACTIONS.SET_ERROR, section: 'map', error: null });
     
     try {
-      console.info('[AcervoContext] 🗺️ Carregando dados do mapa para creator:', creatorId);
+      const cacheKey = creatorId ? `${creatorId}` : 'all';
+      console.info('[AcervoContext] 🗺️ Carregando dados do mapa para:', creatorId ? `creator ${creatorId}` : 'todo o acervo');
       
       // Configurar paginação otimizada
       let allItems = [];
@@ -745,7 +817,8 @@ export function AcervoProvider({ children }) {
       const limit = fastMode ? 50 : 30; // Páginas maiores no modo rápido para eficiência
       
       // Primeira chamada para obter total
-      const firstResponse = await fetchCompat(`/api/acervo?creators=${creatorId}&limit=${limit}`);
+      const apiUrl = creatorId ? `/api/acervo?creators=${creatorId}&limit=${limit}` : `/api/acervo?limit=${limit}`;
+      const firstResponse = await fetchCompat(apiUrl);
       if (!firstResponse.ok) {
         throw new Error(`Erro na API: ${firstResponse.status}`);
       }
@@ -765,7 +838,8 @@ export function AcervoProvider({ children }) {
         for (skip = limit; skip < maxItemsToLoad; skip += limit) {
           console.info(`[AcervoContext] 📄 Buscando página skip=${skip} (modo: ${fastMode ? 'rápido' : 'completo'})`);
           
-          const response = await fetchCompat(`/api/acervo?creators=${creatorId}&limit=${limit}&skip=${skip}`);
+          const pageUrl = creatorId ? `/api/acervo?creators=${creatorId}&limit=${limit}&skip=${skip}` : `/api/acervo?limit=${limit}&skip=${skip}`;
+          const response = await fetchCompat(pageUrl);
           if (response.ok) {
             const pageData = await response.json();
             const newItems = pageData.results || [];
@@ -847,9 +921,9 @@ export function AcervoProvider({ children }) {
       // Salvar no localStorage para cache persistente
       if (typeof window !== 'undefined') {
         try {
-          localStorage.setItem(`mapData_${creatorId}`, JSON.stringify(itemsWithDetails));
-          localStorage.setItem(`geoJson_${creatorId}`, JSON.stringify(geoJson));
-          localStorage.setItem(`mapCache_timestamp_${creatorId}`, Date.now().toString());
+          localStorage.setItem(`mapData_${cacheKey}`, JSON.stringify(itemsWithDetails));
+          localStorage.setItem(`geoJson_${cacheKey}`, JSON.stringify(geoJson));
+          localStorage.setItem(`mapCache_timestamp_${cacheKey}`, Date.now().toString());
           console.info('[AcervoContext] 💾 Dados do mapa salvos no localStorage');
         } catch (error) {
           console.warn('[AcervoContext] ⚠️ Erro ao salvar cache no localStorage:', error);
@@ -866,7 +940,7 @@ export function AcervoProvider({ children }) {
 
   // Gerar GeoJSON a partir dos dados do mapa
   const generateGeoJson = useCallback(async (items = state.mapData) => {
-    console.info('[AcervoContext] 🗺️ Gerando GeoJSON...');
+    console.info('[AcervoContext] 🗺️ Gerando GeoJSON...', `${items.length} itens para processar`);
     
     const features = [];
     let itemsWithCoordinates = 0;
@@ -884,12 +958,27 @@ export function AcervoProvider({ children }) {
         itemsWithCoordinates++;
       } else {
         // 2. Se não tem coordenadas em notes, tentar estimar baseado em place_access_points
-        coordinates = await estimateCoordinatesFromPlaces(item.place_access_points);
+        const estimationResult = await estimateCoordinatesFromPlaces(item.place_access_points);
         
-        if (coordinates) {
-          coordinateSource = 'estimated_from_places';
-          hasRealCoordinates = false; // Estimada, não real
-          itemsWithCoordinates++; // Conta como "tem coordenadas" mas não "real"
+        if (estimationResult) {
+          // Compatibilidade: se é um objeto com coordinates, usar isso; senão, é array direto
+          if (estimationResult.coordinates && Array.isArray(estimationResult.coordinates)) {
+            coordinates = estimationResult.coordinates;
+            coordinateSource = estimationResult.source || 'estimated_from_places';
+          } else if (Array.isArray(estimationResult)) {
+            // Formato antigo - array direto
+            coordinates = estimationResult;
+            coordinateSource = 'estimated_from_places';
+          } else {
+            // Caso inesperado - log para debug
+            console.warn('[Coordinates] ⚠️ Formato inesperado do estimationResult:', estimationResult);
+            coordinates = null;
+          }
+          
+          if (coordinates) {
+            hasRealCoordinates = coordinateSource === 'geocoded_nominatim'; // Nominatim considerado mais preciso
+            itemsWithCoordinates++; // Conta como "tem coordenadas" mas não "real"
+          }
         } else {
           // 3. Último recurso: coordenadas padrão de Brasília
           coordinates = [-47.8825, -15.7942];
@@ -925,7 +1014,7 @@ export function AcervoProvider({ children }) {
           api_url: `https://base.acervodistritohiphop.com.br/index.php/api/informationobjects/${item.slug}`,
           
           // Metadados
-          source: "AtoM API - Creator 3312",
+          source: "AtoM API - Todos os Creators",
           last_updated: new Date().toISOString()
         },
         geometry: {
@@ -945,8 +1034,8 @@ export function AcervoProvider({ children }) {
     const geoJson = {
       type: "FeatureCollection",
       metadata: {
-        title: "Acervo Hip-Hop DF - Creator 8337",
-        description: "Itens do acervo com informações geográficas para exibição no mapa",
+        title: "Acervo Hip-Hop DF - Todos os Itens",
+        description: "Todos os itens do acervo com informações geográficas para exibição no mapa",
         total_features: features.length,
         coordinate_statistics: {
           items_with_real_coordinates: realCoords,
@@ -957,11 +1046,13 @@ export function AcervoProvider({ children }) {
           extraction_success_rate: `${(((realCoords + estimatedCoords) / features.length) * 100).toFixed(1)}%`
         },
         source: "AtoM API",
-        creator_id: "8337",
+        creator_id: "all",
         generated_at: new Date().toISOString()
       },
       features: features
     };
+    
+    console.info('[AcervoContext] ✅ GeoJSON gerado:', `${features.length} features criadas`);
     
     // Atualizar estatísticas
     const statistics = {
@@ -1057,10 +1148,10 @@ export function AcervoProvider({ children }) {
       if (typeof window === 'undefined') return null;
       
       const cacheInfo = {};
-      ['8337', '3312'].forEach(creatorId => {
-        const timestamp = localStorage.getItem(`mapCache_timestamp_${creatorId}`);
-        const mapData = localStorage.getItem(`mapData_${creatorId}`);
-        const geoJson = localStorage.getItem(`geoJson_${creatorId}`);
+      ['8337', '3312', 'all'].forEach(cacheKey => {
+        const timestamp = localStorage.getItem(`mapCache_timestamp_${cacheKey}`);
+        const mapData = localStorage.getItem(`mapData_${cacheKey}`);
+        const geoJson = localStorage.getItem(`geoJson_${cacheKey}`);
         
         if (timestamp && mapData && geoJson) {
           const age = Date.now() - parseInt(timestamp);
@@ -1068,7 +1159,7 @@ export function AcervoProvider({ children }) {
           const mapDataSize = Math.round(mapData.length / 1024);
           const geoJsonSize = Math.round(geoJson.length / 1024);
           
-          cacheInfo[creatorId] = {
+          cacheInfo[cacheKey] = {
             cached: true,
             ageHours,
             mapDataSizeKB: mapDataSize,
@@ -1076,7 +1167,7 @@ export function AcervoProvider({ children }) {
             totalSizeKB: mapDataSize + geoJsonSize
           };
         } else {
-          cacheInfo[creatorId] = { cached: false };
+          cacheInfo[cacheKey] = { cached: false };
         }
       });
       
@@ -1095,7 +1186,7 @@ export function AcervoProvider({ children }) {
         console.info('[AcervoContext] 🔄 Forçando reload dos dados do mapa...');
         clearCache();
         setTimeout(() => {
-          loadMapData('8337', true, false); // Forçar reload completo
+          loadMapData(null, true, false); // Forçar reload completo de todo o acervo
         }, 100);
       };
       
