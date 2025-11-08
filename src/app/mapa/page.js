@@ -136,7 +136,7 @@ const MapaContent = () => {
       setRegionsLoading(true);
       try {
         console.info('[Mapa] 🗺️ Iniciando carregamento dos dados do mapa');
-        await loadMapData('8337', false, true); // Modo rápido por padrão
+        await loadMapData(null, false, true); // Carregar TODOS os itens do acervo
       } catch (error) {
         console.error('[Mapa] ❌ Erro ao carregar dados do mapa:', error);
       } finally {
@@ -788,17 +788,18 @@ const MapaContent = () => {
         {/* Botão de desenvolvimento - apenas em modo desenvolvimento */}
         {process.env.NODE_ENV === 'development' && (
           <button
-            onClick={() => {
-              console.info('[Mapa] 🧹 Limpando cache e recarregando dados...');
+            onClick={async () => {
+              console.info('[Mapa] 🧹 Limpando cache e recarregando TODOS os dados...');
               clearCache();
-              setTimeout(() => {
-                window.location.reload();
-              }, 100);
+              setHipHopLayerUpdated(false); // Resetar flag de layer atualizada
+              setTimeout(async () => {
+                await loadMapData(null, true, false); // Forçar reload de TODO o acervo
+              }, 500);
             }}
             className="fixed top-20 right-4 z-50 bg-red-500 hover:bg-red-600 text-white px-3 py-2 text-xs font-mono border-2 border-black shadow-lg transition-colors"
-            title="Limpar cache e recarregar (desenvolvimento)"
+            title="Limpar cache e recarregar TODOS os itens do acervo"
           >
-            🧹 Clear Cache
+            🧹 Reload ALL Items
           </button>
         )}
 
@@ -1214,8 +1215,8 @@ const MapaContent = () => {
                                 closeOnClick={false}
                                 closeOnMove={false}
                               >
-                                <div className="popup-folha-pauta px-6 py-3 min-w-[200px]">
-                                  <p className="font-scratchy text-4xl mb-1 text-black">{hoveredLocation.name}</p>
+                                <div className="popup-folha-pauta px-6 py-3">
+                                  <p className="font-scratchy text-xl mb-1 text-black">{hoveredLocation.name}</p>
                                   <p className="font-sometype-mono text-xs mb-2 line-clamp-2 text-black">{hoveredLocation.description}</p>
                                   <div className="flex items-center gap-1">
                                     {hoveredLocation.sourceType === 'df_locality' ? (
