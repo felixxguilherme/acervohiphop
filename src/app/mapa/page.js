@@ -954,48 +954,6 @@ const MapaContent = () => {
                   </div>
                 );
               })}
-
-              {/* Seção especial para campos não mapeados */}
-              {(() => {
-                const mappedFields = new Set();
-                Object.values(sections).forEach(section => {
-                  Object.values(section.fields).forEach(value => {
-                    if (typeof value === 'string') mappedFields.add(value);
-                  });
-                });
-
-                const unmappedData = {};
-                Object.entries(location).forEach(([key, value]) => {
-                  if (value && 
-                      !['coordinates', 'items', 'lat', 'lng', 'id'].includes(key) &&
-                      !mappedFields.has(value) &&
-                      typeof value !== 'object') {
-                    unmappedData[key] = value;
-                  }
-                });
-
-                if (Object.keys(unmappedData).length === 0) return null;
-
-                return (
-                  <div className="border-3 border-black p-4">
-                    <h3 className="font-dirty-stains text-lg text-black mb-4 border-b-2 border-black pb-2">
-                      DADOS ADICIONAIS
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {Object.entries(unmappedData).map(([key, value]) => (
-                        <div key={key} className="p-3">
-                          <h4 className="font-sometype-mono font-bold text-xs text-black/70 uppercase tracking-wider mb-1">
-                            {key.replace(/_/g, ' ')}
-                          </h4>
-                          <p className="font-sometype-mono text-sm text-black leading-relaxed">
-                            {String(value)}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })()}
             </div>
           </div>
         </div>
