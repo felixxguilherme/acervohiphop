@@ -27,24 +27,6 @@ export const useMapLayers = () => {
     
     const defaultLayers = [
       {
-        id: 'municipios-ibge',
-        name: 'Municípios do Brasil',
-        type: 'line',
-        visible: true,
-        source: {
-          type: 'geojson',
-          data: 'https://servicodados.ibge.gov.br/api/v4/malhas/municipios?formato=application/vnd.geo+json'
-        },
-        layout: {
-          'visibility': 'visible'
-        },
-        paint: {
-          'line-color': '#000',// '#95a5a6',  // Cinza para municípios do Brasil
-          'line-width': 2,          // Linha fina para não poluir
-          'line-opacity': 0.6       // Transparente para ser discreta
-        }
-      },
-      {
         id: 'regioes-administrativas-df',
         name: 'Regiões Administrativas',
         type: 'line',
@@ -141,7 +123,10 @@ export const useMapLayers = () => {
             features: []
           }
         },
-        layout: {},
+        // layout: {
+        //   'icon-image': 'batalha-icon',
+        //   'icon-size': 2,
+        // },
         paint: {
           'circle-radius': 12,
           'circle-color': '#fae523',
