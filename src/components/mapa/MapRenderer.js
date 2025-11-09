@@ -17,7 +17,8 @@ const MapRenderer = forwardRef(({
   transitionDuration = 300,
   ...mapProps 
 }, ref) => {
-  const { layers, isInitialized, initializeLayers } = useMap();
+  const mapContext = useMap();
+  const { layers, isInitialized, initializeLayers } = mapContext;
   const internalMapRef = useRef(null);
   const mapRef = ref || internalMapRef;
   const lastLayersStateRef = useRef(null);
@@ -41,9 +42,10 @@ const MapRenderer = forwardRef(({
   }, [visibleLayers]);
 
   // GUI-NOTE: Function to automatically load images for layers
-  const loadLayerImages = useCallback(async (map, layers) => {
+  const loadLayerImages = useCallback(async (map, layers, mapContext) => {
     console.log('🔍 Loading images for layers:', layers.length);
     const imagesToLoad = new Set();
+    let iconLoadSuccess = false;
     
     // Extract all icon-image references from layers
     layers.forEach(layer => {
@@ -65,49 +67,78 @@ const MapRenderer = forwardRef(({
     
     // Load each image
     for (const imageName of imagesToLoad) {
-      if (!map.hasImage(imageName)) {
-        try {
-          console.log(`🔍 Loading image: ${imageName} from /mapa/${imageName}.png`);
-          const response = await fetch(`/mapa/${imageName}.png`);
-          if (response.ok) {
-            const imageBlob = await response.blob();
-            const imageBitmap = await createImageBitmap(imageBlob);
-            map.addImage(imageName, imageBitmap);
-            console.log(`✅ Successfully loaded image: ${imageName}`);
-          } else {
-            console.warn(`❌ Image not found: /mapa/${imageName}.png (status: ${response.status})`);
-          }
-        } catch (error) {
-          console.warn(`[MapRenderer] ❌ Error loading image ${imageName}:`, error);
+      try {
+        console.log(`🔍 Loading image: ${imageName} from /mapa/${imageName}.png`);
+        
+        // Remove existing image first to avoid conflicts
+        if (map.hasImage(imageName)) {
+          map.removeImage(imageName);
+          console.log(`🗑️ Removed existing image: ${imageName}`);
         }
-      } else {
-        console.log(`♻️ Image already loaded: ${imageName}`);
+        
+        const response = await fetch(`/mapa/${imageName}.png`);
+        if (response.ok) {
+          const imageBlob = await response.blob();
+          const imageBitmap = await createImageBitmap(imageBlob);
+          map.addImage(imageName, imageBitmap);
+          console.log(`✅ Successfully loaded image: ${imageName}`);
+          
+          // If batalha-icon loaded successfully, hide fallback
+          if (imageName === 'batalha-icon') {
+            iconLoadSuccess = true;
+          }
+        } else {
+          console.warn(`❌ Image not found: /mapa/${imageName}.png (status: ${response.status})`);
+          
+          // If batalha-icon failed, show fallback
+          if (imageName === 'batalha-icon') {
+            console.log('🔄 batalha-icon failed, enabling fallback circle');
+            if (mapContext && mapContext.updateLayerProperty) {
+              mapContext.updateLayerProperty('hip-hop-locations-center', 'visible', true);
+            }
+          }
+        }
+      } catch (error) {
+        console.warn(`[MapRenderer] ❌ Error loading image ${imageName}:`, error);
+        
+        // If batalha-icon errored, show fallback
+        if (imageName === 'batalha-icon') {
+          console.log('🔄 batalha-icon error, enabling fallback circle');
+          if (mapContext && mapContext.updateLayerProperty) {
+            mapContext.updateLayerProperty('hip-hop-locations-center', 'visible', true);
+          }
+        }
       }
     }
+    
+    return { iconLoadSuccess };
   }, []);
 
   // GUI-NOTE: Function to create fallback circle icon
   const createFallbackIcon = useCallback(() => {
     const canvas = document.createElement('canvas');
-    const size = 32;
+    const size = 128; // Increase size to avoid empty canvas issues
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext('2d');
 
+    // Clear canvas with transparent background
+    ctx.clearRect(0, 0, size, size);
+
     // Círculo preto com borda branca
     ctx.fillStyle = '#000000';
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
     
     ctx.beginPath();
-    ctx.arc(size / 2, size / 2, size / 2 - 2, 0, 2 * Math.PI);
+    ctx.arc(size / 2, size / 2, size / 2 - 4, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
 
     // Centro branco
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(size / 2, size / 2, 6, 0, 2 * Math.PI);
+    ctx.arc(size / 2, size / 2, 8, 0, 2 * Math.PI);
     ctx.fill();
 
     return canvas;
@@ -123,12 +154,17 @@ const MapRenderer = forwardRef(({
       mapLoadedRef.current = true;
       
       // Load custom images before initializing layers
-      await loadLayerImages(map, layers);
+      await loadLayerImages(map, layers, mapContext);
       
       // Add fallback circle icon
       if (!map.hasImage('circle-fallback')) {
-        const fallbackCanvas = createFallbackIcon();
-        map.addImage('circle-fallback', fallbackCanvas);
+        try {
+          const fallbackCanvas = createFallbackIcon();
+          map.addImage('circle-fallback', fallbackCanvas);
+          console.log('✅ Fallback circle icon created');
+        } catch (error) {
+          console.warn('❌ Error creating fallback icon:', error);
+        }
       }
       
       // Initialize default layers from context if not already initialized

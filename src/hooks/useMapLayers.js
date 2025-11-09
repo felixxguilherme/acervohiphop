@@ -123,7 +123,7 @@ export const useMapLayers = () => {
         },
         layout: {
           'icon-image': 'batalha-icon',
-          'icon-size': 1.5,
+          'icon-size': 0.2,
           'icon-allow-overlap': true,
           'icon-anchor': 'center'
         },
@@ -133,9 +133,9 @@ export const useMapLayers = () => {
       },
       {
         id: 'hip-hop-locations-center',
-        name: 'Centro dos Itens',
+        name: 'Centro dos Itens (Fallback)',
         type: 'circle',
-        visible: true,
+        visible: false,
         source: {
           type: 'geojson',
           data: {
@@ -145,9 +145,12 @@ export const useMapLayers = () => {
         },
         layout: {},
         paint: {
-          'circle-radius': 4,
-          'circle-color': '#000000',
-          'circle-opacity': 1.0
+          'circle-radius': 8,
+          'circle-color': '#fae523',
+          'circle-stroke-color': '#000',
+          'circle-stroke-width': 2,
+          'circle-opacity': 0.8,
+          'circle-stroke-opacity': 1.0
         }
       },
       {
