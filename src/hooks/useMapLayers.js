@@ -114,7 +114,7 @@ export const useMapLayers = () => {
       {
         id: 'hip-hop-locations',
         name: 'Itens do Acervo',
-        type: 'circle',
+        type: 'symbol',
         visible: true,
         source: {
           type: 'geojson',
@@ -123,17 +123,25 @@ export const useMapLayers = () => {
             features: []
           }
         },
-        // layout: {
-        //   'icon-image': 'batalha-icon',
-        //   'icon-size': 2,
-        // },
+        layout: {
+          'icon-image': ['case',
+            // Se tiver uma propriedade que indique que é uma batalha, usar o ícone
+            ['any',
+              ['==', ['downcase', ['to-string', ['get', 'title']]], ['literal', 'batalha']],
+              ['in', ['literal', 'batalha'], ['downcase', ['to-string', ['get', 'title']]]],
+              ['in', ['literal', 'battle'], ['downcase', ['to-string', ['get', 'title']]]],
+              ['in', ['literal', 'duelo'], ['downcase', ['to-string', ['get', 'title']]]]
+            ],
+            'batalha-icon',
+            // Fallback para círculo
+            'circle-fallback'
+          ],
+          'icon-size': 0.8,
+          'icon-allow-overlap': true,
+          'icon-anchor': 'center'
+        },
         paint: {
-          'circle-radius': 12,
-          'circle-color': '#fae523',
-          'circle-stroke-color': '#000000',
-          'circle-stroke-width': 3,
-          'circle-opacity': 1.0,
-          'circle-stroke-opacity': 1.0
+          'icon-opacity': 1.0
         }
       },
       {

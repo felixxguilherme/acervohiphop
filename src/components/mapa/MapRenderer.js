@@ -77,6 +77,33 @@ const MapRenderer = forwardRef(({
     }
   }, []);
 
+  // GUI-NOTE: Function to create fallback circle icon
+  const createFallbackIcon = useCallback(() => {
+    const canvas = document.createElement('canvas');
+    const size = 32;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    // Círculo preto com borda branca
+    ctx.fillStyle = '#000000';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 3;
+    
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2 - 2, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+
+    // Centro branco
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, 6, 0, 2 * Math.PI);
+    ctx.fill();
+
+    return canvas;
+  }, []);
+
   // GUI-NOTE: Effect to initialize map and then load default layers
   useEffect(() => {
     if (!mapRef.current) return;
@@ -89,6 +116,13 @@ const MapRenderer = forwardRef(({
       
       // Load custom images before initializing layers
       await loadLayerImages(map, layers);
+      
+      // Add fallback circle icon
+      if (!map.hasImage('circle-fallback')) {
+        const fallbackCanvas = createFallbackIcon();
+        map.addImage('circle-fallback', fallbackCanvas);
+        console.log('[MapRenderer] ✅ Fallback circle icon created');
+      }
       
       console.log('[MapRenderer] 🔍 Status after load:', {
         mapLoadedRef: mapLoadedRef.current,

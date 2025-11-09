@@ -1115,8 +1115,8 @@ const MapaContent = () => {
                     )}
 
 
-                    {/* Botão de sair do fullscreen */}
-                    {isFullscreen && (
+                    {/* Botão de sair do fullscreen - esconder quando overlay está ativo */}
+                    {isFullscreen && !isDetailModalOpen && (
                       <button
                         onClick={toggleFullscreen}
                         className="absolute top-4 right-4 z-[10001] flex items-center justify-center text-white bg-black bg-opacity-70 hover:bg-opacity-90 transition-opacity p-2 rounded-lg"
