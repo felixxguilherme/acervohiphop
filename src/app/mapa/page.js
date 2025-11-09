@@ -869,16 +869,17 @@ const MapaContent = () => {
     
     return (
       <div 
-        className="bg-theme-background text-black w-full max-w-6xl h-[90vh] overflow-hidden border-4 border-hip-amarelo flex flex-col" 
+        className="bg-white text-black w-full lg:max-w-6xl h-full lg:h-[90vh] overflow-hidden border-4 border-hip-amarelo flex flex-col" 
         onClick={(e) => e.stopPropagation()}
         style={{
+          backgroundColor: 'white',
           position: 'relative',
-          maxWidth: '90vw',
-          maxHeight: '90vh'
+          width: '100%',
+          height: '100%'
         }}
       >
           {/* Header */}
-          <div className="flex justify-between items-center border-b-3 border-black p-6">
+          <div className="flex justify-between items-center border-b-3 border-black lg:p-6 p-4">
             <div>
               <h2 className="text-2xl font-dirty-stains text-black">{location.title || location.name || 'Detalhes do Item'}</h2>
               {location.reference_code && (
@@ -897,7 +898,7 @@ const MapaContent = () => {
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto">
-            <div className="p-6 space-y-8">
+            <div className="lg:p-6 p-3 lg:space-y-8 space-y-4">
               {/* Imagem principal */}
               {getImageUrl() && (
                 <div className="border-3 border-black p-4">
@@ -1048,24 +1049,6 @@ const MapaContent = () => {
       {/* Conteúdo da página */}
       <div className={`${isPageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}>
         <HeaderApp title="MAPA DO HIP HOP" showTitle={true} />
-        
-        {/* Botão de desenvolvimento - apenas em modo desenvolvimento */}
-        {process.env.NODE_ENV === 'development' && (
-          <button
-            onClick={async () => {
-              console.info('[Mapa] 🧹 Limpando cache e recarregando TODOS os dados...');
-              clearCache();
-              setHipHopLayerUpdated(false); // Resetar flag de layer atualizada
-              setTimeout(async () => {
-                await loadMapData(null, true, false); // Forçar reload de TODO o acervo
-              }, 500);
-            }}
-            className="fixed top-20 right-4 z-50 bg-red-500 hover:bg-red-600 text-white px-3 py-2 text-xs font-mono border-2 border-black shadow-lg transition-colors"
-            title="Limpar cache e recarregar TODOS os itens do acervo"
-          >
-            🧹 Reload ALL Items
-          </button>
-        )}
 
         <div className="relative max-w-7xl mx-auto min-h-screen border-theme border-l-3 border-r-3 border-b-3">
 
@@ -1507,7 +1490,7 @@ const MapaContent = () => {
                           <div id="map-overlay" className={`${isDetailModalOpen && isFullscreen ? 'active' : ''}`}>
                             {isDetailModalOpen && isFullscreen && (
                               <div 
-                                className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-[10001]" 
+                                className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center lg:p-4 p-2 z-[10001]" 
                                 onClick={() => setIsDetailModalOpen(false)}
                                 style={{ 
                                   position: 'absolute',
@@ -1683,24 +1666,6 @@ const MapaContent = () => {
 
                           {/* LayerControl agora flutua sobre o mapa */}
                           <LayerControl isVisible={!selectedTour} />
-                          
-                          {/* Botão Clear Cache em desenvolvimento */}
-                          {/* {process.env.NODE_ENV === 'development' && (
-                            <div className="absolute top-4 right-4 z-10">
-                              <button
-                                onClick={() => {
-                                  if (typeof window !== 'undefined' && window.clearMapCache) {
-                                    window.clearMapCache();
-                                    window.location.reload();
-                                  }
-                                }}
-                                className="bg-red-500 text-white px-3 py-2 border-2 border-black font-scratchy hover:bg-red-600 transition-colors text-sm"
-                                title="Limpar cache do mapa (desenvolvimento)"
-                              >
-                                🗑️ Cache
-                              </button>
-                            </div>
-                          )} */}
 
                           </div>
                         </div>
