@@ -157,6 +157,13 @@ const MapaContent = () => {
     return () => clearTimeout(timeoutId);
   }, []); // Dependências vazias para executar apenas uma vez
 
+  // Effect para fechar modal automaticamente quando sair do fullscreen
+  useEffect(() => {
+    if (!isFullscreen && isDetailModalOpen) {
+      setIsDetailModalOpen(false);
+    }
+  }, [isFullscreen, isDetailModalOpen]);
+
   // Convert GeoJSON features to locations format for the map (memoized)
   const locations = useMemo(() => {
     if (!geoJson?.features) return [];
@@ -1010,11 +1017,6 @@ const MapaContent = () => {
   };
 
 
-  // Debug logs
-  console.log("🔍 Render - isDetailModalOpen:", isDetailModalOpen);
-  console.log("🔍 Render - isFullscreen:", isFullscreen);
-  console.log("🔍 Render - shouldShowModal:", isDetailModalOpen && isFullscreen);
-  console.log("🔍 Render - selectedLocation:", selectedLocation?.name || 'null/undefined');
 
   return (
     <>
@@ -1309,11 +1311,8 @@ const MapaContent = () => {
                                             <button 
                                               onClick={(e) => {
                                                 e.stopPropagation();
-                                                console.log("🔥 Botão clicado! Location:", location);
-                                                console.log("🔥 isFullscreen:", isFullscreen);
                                                 setSelectedLocation(location);
                                                 setIsDetailModalOpen(true);
-                                                console.log("🔥 States definidos - selectedLocation e isDetailModalOpen=true");
                                               }}
                                               className="font-sometype-mono text-xs text-black underline hover:no-underline"
                                             >
@@ -1670,10 +1669,7 @@ const MapaContent = () => {
                                     <button 
                                       className="w-full bg-black text-white px-4 py-2 font-scratchy text-lg border-2 border-black hover:bg-gray-800 transition-colors"
                                       onClick={() => {
-                                        console.log("🔥 Botão Explorar Local clicado no popup! selectedLocation:", selectedLocation);
-                                        console.log("🔥 isFullscreen:", isFullscreen);
                                         setIsDetailModalOpen(true);
-                                        console.log("🔥 Modal deveria abrir agora");
                                       }}
                                     >
                                       Explorar Local →
