@@ -42,28 +42,46 @@ const MapRenderer = forwardRef(({
 
   // GUI-NOTE: Function to automatically load images for layers
   const loadLayerImages = useCallback(async (map, layers) => {
+    console.log('🔍 Loading images for layers:', layers.length);
     const imagesToLoad = new Set();
     
     // Extract all icon-image references from layers
     layers.forEach(layer => {
       if (layer.layout && layer.layout['icon-image']) {
-        imagesToLoad.add(layer.layout['icon-image']);
+        console.log('📸 Found icon-image in layer:', layer.id, '→', layer.layout['icon-image']);
+        // Handle both string and array formats
+        const iconImage = layer.layout['icon-image'];
+        if (typeof iconImage === 'string') {
+          imagesToLoad.add(iconImage);
+        } else if (Array.isArray(iconImage)) {
+          // For 'case' expressions, extract possible image names
+          const imageNames = iconImage.filter(item => typeof item === 'string' && !['case', 'literal'].includes(item));
+          imageNames.forEach(name => imagesToLoad.add(name));
+        }
       }
     });
+    
+    console.log('🎨 Images to load:', Array.from(imagesToLoad));
     
     // Load each image
     for (const imageName of imagesToLoad) {
       if (!map.hasImage(imageName)) {
         try {
+          console.log(`🔍 Loading image: ${imageName} from /mapa/${imageName}.png`);
           const response = await fetch(`/mapa/${imageName}.png`);
           if (response.ok) {
             const imageBlob = await response.blob();
             const imageBitmap = await createImageBitmap(imageBlob);
             map.addImage(imageName, imageBitmap);
+            console.log(`✅ Successfully loaded image: ${imageName}`);
+          } else {
+            console.warn(`❌ Image not found: /mapa/${imageName}.png (status: ${response.status})`);
           }
         } catch (error) {
           console.warn(`[MapRenderer] ❌ Error loading image ${imageName}:`, error);
         }
+      } else {
+        console.log(`♻️ Image already loaded: ${imageName}`);
       }
     }
   }, []);

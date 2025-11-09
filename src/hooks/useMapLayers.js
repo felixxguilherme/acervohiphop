@@ -122,19 +122,8 @@ export const useMapLayers = () => {
           }
         },
         layout: {
-          'icon-image': ['case',
-            // Se tiver uma propriedade que indique que é uma batalha, usar o ícone
-            ['any',
-              ['==', ['downcase', ['to-string', ['get', 'title']]], ['literal', 'batalha']],
-              ['in', ['literal', 'batalha'], ['downcase', ['to-string', ['get', 'title']]]],
-              ['in', ['literal', 'battle'], ['downcase', ['to-string', ['get', 'title']]]],
-              ['in', ['literal', 'duelo'], ['downcase', ['to-string', ['get', 'title']]]]
-            ],
-            'batalha-icon',
-            // Fallback para círculo
-            'circle-fallback'
-          ],
-          'icon-size': 0.8,
+          'icon-image': 'batalha-icon',
+          'icon-size': 1.5,
           'icon-allow-overlap': true,
           'icon-anchor': 'center'
         },
