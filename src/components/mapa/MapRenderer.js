@@ -25,12 +25,7 @@ const MapRenderer = forwardRef(({
 
   // Memoize visible layers to avoid unnecessary recalculations
   const visibleLayers = useMemo(() => {
-    const visible = layers.filter(layer => layer.visible !== false);
-    console.log('[MapRenderer] 📊 Layers no contexto:', layers.length, '| Visíveis:', visible.length);
-    visible.forEach(layer => {
-      console.log(`[MapRenderer] 👁️ Layer visível: ${layer.id} (${layer.name})`);
-    });
-    return visible;
+    return layers.filter(layer => layer.visible !== false);
   }, [layers]);
 
   // Create a stable hash of layer state to avoid unnecessary re-renders
@@ -60,15 +55,11 @@ const MapRenderer = forwardRef(({
     for (const imageName of imagesToLoad) {
       if (!map.hasImage(imageName)) {
         try {
-          console.log(`[MapRenderer] 🖼️ Loading image: ${imageName}`);
           const response = await fetch(`/mapa/${imageName}.png`);
           if (response.ok) {
             const imageBlob = await response.blob();
             const imageBitmap = await createImageBitmap(imageBlob);
             map.addImage(imageName, imageBitmap);
-            console.log(`[MapRenderer] ✅ Image loaded: ${imageName}`);
-          } else {
-            console.warn(`[MapRenderer] ⚠️ Image not found: /mapa/${imageName}.png`);
           }
         } catch (error) {
           console.warn(`[MapRenderer] ❌ Error loading image ${imageName}:`, error);
@@ -111,7 +102,6 @@ const MapRenderer = forwardRef(({
     const map = mapRef.current.getMap();
     
     const handleMapLoad = async () => {
-      console.log('[MapRenderer] 🗺️ Map loaded, setting mapLoadedRef = true');
       mapLoadedRef.current = true;
       
       // Load custom images before initializing layers
@@ -121,31 +111,20 @@ const MapRenderer = forwardRef(({
       if (!map.hasImage('circle-fallback')) {
         const fallbackCanvas = createFallbackIcon();
         map.addImage('circle-fallback', fallbackCanvas);
-        console.log('[MapRenderer] ✅ Fallback circle icon created');
       }
-      
-      console.log('[MapRenderer] 🔍 Status after load:', {
-        mapLoadedRef: mapLoadedRef.current,
-        isInitialized,
-        layersInContext: layers.length
-      });
       
       // Initialize default layers from context if not already initialized
       if (!isInitialized) {
-        console.log('[MapRenderer] 🎯 Calling initializeLayers...');
         initializeLayers();
       } else {
-        console.log('[MapRenderer] ✅ Layers already initialized, syncing with map...');
         // Sync existing layers with map
         syncLayersWithMap(map);
       }
     };
 
     if (!map.loaded()) {
-      console.log('[MapRenderer] ⏳ Waiting for map to load...');
       map.once('load', handleMapLoad);
     } else {
-      console.log('[MapRenderer] ⚡ Map already loaded, proceeding...');
       handleMapLoad();
     }
   }, [isInitialized, initializeLayers, layers, loadLayerImages]);
@@ -153,23 +132,15 @@ const MapRenderer = forwardRef(({
   // GUI-NOTE: Effect to handle layer updates when layers state changes (only after initialization)
   useEffect(() => {
     if (!mapRef.current || !mapLoadedRef.current || !isInitialized) {
-      console.log('[MapRenderer] ⏸️ Skipping layer update - Reasons:', {
-        hasMapRef: !!mapRef.current,
-        mapLoaded: mapLoadedRef.current,
-        isInitialized: isInitialized,
-        layersCount: layers.length
-      });
       return;
     }
 
     // Only update if layers hash actually changed
     if (lastLayersStateRef.current === layersHash) {
-      console.log('[MapRenderer] ⏸️ Skipping layer update - no changes detected');
       return;
     }
 
     const map = mapRef.current.getMap();
-    console.log('[MapRenderer] 🔄 Processing layer changes...');
     
     // Process each layer in context for INSTANT toggle behavior
     layers.forEach(layer => {
@@ -180,16 +151,13 @@ const MapRenderer = forwardRef(({
       
       if (shouldBeVisible && !layerExists) {
         // Layer should be visible but doesn't exist - ADD IT
-        console.log(`[MapRenderer] 🟢 INSTANTLY adding layer: ${layer.id}`);
         addNewLayer(map, layer, layerId, sourceId);
       } else if (!shouldBeVisible && layerExists) {
         // Layer should be hidden and exists - REMOVE IT
-        console.log(`[MapRenderer] 🔴 INSTANTLY removing layer: ${layer.id}`);
         map.removeLayer(layerId);
         // Keep source for quick re-adding later
       } else if (shouldBeVisible && layerExists) {
         // Layer should be visible and exists - ENSURE IT'S VISIBLE
-        console.log(`[MapRenderer] ✅ Ensuring layer visibility: ${layer.id}`);
         map.setLayoutProperty(layerId, 'visibility', 'visible');
       }
     });
@@ -199,7 +167,6 @@ const MapRenderer = forwardRef(({
 
   // GUI-NOTE: Efficient function to add a new layer to the map
   const addNewLayer = (map, layer, layerId, sourceId) => {
-    console.log(`[MapRenderer] ⚡ INSTANTLY adding layer: ${layer.id}`);
     
     // Add source if it doesn't exist
     if (!map.getSource(sourceId) && layer.source) {
@@ -225,7 +192,6 @@ const MapRenderer = forwardRef(({
 
     try {
       map.addLayer(layerConfig);
-      console.log(`[MapRenderer] ✅ INSTANTLY added layer: ${layer.id}`);
     } catch (error) {
       console.error(`[MapRenderer] ❌ Error adding layer ${layer.id}:`, error);
     }
@@ -233,7 +199,6 @@ const MapRenderer = forwardRef(({
 
   // GUI-NOTE: Function to sync existing layers from context with map
   const syncLayersWithMap = (map) => {
-    console.log('[MapRenderer] 🔄 Syncing existing layers with map...');
     
     layers.forEach(layer => {
       const layerId = `custom-layer-${layer.id}`;
@@ -243,15 +208,12 @@ const MapRenderer = forwardRef(({
       
       if (shouldBeVisible && !layerExists) {
         // Layer should be visible but doesn't exist on map - ADD IT
-        console.log(`[MapRenderer] 🟢 Syncing: Adding layer ${layer.id}`);
         addNewLayer(map, layer, layerId, sourceId);
       } else if (!shouldBeVisible && layerExists) {
         // Layer should be hidden but exists on map - REMOVE IT
-        console.log(`[MapRenderer] 🔴 Syncing: Removing layer ${layer.id}`);
         map.removeLayer(layerId);
       } else if (shouldBeVisible && layerExists) {
         // Layer should be visible and exists - ENSURE VISIBILITY
-        console.log(`[MapRenderer] ✅ Syncing: Ensuring visibility for ${layer.id}`);
         map.setLayoutProperty(layerId, 'visibility', 'visible');
       }
     });
@@ -268,7 +230,6 @@ const MapRenderer = forwardRef(({
     
     // Only update if visibility actually changed
     if (currentVisibility !== targetVisibility) {
-      console.log(`[MapRenderer] Updating visibility for ${layerId}: ${targetVisibility}`);
       map.setLayoutProperty(layerId, 'visibility', targetVisibility);
     }
   };

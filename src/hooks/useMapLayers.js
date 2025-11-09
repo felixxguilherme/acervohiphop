@@ -11,20 +11,18 @@ export const useMapLayers = () => {
   const initializeDefaultLayers = () => {
     // Only initialize if not already initialized to prevent duplicate calls
     if (mapContext.isInitialized) {
-      console.log('[MapLayers] Already initialized, skipping initialization');
+      
       return;
     }
     
     // Clear any existing layers first to prevent duplicates
     if (mapContext.layers.length > 0) {
-      console.log('[MapLayers] Clearing existing layers before initialization');
+      
       mapContext.layers.forEach(layer => {
         mapContext.removeLayer(layer.id);
       });
     }
-    
-    console.log('[MapLayers] Starting layer initialization...');
-    
+
     const defaultLayers = [
       {
         id: 'regioes-administrativas-df',
@@ -202,17 +200,14 @@ export const useMapLayers = () => {
     ];
 
     mapContext.loadLayers(defaultLayers);
-    console.log('[MapLayers] 🎯 Default layers loaded:', defaultLayers.length);
-    console.log('[MapLayers] 📋 Layer names:', defaultLayers.map(l => l.name));
-    console.log('[MapLayers] ✅ RA layer configuration:', defaultLayers.find(l => l.id === 'regioes-administrativas-df'));
-    
+
     // Force RA layer to be visible after a short delay to ensure it's rendered
     setTimeout(() => {
-      console.log('[MapLayers] Ensuring RA layer is visible...');
+      
       const raLayer = mapContext.getLayerById('regioes-administrativas-df');
       if (raLayer && raLayer.visible !== true) {
         mapContext.updateLayerProperty('regioes-administrativas-df', 'visible', true);
-        console.log('[MapLayers] RA layer visibility forced to true');
+        
       }
     }, 1500);
   };

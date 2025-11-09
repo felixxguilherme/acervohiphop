@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 8041",
-    "build": "next build",
+    "build": "next build && node copy-public.js",
     "start": "next start -p 8041",
     "lint": "next lint",
     "deploy": "rsync -avz --progress .next/ guilherme@168.231.96.196:acervohiphop/.next/"

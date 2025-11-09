@@ -60,7 +60,6 @@ const MapaContent = () => {
 
   // GUI-NOTE: Initialize map layers when component mounts
   useEffect(() => {
-    console.log('[MapPage] Initializing map layers...');
     mapLayers.initializeDefaultLayers();
   }, []);
 
@@ -70,7 +69,6 @@ const MapaContent = () => {
   // Update hip-hop-locations layer when geoJson data is available
   useEffect(() => {
     if (geoJson?.features?.length > 0 && !hipHopLayerUpdated) {
-      console.log('[MapPage] 🎯 Atualizando layers hip-hop-locations com', geoJson.features.length, 'itens do acervo');
       mapLayers.updateLayerData('hip-hop-locations', geoJson);
       mapLayers.updateLayerData('hip-hop-locations-center', geoJson);
       mapLayers.updateLayerProperty('hip-hop-locations', 'visible', true);
@@ -129,19 +127,18 @@ const MapaContent = () => {
   const [hoveredCoordinates, setHoveredCoordinates] = useState(null);
   const [showHoverPopup, setShowHoverPopup] = useState(false);
 
-
   // Load map data de forma assíncrona (não bloqueia a página) - COM CACHE
   useEffect(() => {
     // Verificar se já temos dados carregados
     if (geoJson?.features?.length > 0) {
-      console.info('[Mapa] 🎯 Dados do mapa já carregados, pulando requisição');
+      
       return;
     }
 
     const loadMapDataAsync = async () => {
       setRegionsLoading(true);
       try {
-        console.info('[Mapa] 🗺️ Iniciando carregamento dos dados do mapa');
+        
         await loadMapData(null, false, true); // Carregar TODOS os itens do acervo
       } catch (error) {
         console.error('[Mapa] ❌ Erro ao carregar dados do mapa:', error);
@@ -448,16 +445,13 @@ const MapaContent = () => {
   useEffect(() => {
     // Only proceed if layers are initialized and we have layers loaded
     if (!mapLayers.isInitialized || mapLayers.layers.length === 0) {
-      console.log('[MapPage] Layers not ready yet, skipping RA selection update');
       return;
     }
     
     // Add a small delay to ensure layers are fully rendered on the map
     const timer = setTimeout(() => {
-      console.log('[MapPage] RA selection changed. selectedRA:', selectedRA);
       
       if (selectedRA) {
-        console.log('[MapPage] Showing specific RA:', selectedRA.properties?.ra_nome);
         // Always clear previous selection first
         mapLayers.updateLayerProperty('ra-selected-highlight', 'visible', false);
         mapLayers.updateLayerProperty('ra-selected-outline', 'visible', false);
@@ -524,10 +518,6 @@ const MapaContent = () => {
               else if (maxDimension > 0.05) zoom = 12; // RA pequena
               else zoom = 13; // RA muito pequena
               
-              console.log('[MapPage] Navegando para RA:', selectedRA.properties?.ra_nome, 
-                         'Centro:', bounds.centerLat.toFixed(4), bounds.centerLng.toFixed(4),
-                         'Zoom:', zoom, 'Dimensões:', bounds.width.toFixed(4), 'x', bounds.height.toFixed(4));
-              
               handleMapFlyTo({
                 longitude: bounds.centerLng,
                 latitude: bounds.centerLat,
@@ -541,7 +531,6 @@ const MapaContent = () => {
         }
         
       } else {
-        console.log('[MapPage] No RA selected, ensuring all RAs are visible');
         // Clear selection and show all RAs when no specific RA is selected
         mapLayers.updateLayerProperty('ra-selected-highlight', 'visible', false);
         mapLayers.updateLayerProperty('ra-selected-outline', 'visible', false);
@@ -739,8 +728,6 @@ const MapaContent = () => {
     };
   }, []);
 
-
-
   // Separar loading da página geral do loading das regiões
   const isPageLoading = isMapLoading; // Apenas loading inicial da página
   const isRegionsLoading = regionsLoading || isLoading('map');
@@ -771,13 +758,12 @@ const MapaContent = () => {
   };
 
   const LocationDetailModal = ({ location, onClose }) => {
-    console.log("🎯 LocationDetailModal renderizando! Location:", location?.name || location?.title);
+    
     if (!location) {
-      console.log("❌ LocationDetailModal - location é null, retornando null");
+      
       return null;
     }
-    console.log("✅ LocationDetailModal - location válido, renderizando modal");
-
+    
     // Função para formatear datas
     const formatDate = (dateString) => {
       if (!dateString) return 'Não informado';
@@ -866,7 +852,6 @@ const MapaContent = () => {
       }
     };
 
-    
     return (
       <div 
         className="bg-white text-black w-full lg:max-w-6xl h-full lg:h-[90vh] overflow-hidden border-4 border-hip-amarelo flex flex-col" 
@@ -1017,8 +1002,6 @@ const MapaContent = () => {
     );
   };
 
-
-
   return (
     <>
       {/* Tela de carregamento apenas para página inicial */}
@@ -1109,11 +1092,9 @@ const MapaContent = () => {
                         </button>
                           </div>
                         </div>
-                        
-                        
+
                       </div>
                     )}
-
 
                     {/* Botão de sair do fullscreen - esconder quando overlay está ativo */}
                     {isFullscreen && !isDetailModalOpen && (
@@ -1663,7 +1644,6 @@ const MapaContent = () => {
                             )}
                           </MapRenderer>
 
-
                           {/* LayerControl agora flutua sobre o mapa */}
                           <LayerControl isVisible={!selectedTour} />
 
@@ -1830,10 +1810,7 @@ const MapaContent = () => {
                   </div>
                 </div>
 
-
               </motion.section>
-
-            
 
               {/* Lista de Locais */}
               <motion.section
@@ -2088,7 +2065,6 @@ const MapaContent = () => {
               </motion.section>
 
               <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden border-t-3 border-theme p-8">
-
 
                 {/* Decorative elements */}
                 <div className="absolute inset-0 z-10 pointer-events-none decorative-elements">

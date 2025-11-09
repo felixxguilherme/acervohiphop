@@ -1175,31 +1175,6 @@ export function AcervoProvider({ children }) {
     }
   };
 
-  // Adicionar funções de desenvolvimento globais
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
-      // Função para limpar cache facilmente no console
-      window.clearMapCache = clearCache;
-      
-      // Função para forçar reload de dados
-      window.reloadMapData = () => {
-        console.info('[AcervoContext] 🔄 Forçando reload dos dados do mapa...');
-        clearCache();
-        setTimeout(() => {
-          loadMapData(null, true, false); // Forçar reload completo de todo o acervo
-        }, 100);
-      };
-      
-      // Função para ver info do cache
-      window.getCacheInfo = contextValue.getCacheStatus;
-      
-      console.info('[AcervoContext] 🛠️ Funções de desenvolvimento disponíveis:');
-      console.info('  - window.clearMapCache() → Limpa todo o cache');
-      console.info('  - window.reloadMapData() → Limpa cache e recarrega dados');
-      console.info('  - window.getCacheInfo() → Mostra informações do cache');
-    }
-  }, [clearCache, loadMapData, contextValue.getCacheStatus]);
-
   return (
     <AcervoContext.Provider value={contextValue}>
       {children}
