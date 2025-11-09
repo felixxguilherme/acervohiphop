@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -44,6 +45,7 @@ const MapaContent = () => {
 
   const [currentTheme, setCurrentTheme] = useState('light');
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   useEffect(() => {
     // Carrega o tema do localStorage no primeiro render
@@ -111,9 +113,13 @@ const MapaContent = () => {
   const mapRef = useRef(null);
   const flyToTimeoutRef = useRef(null);
 
-  // Estados para paginação
+  // Estados para paginação das regiões
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6); // 6 regiões por página
+
+  // Estados para paginação da busca no fullscreen
+  const [searchCurrentPage, setSearchCurrentPage] = useState(1);
+  const [searchItemsPerPage] = useState(10); // 10 resultados de busca por página
 
   // Estado local para controlar carregamento das regiões separadamente
   const [regionsLoading, setRegionsLoading] = useState(false);
@@ -174,7 +180,8 @@ const MapaContent = () => {
       place_access_points: feature.properties.place_access_points,
       has_real_coordinates: feature.properties.has_real_coordinates,
       isRandomPoint: !feature.properties.has_real_coordinates,
-      coordinateType: feature.properties.coordinate_source
+      coordinateType: feature.properties.coordinate_source,
+      ...feature.properties
     }));
   }, [geoJson]);
 
@@ -427,6 +434,7 @@ const MapaContent = () => {
   useEffect(() => {
     const filtered = performSearch(debouncedSearchTerm, allSearchableLocations);
     setFilteredLocations(filtered);
+    setSearchCurrentPage(1); // Reset search pagination when search term changes
   }, [allSearchableLocations, debouncedSearchTerm]);
 
   // Update selected RA layer when RA is selected
@@ -755,6 +763,259 @@ const MapaContent = () => {
     }
   };
 
+  const LocationDetailModal = ({ location, onClose }) => {
+    console.log("🎯 LocationDetailModal renderizando! Location:", location?.name || location?.title);
+    if (!location) {
+      console.log("❌ LocationDetailModal - location é null, retornando null");
+      return null;
+    }
+    console.log("✅ LocationDetailModal - location válido, renderizando modal");
+
+    // Função para formatear datas
+    const formatDate = (dateString) => {
+      if (!dateString) return 'Não informado';
+      try {
+        return new Date(dateString).toLocaleDateString('pt-BR');
+      } catch {
+        return dateString;
+      }
+    };
+
+    // Função para determinar qual URL usar para imagem (prioriza reference_url)
+    const getImageUrl = () => {
+      let url = location.reference_url || location.thumbnail_url || location.digital_object_url;
+      
+      if (url) {
+        // Aplicar correções de URL
+        if (url.includes('acervodistrito') && !url.includes('base.acervodistrito')) {
+          url = url.replace('https://acervodistrito', 'https://base.acervodistrito');
+          url = url.replace('http://acervodistrito', 'https://base.acervodistrito');
+        }
+      }
+      
+      return url;
+    };
+
+    // Seções organizadas de dados
+    const sections = {
+      identification: {
+        title: "IDENTIFICAÇÃO",
+        fields: {
+          "Título": location.title || location.name,
+          "Código de Referência": location.reference_code,
+          "Nível de Descrição": location.level_of_description,
+          "Slug": location.slug
+        }
+      },
+      content: {
+        title: "CONTEÚDO",
+        fields: {
+          "Âmbito e Conteúdo": location.scope_and_content,
+          "História Arquivística": location.archival_history,
+          "Descrição": location.description,
+          "Características Físicas": location.physical_characteristics
+        }
+      },
+      context: {
+        title: "CONTEXTO",
+        fields: {
+          "Data de Criação": Array.isArray(location.creation_dates) ? 
+            location.creation_dates.map(date => formatDate(date)).join(', ') : 
+            formatDate(location.creation_dates),
+          "Pontos de Acesso de Local": Array.isArray(location.place_access_points) ? 
+            location.place_access_points.join(', ') : 
+            location.place_access_points,
+          "Pontos de Acesso de Assunto": Array.isArray(location.subject_access_points) ?
+            location.subject_access_points.join(', ') :
+            location.subject_access_points,
+          "Pontos de Acesso de Nome": Array.isArray(location.name_access_points) ?
+            location.name_access_points.join(', ') :
+            location.name_access_points
+        }
+      },
+      technical: {
+        title: "METADADOS TÉCNICOS",
+        fields: {
+          "Tipo de Coordenada": location.coordinateType,
+          "Fonte da Coordenada": location.coordinate_source,
+          "Latitude": location.coordinates?.lat || location.lat,
+          "Longitude": location.coordinates?.lng || location.lng,
+          "Tipo de Fonte": location.sourceType,
+          "Tipo de Localidade": location.locality_type_name,
+          "URL do Objeto Digital": location.digital_object_url,
+          "URL de Referência": location.reference_url,
+          "URL da Miniatura": location.thumbnail_url
+        }
+      },
+      notes: {
+        title: "NOTAS E OBSERVAÇÕES",
+        fields: {
+          "Notas": Array.isArray(location.notes) ? 
+            location.notes.join(' | ') : 
+            location.notes,
+          "Condições de Acesso": location.access_conditions,
+          "Condições de Reprodução": location.reproduction_conditions
+        }
+      }
+    };
+
+    
+    return (
+      <div 
+        className="bg-theme-background text-black w-full max-w-6xl h-[90vh] overflow-hidden border-4 border-hip-amarelo flex flex-col" 
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'relative',
+          maxWidth: '90vw',
+          maxHeight: '90vh'
+        }}
+      >
+          {/* Header */}
+          <div className="flex justify-between items-center border-b-3 border-black p-6">
+            <div>
+              <h2 className="text-2xl font-dirty-stains text-black">{location.title || location.name || 'Detalhes do Item'}</h2>
+              {location.reference_code && (
+                <p className="font-sometype-mono text-sm text-black/70 mt-1">Ref: {location.reference_code}</p>
+              )}
+            </div>
+            <button 
+              onClick={onClose} 
+              className="bg-black text-white p-2 hover:bg-gray-800 transition-colors border-2 border-black"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-6 space-y-8">
+              {/* Imagem principal */}
+              {getImageUrl() && (
+                <div className="border-3 border-black p-4">
+                  <h3 className="font-dirty-stains text-lg text-black mb-4">IMAGEM</h3>
+                  <div className="bg-white border-2 border-black p-2">
+                    <img
+                      src={getImageUrl()}
+                      alt={location.title || location.name}
+                      className="w-full h-64 object-cover"
+                      onError={(e) => {
+                        console.error('Erro ao carregar imagem:', e.target.src);
+                        e.target.parentElement.innerHTML = '<div class="w-full h-64 bg-gray-200 flex items-center justify-center border-2 border-gray-300"><span class="text-gray-500 font-sometype-mono">Imagem indisponível</span></div>';
+                      }}
+                    />
+                  </div>
+                  {/* Links externos */}
+                  <div className="mt-4 flex gap-2">
+                    {location.digital_object_url && (
+                      <a
+                        href={location.digital_object_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1 bg-black text-white font-sometype-mono text-xs border-2 border-black hover:bg-gray-800 transition-colors"
+                      >
+                        Ver Original
+                      </a>
+                    )}
+                    {location.slug && (
+                      <a
+                        href={`https://base.acervodistritohiphop.com.br/index.php/${location.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1 bg-white text-black font-sometype-mono text-xs border-2 border-black hover:bg-gray-100 transition-colors"
+                      >
+                        Ver no AtoM
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Seções de dados */}
+              {Object.entries(sections).map(([sectionKey, section]) => {
+                const hasData = Object.values(section.fields).some(value => value && value !== 'Não informado');
+                if (!hasData) return null;
+
+                return (
+                  <div key={sectionKey} className="p-4">
+                    <h3 className="font-dirty-stains text-lg text-black mb-4 border-b-2 border-black pb-2">
+                      {section.title}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {Object.entries(section.fields).map(([key, value]) => {
+                        if (!value || value === 'Não informado') return null;
+                        
+                        return (
+                          <div key={key} className="p-3">
+                            <h4 className="marca-texto-amarelo font-sometype-mono font-bold text-xs text-black/70 uppercase tracking-wider mb-1">
+                              {key}
+                            </h4>
+                            <p className="font-sometype-mono text-sm text-black leading-relaxed">
+                              {value}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Seção especial para campos não mapeados */}
+              {(() => {
+                const mappedFields = new Set();
+                Object.values(sections).forEach(section => {
+                  Object.values(section.fields).forEach(value => {
+                    if (typeof value === 'string') mappedFields.add(value);
+                  });
+                });
+
+                const unmappedData = {};
+                Object.entries(location).forEach(([key, value]) => {
+                  if (value && 
+                      !['coordinates', 'items', 'lat', 'lng', 'id'].includes(key) &&
+                      !mappedFields.has(value) &&
+                      typeof value !== 'object') {
+                    unmappedData[key] = value;
+                  }
+                });
+
+                if (Object.keys(unmappedData).length === 0) return null;
+
+                return (
+                  <div className="border-3 border-black p-4">
+                    <h3 className="font-dirty-stains text-lg text-black mb-4 border-b-2 border-black pb-2">
+                      DADOS ADICIONAIS
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {Object.entries(unmappedData).map(([key, value]) => (
+                        <div key={key} className="p-3">
+                          <h4 className="font-sometype-mono font-bold text-xs text-black/70 uppercase tracking-wider mb-1">
+                            {key.replace(/_/g, ' ')}
+                          </h4>
+                          <p className="font-sometype-mono text-sm text-black leading-relaxed">
+                            {String(value)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+    );
+  };
+
+
+  // Debug logs
+  console.log("🔍 Render - isDetailModalOpen:", isDetailModalOpen);
+  console.log("🔍 Render - isFullscreen:", isFullscreen);
+  console.log("🔍 Render - shouldShowModal:", isDetailModalOpen && isFullscreen);
+  console.log("🔍 Render - selectedLocation:", selectedLocation?.name || 'null/undefined');
+
   return (
     <>
       {/* Tela de carregamento apenas para página inicial */}
@@ -965,10 +1226,17 @@ const MapaContent = () => {
                                   <h3 className="font-sometype-mono lg:text-lg text-sm font-bold text-black lg:mb-3 mb-2 border-b border-black pb-1">
                                     LOCAIS ENCONTRADOS
                                   </h3>
-                                  <div className="lg:space-y-2 space-y-1 lg:max-h-96 max-h-48 overflow-y-auto">
-                                    {filteredLocations.slice(0, 10).map((location) => {
-                                      const searchMatches = getSearchMatches(location, searchTerm);
-                                      return (
+                                  <div className="lg:space-y-2 space-y-1">
+                                    {(() => {
+                                      // Calcular paginação da busca
+                                      const searchTotalPages = Math.ceil(filteredLocations.length / searchItemsPerPage);
+                                      const searchStartIndex = (searchCurrentPage - 1) * searchItemsPerPage;
+                                      const searchEndIndex = searchStartIndex + searchItemsPerPage;
+                                      const currentSearchResults = filteredLocations.slice(searchStartIndex, searchEndIndex);
+                                      
+                                      return currentSearchResults.map((location) => {
+                                        const searchMatches = getSearchMatches(location, searchTerm);
+                                        return (
                                         <div
                                           key={location.id}
                                           onClick={() => handleMarkerClick(location)}
@@ -1038,19 +1306,77 @@ const MapaContent = () => {
                                             <span className="font-sometype-mono text-xs text-black/50">
                                               {location.itemCount} item(s)
                                             </span>
-                                            <button className="font-sometype-mono text-xs text-black underline hover:no-underline">
-                                              Ver no mapa →
+                                            <button 
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                console.log("🔥 Botão clicado! Location:", location);
+                                                console.log("🔥 isFullscreen:", isFullscreen);
+                                                setSelectedLocation(location);
+                                                setIsDetailModalOpen(true);
+                                                console.log("🔥 States definidos - selectedLocation e isDetailModalOpen=true");
+                                              }}
+                                              className="font-sometype-mono text-xs text-black underline hover:no-underline"
+                                            >
+                                              Explorar Local →
                                             </button>
                                           </div>
                                         </div>
-                                      );
-                                    })}
-                                    {filteredLocations.length > 10 && (
-                                      <p className="text-center font-sometype-mono text-xs text-black/70 py-2">
-                                        Mostrando 10 de {filteredLocations.length} resultados
-                                      </p>
-                                    )}
+                                        );
+                                      });
+                                    })()}
                                   </div>
+                                  
+                                  {/* Paginação da busca */}
+                                  {(() => {
+                                    const searchTotalPages = Math.ceil(filteredLocations.length / searchItemsPerPage);
+                                    const searchStartIndex = (searchCurrentPage - 1) * searchItemsPerPage;
+                                    const searchEndIndex = Math.min(searchStartIndex + searchItemsPerPage, filteredLocations.length);
+                                    
+                                    if (filteredLocations.length > 0) {
+                                      return (
+                                        <div className="mt-4 space-y-3">
+                                          {/* Informação sobre resultados */}
+                                          <p className="text-center font-sometype-mono text-xs text-black/70">
+                                            Mostrando {searchStartIndex + 1}-{searchEndIndex} de {filteredLocations.length} resultados
+                                          </p>
+                                          
+                                          {/* Controles de paginação */}
+                                          {searchTotalPages > 1 && (
+                                            <div className="flex justify-center items-center gap-2">
+                                              <button
+                                                onClick={() => searchCurrentPage > 1 && setSearchCurrentPage(searchCurrentPage - 1)}
+                                                disabled={searchCurrentPage === 1}
+                                                className={`px-2 py-1 text-xs font-sometype-mono border border-black ${
+                                                  searchCurrentPage === 1 
+                                                    ? 'opacity-50 cursor-not-allowed bg-gray-100' 
+                                                    : 'bg-white hover:bg-gray-100 cursor-pointer'
+                                                }`}
+                                              >
+                                                ← Anterior
+                                              </button>
+                                              
+                                              <span className="px-2 py-1 text-xs font-sometype-mono text-white border border-black">
+                                                {searchCurrentPage} de {searchTotalPages}
+                                              </span>
+                                              
+                                              <button
+                                                onClick={() => searchCurrentPage < searchTotalPages && setSearchCurrentPage(searchCurrentPage + 1)}
+                                                disabled={searchCurrentPage === searchTotalPages}
+                                                className={`px-2 py-1 text-xs font-sometype-mono border border-black ${
+                                                  searchCurrentPage === searchTotalPages 
+                                                    ? 'opacity-50 cursor-not-allowed bg-gray-100' 
+                                                    : 'bg-white hover:bg-gray-100 cursor-pointer'
+                                                }`}
+                                              >
+                                                Próximo →
+                                              </button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    }
+                                    return null;
+                                  })()}
                                 </div>
 
                                 {/* Estatísticas */}
@@ -1179,6 +1505,31 @@ const MapaContent = () => {
 
                           {/* Mapa ocupando o restante da tela - superior em mobile, direita em desktop */}
                           <div className="flex-1 relative lg:order-2 order-1 lg:h-full md:h-2/3 h-3/5">
+                          <div id="map-overlay" className={`${isDetailModalOpen && isFullscreen ? 'active' : ''}`}>
+                            {isDetailModalOpen && isFullscreen && (
+                              <div 
+                                className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-[10001]" 
+                                onClick={() => setIsDetailModalOpen(false)}
+                                style={{ 
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  zIndex: 10001,
+                                  backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                              >
+                                <LocationDetailModal
+                                  location={selectedLocation}
+                                  onClose={() => setIsDetailModalOpen(false)}
+                                />
+                              </div>
+                            )}
+                          </div>
                           <MapRenderer
                             ref={mapRef}
                             {...viewState}
@@ -1216,7 +1567,7 @@ const MapaContent = () => {
                                 closeOnMove={false}
                               >
                                 <div className="popup-folha-pauta px-6 py-3">
-                                  <p className="font-scratchy text-4xl mb-1 text-black">{hoveredLocation.name}</p>
+                                  <p className="font-scratchy text-3xl mb-1 text-black">{hoveredLocation.name}</p>
                                   <p className="font-sometype-mono text-xs mb-2 line-clamp-2 text-black">{hoveredLocation.description}</p>
                                   <div className="flex items-center gap-1">
                                     {hoveredLocation.sourceType === 'df_locality' ? (
@@ -1265,8 +1616,8 @@ const MapaContent = () => {
                                   setShowHoverPopup(false);
                                 }}
                               >
-                                <div className="popup-folha-pauta px-6 py-4 min-w-[280px] max-w-[400px]">
-                                  <h3 className="font-scratchy text-4xl mb-2 text-black font-bold">{selectedLocation.name || selectedLocation.title || 'Local'}</h3>
+                                <div className="popup-folha-pauta px-6 py-4">
+                                  <h3 className="font-scratchy text-2xl mb-2 text-black font-bold">{selectedLocation.name || selectedLocation.title || 'Local'}</h3>
                                   <p className="font-sometype-mono text-sm mb-3 text-black leading-relaxed">{selectedLocation.description || selectedLocation.scope_and_content || 'Sem descrição disponível'}</p>
                                   
                                   {/* Informações específicas para localidades DF */}
@@ -1319,10 +1670,10 @@ const MapaContent = () => {
                                     <button 
                                       className="w-full bg-black text-white px-4 py-2 font-scratchy text-lg border-2 border-black hover:bg-gray-800 transition-colors"
                                       onClick={() => {
-                                        // Navegar para página do item se não for localidade DF
-                                        if (selectedLocation.slug) {
-                                          window.open(`/acervo/item/${selectedLocation.slug}`, '_blank');
-                                        }
+                                        console.log("🔥 Botão Explorar Local clicado no popup! selectedLocation:", selectedLocation);
+                                        console.log("🔥 isFullscreen:", isFullscreen);
+                                        setIsDetailModalOpen(true);
+                                        console.log("🔥 Modal deveria abrir agora");
                                       }}
                                     >
                                       Explorar Local →
@@ -1687,20 +2038,77 @@ const MapaContent = () => {
                             />
                           </PaginationItem>
 
-                          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <PaginationItem key={page}>
-                              <PaginationLink
-                                onClick={() => goToPage(page)}
-                                isActive={page === currentPage}
-                                className={`cursor-pointer border-2 border-theme font-dirty-stains ${page === currentPage
-                                    ? 'bg-blue-500 text-theme hover:bg-blue-600'
-                                    : 'bg-white hover:bg-gray-100 transition-colors'
-                                  }`}
-                              >
-                                {page}
-                              </PaginationLink>
-                            </PaginationItem>
-                          ))}
+                          {(() => {
+                            // Calcular quais páginas mostrar (máximo 5)
+                            const maxVisiblePages = 5;
+                            const startPage = Math.max(1, Math.min(currentPage - Math.floor(maxVisiblePages / 2), totalPages - maxVisiblePages + 1));
+                            const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                            const items = [];
+                            
+                            // Mostrar primeira página + ... se necessário
+                            if (startPage > 1) {
+                              items.push(
+                                <PaginationItem key={1}>
+                                  <PaginationLink
+                                    onClick={() => goToPage(1)}
+                                    className="cursor-pointer border-2 border-theme font-dirty-stains bg-white hover:bg-gray-100 transition-colors"
+                                  >
+                                    1
+                                  </PaginationLink>
+                                </PaginationItem>
+                              );
+                              
+                              if (startPage > 2) {
+                                items.push(
+                                  <PaginationItem key="ellipsis-start">
+                                    <span className="px-3 py-2 font-dirty-stains text-theme">...</span>
+                                  </PaginationItem>
+                                );
+                              }
+                            }
+                            
+                            // Mostrar páginas do range calculado
+                            for (let i = startPage; i <= endPage; i++) {
+                              items.push(
+                                <PaginationItem key={i}>
+                                  <PaginationLink
+                                    onClick={() => goToPage(i)}
+                                    isActive={i === currentPage}
+                                    className={`cursor-pointer border-2 border-theme font-dirty-stains ${i === currentPage
+                                        ? 'bg-blue-500 text-theme hover:bg-blue-600'
+                                        : 'bg-white hover:bg-gray-100 transition-colors'
+                                      }`}
+                                  >
+                                    {i}
+                                  </PaginationLink>
+                                </PaginationItem>
+                              );
+                            }
+                            
+                            // Mostrar ... + última página se necessário
+                            if (endPage < totalPages) {
+                              if (endPage < totalPages - 1) {
+                                items.push(
+                                  <PaginationItem key="ellipsis-end">
+                                    <span className="px-3 py-2 font-dirty-stains text-theme">...</span>
+                                  </PaginationItem>
+                                );
+                              }
+                              
+                              items.push(
+                                <PaginationItem key={totalPages}>
+                                  <PaginationLink
+                                    onClick={() => goToPage(totalPages)}
+                                    className="cursor-pointer border-2 border-theme font-dirty-stains bg-white hover:bg-gray-100 transition-colors"
+                                  >
+                                    {totalPages}
+                                  </PaginationLink>
+                                </PaginationItem>
+                              );
+                            }
+                            
+                            return items;
+                          })()}
 
                           <PaginationItem>
                             <PaginationNext
